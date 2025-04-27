@@ -1,0 +1,24 @@
+
+{
+	"songs": [
+		["Sussus Moogus", "red", [212, 0, 45], "EthanTheDoodler"],
+		["Sabotage", "red", [212, 0, 45], "M1les0, Rareblin, loggo"],
+		["Meltdown", "red", [212, 0, 45], "EthanTheDoodler, punkett"]
+	],
+	"beanDiffs": [2,3],
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"weekBackground": "polus",
+	
+	"storyName": "Polus Problems",
+	"weekBefore": "tutorial",
+	"weekName": "week1",
+	"startUnlocked": true,
+
+	"hideStoryMode": false,
+	"hideFreeplay": false
+}
+

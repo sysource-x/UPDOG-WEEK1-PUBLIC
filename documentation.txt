@@ -1,0 +1,4 @@
+Song METADATA... How to fuck with! Easy
+
+["Sussus Moogus", "red", [165, 0, 77], 0, [1,1,0,0,0]]
+SONGNAME, CHAR, [R,G,B], PORTRAIT_ID, STARS

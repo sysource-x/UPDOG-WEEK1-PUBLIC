@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="boomboxfall.png">
+	<!-- Created with Adobe Animate version 24.0.8.70 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="boombox falls0000" x="0" y="0" width="126" height="123" frameX="0" frameY="0" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0001" x="0" y="0" width="126" height="123" frameX="0" frameY="0" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0002" x="0" y="0" width="126" height="123" frameX="0" frameY="0" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0003" x="131" y="0" width="127" height="123" frameX="0" frameY="-4" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0004" x="131" y="0" width="127" height="123" frameX="0" frameY="-4" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0005" x="131" y="0" width="127" height="123" frameX="0" frameY="-4" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0006" x="263" y="0" width="126" height="123" frameX="0" frameY="-18" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0007" x="263" y="0" width="126" height="123" frameX="0" frameY="-18" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0008" x="394" y="0" width="136" height="142" frameX="0" frameY="-58" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0009" x="394" y="0" width="136" height="142" frameX="0" frameY="-58" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0010" x="535" y="0" width="137" height="137" frameX="-3" frameY="-144" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0011" x="535" y="0" width="137" height="137" frameX="-3" frameY="-144" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0012" x="677" y="0" width="110" height="154" frameX="-18" frameY="-214" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0013" x="792" y="0" width="86" height="151" frameX="-30" frameY="-297" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0014" x="792" y="0" width="86" height="151" frameX="-30" frameY="-297" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0015" x="883" y="0" width="96" height="142" frameX="-49" frameY="-292" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0016" x="883" y="0" width="96" height="142" frameX="-49" frameY="-292" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0017" x="0" y="159" width="142" height="135" frameX="-68" frameY="-297" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0018" x="0" y="159" width="142" height="135" frameX="-68" frameY="-297" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0019" x="147" y="159" width="135" height="98" frameX="-86" frameY="-326" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0020" x="147" y="159" width="135" height="98" frameX="-86" frameY="-326" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0021" x="287" y="159" width="142" height="80" frameX="-125" frameY="-359" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0022" x="287" y="159" width="142" height="80" frameX="-125" frameY="-359" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0023" x="434" y="159" width="142" height="73" frameX="-134" frameY="-363" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0024" x="434" y="159" width="142" height="73" frameX="-134" frameY="-363" frameWidth="280" frameHeight="448"/>
+	<SubTexture name="boombox falls0025" x="581" y="159" width="144" height="74" frameX="-136" frameY="-363" frameWidth="280" frameHeight="448"/>
+</TextureAtlas>

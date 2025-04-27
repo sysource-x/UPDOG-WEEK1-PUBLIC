@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="crewOutside.png" width="2152" height="1895">
+	<SubTexture name="CYAN WALK0000" x="1145" y="1451" width="325" height="274" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0001" x="1145" y="1451" width="325" height="274" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0002" x="1145" y="1451" width="325" height="274" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0003" x="1145" y="1451" width="325" height="274" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0004" x="1787" y="603" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0005" x="1787" y="603" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0006" x="1787" y="603" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0007" x="1787" y="603" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0008" x="1475" y="1451" width="333" height="267" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0009" x="1475" y="1451" width="333" height="267" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0010" x="1475" y="1451" width="333" height="267" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0011" x="1475" y="1451" width="333" height="267" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0012" x="1813" y="1451" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0013" x="1813" y="1451" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0014" x="1813" y="1451" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="CYAN WALK0015" x="1813" y="1451" width="332" height="260" frameX="-0" frameY="-18" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="IDLE CYAN0000" x="1813" y="1451" width="332" height="260" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="IDLE CYAN0001" x="1813" y="1451" width="332" height="260" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="IDLE CYAN0002" x="1891" y="1" width="260" height="332" rotated="true" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="IDLE CYAN0003" x="1891" y="1" width="260" height="332" rotated="true" frameX="-0" frameY="-0" frameWidth="333" frameHeight="278"/>
+	<SubTexture name="LIME0000" x="666" y="1" width="659" height="883" frameX="-1" frameY="-0" frameWidth="660" frameHeight="884"/>
+	<SubTexture name="LIME0001" x="666" y="1" width="659" height="883" frameX="-1" frameY="-0" frameWidth="660" frameHeight="884"/>
+	<SubTexture name="LIME0002" x="1" y="1" width="660" height="884" frameX="-0" frameY="-0" frameWidth="660" frameHeight="884"/>
+	<SubTexture name="LIME0003" x="1" y="1" width="660" height="884" frameX="-0" frameY="-0" frameWidth="660" frameHeight="884"/>
+	<SubTexture name="PURPLE0000" x="666" y="889" width="606" height="557" rotated="true" frameX="-1" frameY="-1" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0001" x="666" y="889" width="606" height="557" rotated="true" frameX="-1" frameY="-1" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0002" x="1" y="890" width="607" height="555" rotated="true" frameX="-4" frameY="-1" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0003" x="1" y="890" width="607" height="555" rotated="true" frameX="-4" frameY="-1" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0004" x="1330" y="1" width="556" height="597" frameX="-1" frameY="-17" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0005" x="1330" y="1" width="556" height="597" frameX="-1" frameY="-17" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0006" x="1277" y="889" width="597" height="557" rotated="true" frameX="-1" frameY="-17" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="PURPLE0007" x="1277" y="889" width="597" height="557" rotated="true" frameX="-1" frameY="-17" frameWidth="559" frameHeight="614"/>
+	<SubTexture name="ROSE0000" x="460" y="1673" width="458" height="213" rotated="true" frameX="-4" frameY="-4" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0001" x="460" y="1673" width="458" height="213" rotated="true" frameX="-4" frameY="-4" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0002" x="460" y="1673" width="458" height="213" rotated="true" frameX="-4" frameY="-4" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0003" x="460" y="1673" width="458" height="213" rotated="true" frameX="-4" frameY="-4" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0004" x="468" y="1451" width="450" height="216" rotated="true" frameX="-9" frameY="-14" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0005" x="468" y="1451" width="450" height="216" rotated="true" frameX="-9" frameY="-14" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0006" x="468" y="1451" width="450" height="216" rotated="true" frameX="-9" frameY="-14" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0007" x="468" y="1451" width="450" height="216" rotated="true" frameX="-9" frameY="-14" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0008" x="1" y="1450" width="462" height="218" rotated="true" frameX="-0" frameY="-0" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0009" x="1" y="1450" width="462" height="218" rotated="true" frameX="-0" frameY="-0" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0010" x="1" y="1450" width="462" height="218" rotated="true" frameX="-0" frameY="-0" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0011" x="1" y="1450" width="462" height="218" rotated="true" frameX="-0" frameY="-0" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0012" x="923" y="1451" width="217" height="442" frameX="-0" frameY="-17" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0013" x="923" y="1451" width="217" height="442" frameX="-0" frameY="-17" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0014" x="923" y="1451" width="217" height="442" frameX="-0" frameY="-17" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0015" x="923" y="1451" width="217" height="442" frameX="-0" frameY="-17" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0016" x="1" y="1673" width="454" height="221" rotated="true" frameX="-5" frameY="-8" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0017" x="1" y="1673" width="454" height="221" rotated="true" frameX="-5" frameY="-8" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0018" x="1330" y="603" width="452" height="223" rotated="true" frameX="-4" frameY="-9" frameWidth="227" frameHeight="464"/>
+	<SubTexture name="ROSE0019" x="1330" y="603" width="452" height="223" rotated="true" frameX="-4" frameY="-9" frameWidth="227" frameHeight="464"/>
+</TextureAtlas>

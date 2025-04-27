@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="tempshieldthing.png">
+	<!-- Created with Adobe Animate version 21.0.3.38773 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="temp0000" x="0" y="0" width="687" height="685" frameX="-211" frameY="-212" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0001" x="692" y="0" width="715" height="713" frameX="-197" frameY="-198" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0002" x="1412" y="0" width="745" height="743" frameX="-182" frameY="-183" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0003" x="2162" y="0" width="777" height="775" frameX="-166" frameY="-167" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0004" x="2944" y="0" width="807" height="805" frameX="-151" frameY="-152" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0005" x="0" y="810" width="837" height="835" frameX="-136" frameY="-137" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0006" x="842" y="810" width="867" height="865" frameX="-121" frameY="-122" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0007" x="1714" y="810" width="897" height="895" frameX="-106" frameY="-107" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0008" x="2616" y="810" width="927" height="925" frameX="-91" frameY="-92" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0009" x="0" y="1740" width="956" height="955" frameX="-76" frameY="-77" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0010" x="961" y="1740" width="987" height="985" frameX="-61" frameY="-62" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0011" x="1953" y="1740" width="1017" height="1016" frameX="-46" frameY="-46" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0012" x="2975" y="1740" width="1049" height="1049" frameX="-30" frameY="-30" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0013" x="0" y="2794" width="1079" height="1079" frameX="-15" frameY="-15" frameWidth="1110" frameHeight="1109"/>
+	<SubTexture name="temp0014" x="1084" y="2794" width="1110" height="1109"/>
+</TextureAtlas>

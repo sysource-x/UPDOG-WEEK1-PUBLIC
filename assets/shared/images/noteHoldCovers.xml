@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Free texture packer v0.6.7 http://free-tex-packer.com
+-->
+<TextureAtlas imagePath="noteHoldCovers.png" width="2048" height="1024">
+  <SubTexture name="blueend0008" x="5" y="5"  width="263" height="151" frameX="-0" frameY="-22" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0008" x="278" y="5"  width="263" height="151" frameX="-0" frameY="-22" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0008" x="551" y="5"  width="263" height="151" frameX="-0" frameY="-22" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0008" x="824" y="5"  width="263" height="151" frameX="-0" frameY="-22" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueend0007" x="1097" y="5"  width="262" height="154" frameX="-1" frameY="-16" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0007" x="1369" y="5"  width="262" height="154" frameX="-1" frameY="-16" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0007" x="1641" y="5"  width="262" height="154" frameX="-1" frameY="-16" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueend0001" x="1913" y="5"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0001" x="1913" y="56"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0001" x="1913" y="107"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0001" x="1913" y="158"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0007" x="5" y="166"  width="262" height="154" frameX="-1" frameY="-16" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueend0006" x="277" y="166"  width="261" height="160" frameX="-0" frameY="-7" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0006" x="5" y="330"  width="261" height="160" frameX="-0" frameY="-7" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0006" x="548" y="166"  width="261" height="160" frameX="-0" frameY="-7" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0006" x="819" y="166"  width="261" height="160" frameX="-0" frameY="-7" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueend0004" x="1090" y="169"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0004" x="1343" y="169"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0004" x="1596" y="169"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueloop0002" x="1849" y="209"  width="180" height="114" frameX="-0" frameY="-27" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="greenloop0002" x="1849" y="333"  width="180" height="114" frameX="-0" frameY="-27" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="redend0004" x="276" y="336"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueend0003" x="5" y="500"  width="220" height="146" frameX="-17" frameY="-10" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0003" x="529" y="336"  width="220" height="146" frameX="-17" frameY="-10" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0003" x="759" y="336"  width="220" height="146" frameX="-17" frameY="-10" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0003" x="989" y="343"  width="220" height="146" frameX="-17" frameY="-10" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleloop0002" x="529" y="492"  width="180" height="114" frameX="-0" frameY="-27" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="redloop0002" x="719" y="492"  width="180" height="114" frameX="-0" frameY="-27" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="bluestart0001" x="235" y="510"  width="166" height="120" frameX="-0" frameY="-0" frameWidth="166" frameHeight="120"/>
+  <SubTexture name="blueloop0004" x="411" y="510"  width="103" height="68" frameX="-42" frameY="-51" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="greenloop0004" x="411" y="588"  width="103" height="68" frameX="-42" frameY="-51" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="greenstart0001" x="235" y="640"  width="166" height="120" frameX="-0" frameY="-0" frameWidth="166" frameHeight="120"/>
+  <SubTexture name="purplestart0001" x="5" y="656"  width="166" height="120" frameX="-0" frameY="-0" frameWidth="166" frameHeight="120"/>
+  <SubTexture name="redstart0001" x="1219" y="343"  width="166" height="120" frameX="-0" frameY="-0" frameWidth="166" frameHeight="120"/>
+  <SubTexture name="blueloop0003" x="1395" y="343"  width="143" height="96" frameX="-23" frameY="-44" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="greenloop0003" x="1548" y="343"  width="143" height="96" frameX="-23" frameY="-44" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="blueloop0001" x="1701" y="343"  width="116" height="152" frameX="-27" frameY="-0" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="purpleloop0003" x="1827" y="457"  width="143" height="96" frameX="-23" frameY="-44" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="redloop0003" x="1395" y="449"  width="143" height="96" frameX="-23" frameY="-44" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="greenloop0001" x="1548" y="449"  width="116" height="152" frameX="-27" frameY="-0" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="purpleloop0001" x="1674" y="505"  width="116" height="152" frameX="-27" frameY="-0" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="redloop0001" x="1674" y="667"  width="116" height="152" frameX="-27" frameY="-0" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="purpleloop0004" x="1219" y="473"  width="103" height="68" frameX="-42" frameY="-51" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="redloop0004" x="1800" y="563"  width="103" height="68" frameX="-42" frameY="-51" frameWidth="180" frameHeight="152"/>
+  <SubTexture name="blueend0002" x="1913" y="5"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="blueend0005" x="1090" y="169"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0002" x="1913" y="56"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="greenend0005" x="1343" y="169"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0002" x="1913" y="107"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="purpleend0005" x="1596" y="169"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0002" x="1913" y="158"  width="126" height="41" frameX="-73" frameY="-80" frameWidth="263" frameHeight="173"/>
+  <SubTexture name="redend0005" x="276" y="336"  width="243" height="164" frameX="-6" frameY="-0" frameWidth="263" frameHeight="173"/>
+</TextureAtlas>

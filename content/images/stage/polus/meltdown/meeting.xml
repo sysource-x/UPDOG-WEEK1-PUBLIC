@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="meeting.png" width="1290" height="1958">
+	<SubTexture name="meeting0000" x="1" y="1956" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0001" x="1" y="1956" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0002" x="1" y="1838" width="1288" height="113" frameX="-0" frameY="-271" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0003" x="1" y="1838" width="1288" height="113" frameX="-0" frameY="-271" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0004" x="1" y="1" width="1288" height="644" frameX="-0" frameY="-0" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0005" x="1" y="1" width="1288" height="644" frameX="-0" frameY="-0" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0006" x="1" y="650" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0007" x="1" y="650" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0008" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0009" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0010" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0011" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0012" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0013" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0014" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0015" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0016" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0017" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0018" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0019" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0020" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0021" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0022" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0023" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0024" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0025" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0026" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0027" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0028" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0029" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0030" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0031" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0032" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0033" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0034" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0035" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0036" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0037" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0038" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0039" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0040" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0041" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0042" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0043" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+	<SubTexture name="meeting0044" x="1" y="1244" width="1288" height="589" frameX="-0" frameY="-28" frameWidth="1288" frameHeight="659"/>
+</TextureAtlas>

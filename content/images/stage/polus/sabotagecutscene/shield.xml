@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="shield.png">
+	<!-- Created with Adobe Animate version 21.0.3.38773 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="shield breaks0000" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0001" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0002" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0003" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0004" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0005" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0006" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0007" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0008" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0009" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0010" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0011" x="0" y="0" width="445" height="447" frameX="-28" frameY="-1" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0012" x="450" y="0" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0013" x="905" y="0" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0014" x="1360" y="0" width="478" height="450"/>
+	<SubTexture name="shield breaks0015" x="1843" y="0" width="478" height="450"/>
+	<SubTexture name="shield breaks0016" x="2326" y="0" width="478" height="450"/>
+	<SubTexture name="shield breaks0017" x="2809" y="0" width="478" height="450"/>
+	<SubTexture name="shield breaks0018" x="3292" y="0" width="478" height="450"/>
+	<SubTexture name="shield breaks0019" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0020" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0021" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0022" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0023" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0024" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0025" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0026" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0027" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0028" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0029" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0030" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0031" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0032" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0033" x="0" y="455" width="478" height="450"/>
+	<SubTexture name="shield breaks0034" x="483" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0035" x="938" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0036" x="1393" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0037" x="1848" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0038" x="2303" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0039" x="2758" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0040" x="3213" y="455" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0041" x="0" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0042" x="455" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0043" x="910" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0044" x="1365" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0045" x="1820" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0046" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0047" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0048" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0049" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0050" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0051" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0052" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0053" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0054" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0055" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0056" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0057" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0058" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0059" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0060" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0061" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0062" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0063" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0064" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0065" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0066" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0067" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0068" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0069" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0070" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0071" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0072" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0073" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0074" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0075" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0076" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0077" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0078" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0079" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0080" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0081" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0082" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0083" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0084" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0085" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0086" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0087" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0088" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield breaks0089" x="2275" y="910" width="450" height="450" frameX="-28" frameY="0" frameWidth="478" frameHeight="450"/>
+	<SubTexture name="shield shatter bottom0000" x="2730" y="910" width="413" height="407" frameX="-54" frameY="-60" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0001" x="2730" y="910" width="413" height="407" frameX="-54" frameY="-60" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0002" x="2730" y="910" width="413" height="407" frameX="-54" frameY="-60" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0003" x="3148" y="910" width="495" height="486" frameX="-25" frameY="-25" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0004" x="3148" y="910" width="495" height="486" frameX="-25" frameY="-25" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0005" x="3148" y="910" width="495" height="486" frameX="-25" frameY="-25" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0006" x="0" y="1401" width="507" height="531" frameX="-16" frameY="-10" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0007" x="0" y="1401" width="507" height="531" frameX="-16" frameY="-10" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0008" x="0" y="1401" width="507" height="531" frameX="-16" frameY="-10" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0009" x="512" y="1401" width="527" height="528" frameX="-7" frameY="-3" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0010" x="512" y="1401" width="527" height="528" frameX="-7" frameY="-3" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0011" x="512" y="1401" width="527" height="528" frameX="-7" frameY="-3" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0012" x="1044" y="1401" width="530" height="458" frameX="0" frameY="0" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0013" x="1044" y="1401" width="530" height="458" frameX="0" frameY="0" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter bottom0014" x="1044" y="1401" width="530" height="458" frameX="0" frameY="0" frameWidth="534" frameHeight="541"/>
+	<SubTexture name="shield shatter top0000" x="1579" y="1401" width="474" height="486" frameX="-69" frameY="-59" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0001" x="2058" y="1401" width="474" height="486" frameX="-69" frameY="-59" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0002" x="2058" y="1401" width="474" height="486" frameX="-69" frameY="-59" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0003" x="2537" y="1401" width="565" height="561" frameX="-28" frameY="-18" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0004" x="2537" y="1401" width="565" height="561" frameX="-28" frameY="-18" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0005" x="2537" y="1401" width="565" height="561" frameX="-28" frameY="-18" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0006" x="3107" y="1401" width="590" height="622" frameX="-15" frameY="-7" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0007" x="3107" y="1401" width="590" height="622" frameX="-15" frameY="-7" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0008" x="3107" y="1401" width="590" height="622" frameX="-15" frameY="-7" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0009" x="0" y="2028" width="602" height="551" frameX="-10" frameY="-3" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0010" x="0" y="2028" width="602" height="551" frameX="-10" frameY="-3" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0011" x="0" y="2028" width="602" height="551" frameX="-10" frameY="-3" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0012" x="607" y="2028" width="620" height="567" frameX="0" frameY="0" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0013" x="607" y="2028" width="620" height="567" frameX="0" frameY="0" frameWidth="620" frameHeight="629"/>
+	<SubTexture name="shield shatter top0014" x="607" y="2028" width="620" height="567" frameX="0" frameY="0" frameWidth="620" frameHeight="629"/>
+</TextureAtlas>
