@@ -40,9 +40,9 @@ jobs:
           haxelib run lime config ANDROID_SETUP true 
 
       # Decrypt the keystore
-      - name: Decrypt Keystore
-        run: |
-          echo ${{ secrets.ENCRYPTION_PASSWORD }} | openssl enc -aes-256-cbc -d -in key.keystore.enc -out key.keystore -pass stdin
+      # - name: Decrypt Keystore
+      #  run: |
+      #    echo ${{ secrets.ENCRYPTION_PASSWORD }} | openssl enc -aes-256-cbc -d -in key.keystore.enc -out key.keystore -pass stdin
 
       - name: Compile
         run: |
