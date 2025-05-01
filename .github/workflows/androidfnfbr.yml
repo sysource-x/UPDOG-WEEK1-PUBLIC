@@ -2,14 +2,10 @@ name: Android Build
 on: 
   push:
     branches:
-      - main
+      - test
   pull_request:
     branches:
-      - main
-  workflow_run:
-    workflows: ["Android Build"]
-    types:
-      - completed
+      - test
   workflow_dispatch:
 jobs:
   Build:
