@@ -12,6 +12,7 @@ import flixel.util.FlxTimer;
 import flixel.FlxBasic;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
+import flixel.util.FlxDestroyUtil;
 #if sys
 import sys.io.*;
 import sys.*;
@@ -32,6 +33,15 @@ import funkin.data.Highscore;
 import funkin.states.*;
 import funkin.objects.BGSprite;
 import funkin.backend.MusicBeatState;
+
+//Mobile Controls/FlxButtons
+import android.AndroidControls;
+import android.AndroidControlsSubState;
+import android.flixel.FlxHitbox;
+import android.flixel.FlxButton;
+import android.flixel.FlxJoySitck;
+import android.flixel.FlxVirtualPad;
+import android.backend.SUtil;
 
 using StringTools;
 #end

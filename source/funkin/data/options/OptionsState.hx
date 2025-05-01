@@ -136,6 +136,10 @@ class OptionsState extends MusicBeatState
 		changeSel(0, 0);
 		ClientPrefs.saveSettings();
 
+		#if android
+		addVirtualPad(UP_DOWN, A_B);
+		#end
+
 		super.create();
 	}
 	function doItBruh() 
@@ -164,18 +168,18 @@ class OptionsState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		//if(FlxG.keys.justPressed.R) FlxG.resetState();
-		if(controls.UI_DOWN_P) {
+		if(controls.UI_DOWN_P #if android || FlxG.android.buttonDown.justPressed #end) {
 			changeSel(1, 1);
 		}
-		if(controls.UI_UP_P) {
+		if(controls.UI_UP_P #if android || FlxG.android.buttonUp.justPressed #end) {
 			changeSel(-1, 1);
 		}
 
-		if(controls.ACCEPT) {
+		if(controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end) {
 			doItBruh();
 			//openSubState(new ControlsSubState());
 		}
-		if(controls.BACK) {
+		if(controls.BACK #if android || FlxG.android.buttonB.justPressed #end) {
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			if (onPlayState)
 			{
@@ -185,7 +189,15 @@ class OptionsState extends MusicBeatState
 			}
 			else FlxG.switchState(new TitleState());
 		}
-		
+
+		#if android
+		if (virtualPad.buttonC.justPressed) {
+			#if android
+			removeVirtualPad();
+			#end
+			openSubState(new android.AndroidControlsSubState());
+		}
+		#end
 	}
 	override function closeSubState(){
 		boiText.alpha = 1;
@@ -194,5 +206,9 @@ class OptionsState extends MusicBeatState
 
 		super.closeSubState();
 		ClientPrefs.saveSettings();
+		#if android
+		removeVirtualPad();
+		addVirtualPad(UP_DOWN,A_B);
+		#end
 	}
 }

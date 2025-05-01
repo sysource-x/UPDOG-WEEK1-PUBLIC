@@ -122,6 +122,10 @@ class ControlsSubState extends MusicBeatSubstate
 			}
 		}
 		changeSelection();
+
+		#if android
+ 		addVirtualPad(UP_DOWN,A_B);
+ 		#end
 	}
 	
 	var leaving:Bool = false;
@@ -158,27 +162,53 @@ class ControlsSubState extends MusicBeatSubstate
 	{			
 		if (!rebindingKey)
 		{
-			if (controls.UI_UP_P)
+			if (controls.UI_UP_P #if android || FlxG.android.buttonUp.justPressed #end)
 			{
 				changeSelection(-1);
 			}
-			if (controls.UI_DOWN_P)
+			if (controls.UI_DOWN_P #if android || FlxG.android.buttonDown.justPressed #end)
 			{
 				changeSelection(1);
 			}
-			if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
+			if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if android || FlxG.android.buttonLeft.justPressed #end || FlxG.android.buttonRight.justPressed #end)
+			{
+				changeSelection(0);
+			}
+			{
+				changeSelection(0);
+			}
 			{
 				changeAlt();
 			}
 			
-			if (controls.BACK)
+			if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
+			{
+				FlxG.sound.play(Paths.sound('cancelMenu'));
+				if (rebindingKey)
+				{
+					bindingTime = 0;
+					rebindingKey = false;
+					if (curAlt)
+					{
+						grpInputsAlt[getInputTextNum()].alpha = 1;
+					}
+					else
+					{
+						grpInputs[getInputTextNum()].alpha = 1;
+					}
+				}
+				else
+				{
+					close();
+				}
+			}
 			{
 				ClientPrefs.reloadControls();
 				close();
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
 			
-			if (controls.ACCEPT && nextAccept <= 0)
+			if (controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end && nextAccept <= 0)
 			{
 				if (optionShit[curSelected][0] == defaultKey)
 				{

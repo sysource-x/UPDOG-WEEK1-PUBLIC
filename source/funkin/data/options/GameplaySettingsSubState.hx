@@ -26,7 +26,14 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Disable Reset Button', "Disables the Reset button", 'noReset', 'bool', false);
 		addOption(option);
 
-		var option:Option = new Option('Controller Mode', 'Enables controller support',
+		var option:Option = new Option('Keyboard Enabled',
+			'Check this if you want to play with\na keyboard on the Android Port',
+			'keyboardEnabled',
+			'bool',
+			false);
+		addOption(option);
+
+		var option:Option = new Option('Controller Mode', 'Check this if you want to play with\na controller instead of using your Keyboard.\n DO NOT TURN THIS ON IF MOBILE',
 			'controllerMode', 'bool', false);
 		addOption(option);
 
@@ -34,10 +41,6 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Mechanics', 'Check this if you want to enable mechanics!',
 		'mechanics', 'bool', true);
 		addOption(option);*/
-
-
-
-		
 
 		super();
 	}

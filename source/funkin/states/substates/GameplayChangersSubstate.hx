@@ -152,6 +152,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			updateTextFrom(optionsArray[i]);
 		}
 
+		#if android
+		addVirtualPad(FULL,A_B_X);
+		#end
+
 		changeSelection();
 		reloadCheckboxes();
 	}
@@ -162,16 +166,16 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P)
+		if (controls.UI_UP_P #if android || _virtualpad.buttonUp.justPressed #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P)
+		if (controls.UI_DOWN_P #if android || _virtualpad.buttonDown.justPressed #end)
 		{
 			changeSelection(1);
 		}
 
-		if (controls.BACK)
+		if (controls.BACK #if android || _virtualpad.buttonB.justPressed #end)
 		{
 			close();
 			ClientPrefs.saveSettings();
@@ -188,7 +192,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 			if (usesCheckbox)
 			{
-				if (controls.ACCEPT)
+				if (controls.ACCEPT #if android || _virtualpad.buttonA.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					curOption.setValue((curOption.getValue() == true) ? false : true);
@@ -198,9 +202,9 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			}
 			else
 			{
-				if (controls.UI_LEFT || controls.UI_RIGHT)
+				if (controls.UI_LEFT || controls.UI_RIGHT #if android || _virtualpad.buttonLeft.pressed || _virtualpad.buttonRight.pressed #end)
 				{
-					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
+					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P #if android || _virtualpad.buttonLeft.justPressed || _virtualpad.buttonRight.justPressed #end);
 					if (holdTime > 0.5 || pressed)
 					{
 						if (pressed)
@@ -208,7 +212,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 							var add:Dynamic = null;
 							if (curOption.type != 'string')
 							{
-								add = controls.UI_LEFT ? -curOption.changeValue : curOption.changeValue;
+								add = controls.UI_LEFT #if android || _virtualpad.buttonLeft.pressed #end ? -curOption.changeValue : curOption.changeValue;
 							}
 
 							switch (curOption.type)
@@ -231,7 +235,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 								case 'string':
 									var num:Int = curOption.curOption; // lol
-									if (controls.UI_LEFT_P) --num;
+									if (controls.UI_LEFT_P #if android || _virtualpad.buttonLeft.justPressed #end) --num;
 									else num++;
 
 									if (num < 0)
@@ -273,7 +277,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 						}
 						else if (curOption.type != 'string')
 						{
-							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT ? -1 : 1);
+							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT #if android || _virtualpad.buttonLeft.pressed #end ? -1 : 1);
 							if (holdValue < curOption.minValue) holdValue = curOption.minValue;
 							else if (holdValue > curOption.maxValue) holdValue = curOption.maxValue;
 
@@ -295,13 +299,13 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 						holdTime += elapsed;
 					}
 				}
-				else if (controls.UI_LEFT_R || controls.UI_RIGHT_R)
+				else if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if android || _virtualpad.buttonLeft.justReleased || _virtualpad.buttonRight.justReleased #end)
 				{
 					clearHold();
 				}
 			}
 
-			if (controls.RESET)
+			if (controls.RESET #if android || _virtualpad.buttonX.justPressed #end)
 			{
 				for (i in 0...optionsArray.length)
 				{

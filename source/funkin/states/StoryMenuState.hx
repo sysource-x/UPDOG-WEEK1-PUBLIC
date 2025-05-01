@@ -182,6 +182,9 @@ class StoryMenuState extends MusicBeatState
 		}
 		
 		reloadSongList();
+		#if android
+		addVirtualPad(LEFT_RIGHT,A_B_X_C_D);
+		#end
 		super.create();
 	}
 	
@@ -263,16 +266,16 @@ class StoryMenuState extends MusicBeatState
 		scoreText.text = "Score: " + FlxStringUtil.formatMoney(lerpScore, false, true);
 		if (!selectedWeek)
 		{
-			if (controls.UI_LEFT_P) changeWeek(-1);
-			if (controls.UI_RIGHT_P) changeWeek(1);
-			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q) changeDiff();
-			if (controls.ACCEPT) selectWeek();
-			if (controls.BACK) 
+			if (controls.UI_LEFT_P #if android || FlxG.android.buttonLeft.justPressed #end) changeWeek(-1);
+			if (controls.UI_RIGHT_P #if android || FlxG.android.buttonRight.justPressed #end) changeWeek(1);
+			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if android || FlxG.android.buttonD.justPressed || FlxG.android.buttonC.justPressed #end) changeDiff();
+			if (controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end) selectWeek();
+			if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
 			{
 				FlxG.switchState(new TitleState());
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
-			if (FlxG.keys.justPressed.R) 
+			if (FlxG.keys.justPressed.R #if android || FlxG.android.buttonX.justPressed #end) 
 			{
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubStateImpostor('', curDiff, curWeek));
@@ -340,5 +343,9 @@ class StoryMenuState extends MusicBeatState
 		persistentUpdate = true;
 		changeWeek();
 		super.closeSubState();
+		#if android
+		removeVirtualPad();
+		addVirtualPad(LEFT_RIGHT,A_B_X_C_D);
+		#end
 	}
 }

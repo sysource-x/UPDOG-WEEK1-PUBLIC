@@ -139,6 +139,11 @@ class NoteOffsetState extends MusicBeatState
 		blackBox.alpha = 0.6;
 		blackBox.cameras = [camHUD];
 		add(blackBox);
+
+		#if android
+ 		addVirtualPad(LEFT_RIGHT,B_X);
+ 		addVirtualPadCamera();
+ 		#end
 		
 		Conductor.bpm = 128.0;
 		FlxG.sound.playMusic(Paths.music('offsetSong'), 1, true);
@@ -152,25 +157,25 @@ class NoteOffsetState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
 		
-		if (controls.UI_LEFT_P)
+		if (controls.UI_LEFT_P #if android || FlxG.android.buttonLeft.justPressed #end)
 		{
 			barPercent = Math.max(delayMin, Math.min(ClientPrefs.noteOffset - 1, delayMax));
 			updateNoteDelay();
 		}
-		else if (controls.UI_RIGHT_P)
+		else if (controls.UI_RIGHT_P #if android || FlxG.android.buttonRight.justPressed #end)
 		{
 			barPercent = Math.max(delayMin, Math.min(ClientPrefs.noteOffset + 1, delayMax));
 			updateNoteDelay();
 		}
 		
 		var mult:Int = 1;
-		if (controls.UI_LEFT || controls.UI_RIGHT)
+		if (controls.UI_LEFT || controls.UI_RIGHT #if android || FlxG.android.buttonLeft.justPressed #end || #if android || FlxG.android.buttonRight.justPressed #end)
 		{
 			holdTime += elapsed;
 			if (controls.UI_LEFT) mult = -1;
 		}
 		
-		if (controls.UI_LEFT_R || controls.UI_RIGHT_R) holdTime = 0;
+		if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if android || FlxG.android.buttonLeft.justPressed #end #if android || FlxG.android.buttonRight.justPressed #end) holdTime = 0;
 		
 		if (holdTime > 0.5)
 		{
@@ -179,14 +184,14 @@ class NoteOffsetState extends MusicBeatState
 			updateNoteDelay();
 		}
 		
-		if (controls.RESET)
+		if (controls.RESET #if android || FlxG.android.buttonX.justPressed #end)
 		{
 			holdTime = 0;
 			barPercent = 0;
 			updateNoteDelay();
 		}
 		
-		if (controls.BACK)
+		if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
 		{
 			if (zoomTween != null) zoomTween.cancel();
 			if (beatTween != null) beatTween.cancel();

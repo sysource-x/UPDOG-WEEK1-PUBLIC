@@ -365,13 +365,13 @@ class Paths
 		{
 			xmlExists = true;
 		}
-		
+			
 		if (!xmlExists)
 		{
 			xml = getPath('images/$key.xml', null, library);
 			if (FileSystem.exists(xml)) xmlExists = true;
 		}
-		
+			
 		return FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(xml) : getPath('images/$key.xml', null, library)));
 		#else
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
@@ -387,17 +387,17 @@ class Paths
 		{
 			txtExists = true;
 		}
-		
+			
 		return FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(modsTxt(key)) : file('images/$key.txt', library)));
 		#else
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 		#end
-	}
+	}		
 	
 	inline static public function formatToSongPath(path:String)
 	{
 		return path.toLowerCase().replace(' ', '-');
-	}
+	}		
 	
 	// completely rewritten asset loading? fuck!
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];

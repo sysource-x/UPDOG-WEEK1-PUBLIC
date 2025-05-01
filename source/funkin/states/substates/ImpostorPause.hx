@@ -64,6 +64,11 @@ class ImpostorPause extends MusicBeatSubstate
 		buttons.add(exit);
 		
 		changeSel();
+
+		#if android
+		addVirtualPad(UP_DOWN, A);
+	    addVirtualPadCamera();
+	    #end
 		
 		super.create();
 	}
@@ -73,8 +78,8 @@ class ImpostorPause extends MusicBeatSubstate
 		if (pauseMusic.volume < 0.5) pauseMusic.volume += 0.01 * elapsed;
 		super.update(elapsed);
 		
-		if (controls.UI_DOWN_P || controls.UI_UP_P) changeSel(controls.UI_DOWN_P ? 1 : -1);
-		if (controls.ACCEPT)
+		if (controls.UI_DOWN_P || controls.UI_UP_P #if android || _virtualpad.buttonDown.justPressed || _virtualpad.buttonUp.justPressed #end) changeSel((controls.UI_DOWN_P #if android || _virtualpad.buttonDown.justPressed #end) ? 1 : -1);
+		if (controls.ACCEPT #if android || _virtualpad.buttonA.justPressed #end)
 		{
 			buttons.members[curSel].onClick();
 		}

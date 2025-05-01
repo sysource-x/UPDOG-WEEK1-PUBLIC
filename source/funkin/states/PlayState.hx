@@ -768,6 +768,13 @@ class PlayState extends MusicBeatState
 		setOnScripts('notes', notes);
 		setOnScripts('botplayTxt', botplayTxt);
 		callOnLuas('onCreate', []);
+
+		// addHitbox(3);
+   		// _hitbox.visible = false;
+		#if android
+		addAndroidControls();
+		androidControls.visible = false;
+		#end
 		
 		startingSong = true;
 		
@@ -1179,6 +1186,13 @@ class PlayState extends MusicBeatState
 	
 	public function startCountdown():Void
 	{
+		#if android
+        androidControls.visible = true;
+        #end
+		// #if mobile
+   		// _hitbox.visible = true;
+   		// #end
+
 		if (startedCountdown)
 		{
 			callOnScripts('onStartCountdown', []);
@@ -2303,7 +2317,7 @@ class PlayState extends MusicBeatState
 		setOnHScripts('curStep', curStep);
 		setOnHScripts('curBeat', curBeat);
 		
-		if (controls.PAUSE && startedCountdown && canPause)
+		if (controls.PAUSE #if android || FlxG.android.justReleased.BACK #end && startedCountdown && canPause)
 		{
 			final ret:Dynamic = callOnScripts('onPause', []);
 			if (ret != Globals.Function_Stop)
@@ -3371,6 +3385,13 @@ class PlayState extends MusicBeatState
 		camZooming = false;
 		inCutscene = false;
 		updateTime = false;
+
+		// #if mobile
+   		// _hitbox.visible = false;
+   		// #end
+		#if android
+		androidControls.visible = false;
+		#end
 		
 		deathCounter = 0;
 		seenCutscene = false;
@@ -3610,7 +3631,7 @@ class PlayState extends MusicBeatState
 		// trace('Pressed: ' + eventKey);
 		if (cpuControlled || paused || !startedCountdown) return;
 		
-		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
+		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || !ClientPrefs.controllerMode))
 		{
 			if (!boyfriend.stunned && generatedMusic && !endingSong)
 			{
@@ -3719,6 +3740,17 @@ class PlayState extends MusicBeatState
 			}
 		}
 		return -1;
+	}
+
+	public var _hitbox:FlxHitbox;
+
+	private function hitboxDataKeyIsPressed(data:Int):Bool
+	{
+		if (_hitbox.array[data].pressed) 
+				{
+						return true;
+				}
+		return false;
 	}
 	
 	// Hold notes

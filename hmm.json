@@ -1,0 +1,78 @@
+{
+    "dependencies": [
+        {
+            "name": "lime",
+            "type": "git",
+            "dir": null,   
+            "ref": "main",
+            "url": "https://github.com/MobilePorting/lime"   
+        },
+        {
+            "name": "openfl",
+            "type": "haxelib",
+            "version": null
+        },
+        {
+            "name": "hxcpp-debug-server",
+            "type": "haxelib",
+            "version": null
+        },
+        {
+            "name": "hxcpp",
+            "type": "git",
+            "dir": null,
+            "ref": "main",
+            "url": "https://github.com/MobilePorting/hxcpp"
+        },
+        {
+            "name": "hscript",
+            "type": "haxelib",
+            "version": null
+        },
+        {
+            "name": "hscript-iris",
+            "type": "haxelib",
+            "version": null
+        },
+        {  
+            "name": "flixel",
+            "type": "haxelib",
+            "version": "6.0.0"
+        },
+        {
+            "name": "flixel-addons",
+            "type": "haxelib",
+            "version": null
+        },
+        {
+            "name": "flixel-ui",
+            "type": "haxelib",
+            "version": null
+        },
+        {
+            "name": "flixel-tools",
+            "type": "haxelib",
+            "version": null
+        },
+        {
+            "name": "linc_luajit",
+            "type": "git",
+            "dir": null,
+            "ref": "master",
+            "url": "https://github.com/MobilePorting/linc_luajit"
+        },
+        {
+            "name": "flxanimate",
+            "type": "git",
+            "dir": null,
+            "url": "https://github.com/FixedData/flxanimate"
+        },
+        {
+            "name": "hxvlc",
+            "type": "git",
+            "dir": null,
+            "ref": "70e7f5f3e76d526ac6fb8f0e6665efe7dfda589d",
+            "url": "https://github.com/MAJigsaw77/hxvlc"
+        }
+    ]
+} credits to Heropowerbrine

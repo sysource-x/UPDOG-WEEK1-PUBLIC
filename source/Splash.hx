@@ -1,6 +1,5 @@
 package;
 
-
 import flixel.FlxState;
 
 using StringTools;
@@ -9,6 +8,7 @@ using StringTools;
 @:access(Main)
 class Splash extends FlxState
 {
+	public static var nextState:Class<FlxState>;
 	// var video:FunkinVideo;
 	var _cachedAutoPause:Bool;
 
@@ -91,6 +91,6 @@ class Splash extends FlxState
 	function complete()
 	{
 		FlxG.autoPause = _cachedAutoPause;
-		FlxG.switchState(() -> Type.createInstance(Main.startMeta.initialState, []));
+		FlxG.switchState(() -> Type.createInstance(nextState, []));
 	}
 }

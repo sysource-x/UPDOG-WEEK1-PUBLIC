@@ -30,7 +30,7 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true" allow-high-dpi="true"/>
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
@@ -38,27 +38,26 @@
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<!-- Use project assets folder instead of the build one if on a debug build. -->
-	<define name="ASSET_REDIRECT" if="debug"/>
+	<define name="ASSET_REDIRECT" if="desktop"/>
 
 	<!--<define name="RELEASE_BUILD"/>-->
-
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	<set name="BUILD_DIR" value="export/32bit" if="32bits" />
 
 	<classpath name="source" />
+
+	<assets path="assets/android" if="android"/> <!-- credits to FNF BR // the mobile controls-->
 	
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
-	<define name="MODS_ALLOWED" if="desktop" />
-	<define name="LUA_ALLOWED" if="desktop" />
+	<define name="MODS_ALLOWED" if="desktop || android" />
+	<define name="LUA_ALLOWED" if="desktop || android" />
 	<define name="VIDEOS_ALLOWED" if="cpp" />
-	<define name="DISCORD_ALLOWED" if="cpp"/>
+	<define name="DISCORD_ALLOWED" if="desktop"/>
 
-	<assets path='assets/embeds' 		rename='assets'			embed="true" />
-	<assets path="assets/embeds/songs" rename= "assets/songs" library="songs" embed="true"/>
-
-
+	<assets path='assets/embeds' 		rename='assets'			embed="false" />
+	<!-- assets path="assets/embeds/songs" rename= "assets/songs" library="songs" embed="false"/ This are not necessary-->
 
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
@@ -96,6 +95,7 @@
 	<haxelib name="discord_rpc" if="DISCORD_ALLOWED"/>
 	<haxelib name="hxvlc" if="VIDEOS_ALLOWED"/>
 
+	<haxelib name="hxcpp-debug-server" if="debug"/> <!-- see debug things -->
 
 	<!-- ______________________________ macros _____________________________ -->
 
@@ -108,12 +108,15 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<haxedef name="CRASH_HANDLER" if="desktop release"/>
+	<haxedef name="CRASH_HANDLER" />
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_TRACE" if="CRASH_HANDLER" />
+	<haxedef name="HXCPP_CATCH_SEGV" if="CRASH_HANDLER" />
 
+	<!--using a custom keystore so people don't have to keep uninstalling when the mod updates // credits to Heropowerbrine-->
+	<certificate path="-key.keystore" password="portvsimpostor" alias="vsimpostorport" alias-password="portvsimpostor" if="android" unless="debug" />
 	
 	<!-- <define name="DISABLE_TRACES" if="desktop release"/> -->
 
@@ -130,6 +133,10 @@
 	<haxedef name="message.reporting" value="pretty" />
 	
 	<haxedef name="no-deprecation-warnings"/>
+
+	<!--Avoid memory leaks with for loops in HScript credits to Heropowerbrine-->
+  	<haxedef name="loop_unroll_max_cost" value="25" />
+  	<haxedef name="DISABLED_MACRO_SUPERLATIVE" if="mobile" />
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
