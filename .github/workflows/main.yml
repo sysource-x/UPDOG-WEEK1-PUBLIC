@@ -26,7 +26,6 @@ jobs:
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
-      
       - name: Configure Android
         run: |
           haxelib run lime config ANDROID_SDK $ANDROID_HOME
@@ -34,13 +33,13 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true 
 
-      - name: Compile
+      - name: Compile APK (Debug mode, no keystore)
         run: |
-          haxelib run lime build android
+          haxelib run lime build android -debug
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@main #v4
         with:
           name: androidBuild
-          path: export/release/android/bin/app/build/outputs/apk/release/*.apk
+          path: export/debug/android/bin/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
