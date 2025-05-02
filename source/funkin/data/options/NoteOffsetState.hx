@@ -169,7 +169,7 @@ class NoteOffsetState extends MusicBeatState
 		}
 		
 		var mult:Int = 1;
-		if (controls.UI_LEFT || controls.UI_RIGHT #if android || FlxG.android.buttonLeft.justPressed #end || #if android || FlxG.android.buttonRight.justPressed #end)
+		if (controls.UI_LEFT || controls.UI_RIGHT #if android || FlxG.android.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end)
 		{
 			holdTime += elapsed;
 			if (controls.UI_LEFT) mult = -1;
