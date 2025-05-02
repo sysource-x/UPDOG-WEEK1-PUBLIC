@@ -170,7 +170,7 @@ class ControlsSubState extends MusicBeatSubstate
 			{
 				changeSelection(1);
 			}
-			if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if android || FlxG.android.buttonLeft.justPressed #end || FlxG.android.buttonRight.justPressed #end)
+			if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if android || FlxG.android.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end)
 			{
 				changeSelection(0);
 			}
