@@ -90,6 +90,8 @@ class MusicBeatState extends FlxUIState
 	#if android
 	var virtualPad:FlxVirtualPad;
 	var androidControls:AndroidControls;
+	var _virtualpad:FlxVirtualPad;
+	var _hitbox:FlxHitbox;
 	var trackedinputsUI:Array<FlxActionInput> = [];
 	var trackedinputsNOTES:Array<FlxActionInput> = [];
 
@@ -115,7 +117,7 @@ class MusicBeatState extends FlxUIState
 	public function addAndroidControls()
 	{
 		androidControls = new AndroidControls();
-        androidControls.alpha = 0.8;
+                androidControls.alpha = 0.8;
 
 		switch (AndroidControls.getMode())
 		{
