@@ -1,11 +1,18 @@
 #if !macro
 // flixel
-import flixel.*;
-import flixel.math.*;
-import flixel.text.*;
-import flixel.util.*;
-import flixel.tweens.*;
-import flixel.sound.*;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.FlxBasic;
+import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
+import flixel.util.FlxDestroyUtil;
 #if sys
 import sys.io.*;
 import sys.*;
@@ -28,9 +35,9 @@ import funkin.objects.BGSprite;
 import funkin.backend.MusicBeatState;
 
 //Mobile Controls/FlxButtons
-import android.flixel.*;
-import android.backend.*;
-import android.states.*;
+import android.flixel.FlxHitbox;
+import android.flixel.FlxVirtualPad;
+import android.backend.SUtil;
 
 using StringTools;
 #end
