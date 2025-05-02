@@ -115,9 +115,6 @@
 	<haxedef name="HXCPP_STACK_TRACE" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_CATCH_SEGV" if="CRASH_HANDLER" />
 
-	<!--using a custom keystore so people don't have to keep uninstalling when the mod updates // credits to Heropowerbrine-->
-	<certificate path="-key.keystore" password="portvsimpostor" alias="vsimpostorport" alias-password="portvsimpostor" if="android" unless="debug" />
-	
 	<!-- <define name="DISABLE_TRACES" if="desktop release"/> -->
 
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />

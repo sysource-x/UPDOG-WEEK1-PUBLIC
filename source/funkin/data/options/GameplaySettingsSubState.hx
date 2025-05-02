@@ -33,10 +33,6 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
-		var option:Option = new Option('Controller Mode', 'Check this if you want to play with\na controller instead of using your Keyboard.\n DO NOT TURN THIS ON IF MOBILE',
-			'controllerMode', 'bool', false);
-		addOption(option);
-
 		/*
 		var option:Option = new Option('Mechanics', 'Check this if you want to enable mechanics!',
 		'mechanics', 'bool', true);
