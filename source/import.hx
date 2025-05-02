@@ -35,9 +35,9 @@ import funkin.objects.BGSprite;
 import funkin.backend.MusicBeatState;
 
 //Mobile Controls/FlxButtons
-import android.flixel.FlxHitbox;
-import android.flixel.FlxVirtualPad;
-import android.backend.SUtil;
+import android.flixel.*;
+import android.backend.*;
+import android.states.*;
 
 using StringTools;
 #end
