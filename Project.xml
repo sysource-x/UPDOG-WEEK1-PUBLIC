@@ -128,8 +128,9 @@
 	
 	<haxedef name="no-deprecation-warnings"/>
 
-	<!--using a custom keystore so people don't have to keep uninstalling when the mod updates / heropowerbrine -->
+	<!--using a custom keystore so people don't have to keep uninstalling when the mod updates / heropowerbrine 
 	<certificate path="-key.keystore" password="portvsimpostor" alias="vsimpostorport" alias-password="portvsimpostor" if="android" unless="debug" />
+-->
 
 	<!--Avoid memory leaks with for loops in HScript credits to Heropowerbrine-->
   	<haxedef name="loop_unroll_max_cost" value="25" />
