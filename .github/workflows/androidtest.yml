@@ -1,6 +1,11 @@
-name: Android Build Test
+name: Android Build Test yml
 # Credits to Heropowerbrine for the original workflow
 on:
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
+
   workflow_dispatch:
 
 jobs:
@@ -8,29 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      
       - name: Checkout
         uses: actions/checkout@main
-
       
       - name: Setup Java JDK
         uses: actions/setup-java@main
         with:
           distribution: 'temurin'
           java-version: '17'
-
       
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.6
-
       
       - name: Install Libraries
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
-
       
       - name: Configure Android
         run: |

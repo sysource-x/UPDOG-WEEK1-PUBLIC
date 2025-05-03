@@ -1,11 +1,11 @@
-name: Android Build Test
+name: Android Build Main yml
 
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  # push:
-  #   branches: [ "test" ]
-  # pull_request:
-  #   branches: [ "test" ]
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,7 +25,7 @@ jobs:
           java-version: '17'
       
       - name: Setup Haxe
-        uses: krdlab/setup-haxe@v1.1.4
+        uses: krdlab/setup-haxe@v1.1.4 #v1.1.4 is the latest version as of now or you can use master for the latest commit
         with:
           haxe-version: 4.3.6
       
@@ -39,7 +39,12 @@ jobs:
           haxelib run lime config ANDROID_SDK $ANDROID_HOME
           haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_LATEST_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
-          haxelib run lime config ANDROID_SETUP true 
+          haxelib run lime config ANDROID_SETUP true
+
+      # Decrypt the keystore
+      - name: Decrypt Keystore
+        run: |
+          echo ${{ secrets.ENCRYPTION_PASSWORD }} | openssl enc -aes-256-cbc -d -in -key.keystore.enc -out -key.keystore -pass stdin
 
       - name: Compile
         run: |
