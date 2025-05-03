@@ -492,7 +492,7 @@ class TitleState extends MusicBeatState
 							changeSel(0, 1);
 						}
 					}
-					if (controls.ACCEPT #if mobile || _virtualpad.buttonAccept.justPressed #end)
+					if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
 					{
 						selectedOption();
 					}

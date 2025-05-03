@@ -406,7 +406,7 @@ class FreeplayState extends MusicBeatState
 			if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end) changeSong(1);
 			if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) changeWeek(-1);
 			if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end) changeWeek(1);
-			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonY.justPressed || FlxG.android.buttonZ.justPressed #end) changeDiff();
+			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonY.justPressed || _virtualpad.buttonZ.justPressed #end) changeDiff();
 			if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) startSong();
 			if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 			{

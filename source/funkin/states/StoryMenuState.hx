@@ -268,7 +268,7 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) changeWeek(-1);
 			if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end) changeWeek(1);
-			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonD.justPressed || FlxG.android.buttonC.justPressed #end) changeDiff();
+			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonD.justPressed || _virtualpad.buttonC.justPressed #end) changeDiff();
 			if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) selectWeek();
 			if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 			{

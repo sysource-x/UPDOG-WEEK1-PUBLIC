@@ -194,9 +194,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 			else if (curOption.type != 'label')
 			{
-				if (controls.UI_LEFT || controls.UI_RIGHT #if mobile || _virtualpad.buttonLeft.pressed || FlxG.android.buttonRight.pressed #end)
+				if (controls.UI_LEFT || controls.UI_RIGHT #if mobile || _virtualpad.buttonLeft.pressed || _virtualpad.buttonRight.pressed #end)
 				{
-					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || _virtualpad.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end);
+					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || _virtualpad.buttonLeft.justPressed || _virtualpad.buttonRight.justPressed #end);
 					if (holdTime > 0.5 || pressed)
 					{
 						if (pressed)
@@ -274,7 +274,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 						holdTime += elapsed;
 					}
 				}
-				else if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || _virtualpad.buttonLeft.justReleased || FlxG.android.buttonRight.justReleased #end)
+				else if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || _virtualpad.buttonLeft.justReleased || _virtualpad.buttonRight.justReleased #end)
 				{
 					clearHold();
 				}
