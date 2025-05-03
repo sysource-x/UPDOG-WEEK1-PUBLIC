@@ -65,7 +65,7 @@ class MusicBeatSubstate extends FlxSubState
 	}
 	#end
 
-	override function destroy()
+	/*override function destroy()
 	{
 		#if android
 		if (trackedinputsUI != [])
@@ -80,7 +80,7 @@ class MusicBeatSubstate extends FlxSubState
 			virtualPad = null;
 		}
 		#end
-	}
+	}*/
 	public var scripted:Bool = false;
 	public var scriptName:String = 'Placeholder';
 	public var script:OverrideStateScript;
@@ -136,8 +136,20 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function destroy()
 	{
+		#if android
+		if (trackedinputsUI != [])
+			controls.removeFlxInput(trackedinputsUI);
+		#end
+
 		callOnScript('onDestroy', []);
 		super.destroy();
+		#if android
+		if (virtualPad != null)
+		{
+			virtualPad = FlxDestroyUtil.destroy(virtualPad);
+			virtualPad = null;
+		}
+		#end
 	}
 
 	override function update(elapsed:Float)
