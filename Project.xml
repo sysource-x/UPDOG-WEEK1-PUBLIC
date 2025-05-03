@@ -47,12 +47,10 @@
 	<set name="BUILD_DIR" value="export/32bit" if="32bits" />
 
 	<classpath name="source" />
-
-	<assets path="assets/android" if="android"/> <!-- credits to FNF BR // the mobile controls-->
 	
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
-	<define name="MODS_ALLOWED" if="desktop || android || mobile" />
-	<define name="LUA_ALLOWED" if="desktop || android || mobile" />
+	<define name="MODS_ALLOWED" if="desktop || android" />
+	<define name="LUA_ALLOWED" if="desktop || android" />
 	<define name="VIDEOS_ALLOWED" if="cpp" />
 	<define name="DISCORD_ALLOWED" if="desktop"/>
 
@@ -74,7 +72,6 @@
 		<assets path="projFiles/alsoft.ini" rename="alsoft.ini" type="text" if="windows"/>
 		<assets path="projFiles/alsoft.ini" rename="alsoft.conf" type="text" unless="windows"/>
 	</section>
-
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -130,6 +127,9 @@
 	<haxedef name="message.reporting" value="pretty" />
 	
 	<haxedef name="no-deprecation-warnings"/>
+
+	<!--using a custom keystore so people don't have to keep uninstalling when the mod updates / heropowerbrine -->
+	<certificate path="-key.keystore" password="portvsimpostor" alias="vsimpostorport" alias-password="portvsimpostor" if="android" unless="debug" />
 
 	<!--Avoid memory leaks with for loops in HScript credits to Heropowerbrine-->
   	<haxedef name="loop_unroll_max_cost" value="25" />

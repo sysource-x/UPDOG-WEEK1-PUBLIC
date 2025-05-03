@@ -1,25 +1,29 @@
-package android.flixel;
+package mobile.flixel;
 
-import android.flixel.FlxButton;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
+import flixel.ui.FlxButton;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.FlxGraphic;
-import openfl.display.BitmapData;
-import openfl.utils.ByteArray;
 
-/**
- * A gamepad.
- * It's easy to set the callbacks and to customize the layout.
- *
- * @original author Ka Wing Chin
- * @modification's author: Saw (M.A. Jigsaw)
- */
-class FlxVirtualPad extends FlxSpriteGroup
-{
+class FlxVirtualPad extends FlxSpriteGroup {
+	//Actions
+	public var buttonA:FlxButton;
+	public var buttonB:FlxButton;
+	public var buttonC:FlxButton;
+	public var buttonD:FlxButton;
+	public var buttonE:FlxButton;
+	public var buttonF:FlxButton;
+	public var buttonG:FlxButton;
+	public var buttonS:FlxButton;
+	public var buttonV:FlxButton;
+	public var buttonX:FlxButton;
+	public var buttonY:FlxButton;
+	public var buttonZ:FlxButton;
+
+	//DPad
 	public var buttonLeft:FlxButton;
 	public var buttonUp:FlxButton;
 	public var buttonRight:FlxButton;
@@ -28,40 +32,18 @@ class FlxVirtualPad extends FlxSpriteGroup
 	public var buttonUp2:FlxButton;
 	public var buttonRight2:FlxButton;
 	public var buttonDown2:FlxButton;
-	public var buttonA:FlxButton;
-	public var buttonB:FlxButton;
-	public var buttonC:FlxButton;
-	public var buttonD:FlxButton;
-	public var buttonE:FlxButton;
-	public var buttonV:FlxButton;
-	public var buttonX:FlxButton;
-	public var buttonY:FlxButton;
-	public var buttonZ:FlxButton;
 
-	/**
-	 * Group of directions buttons.
-	 */
 	public var dPad:FlxSpriteGroup;
-
-	/**
-	 * Group of action buttons.
-	 */
 	public var actions:FlxSpriteGroup;
-
-	/**
-	 * Create a gamepad.
-	 *
-	 * @param   DPadMode     The D-Pad mode. `LEFT_FULL` for example.
-	 * @param   ActionMode   The action buttons mode. `A_B_C` for example.
-	 */
-	public function new(DPad:FlxDPadMode, Action:FlxActionMode)
-	{
+	
+	public function new(?DPad:FlxDPadMode, ?Action:FlxActionMode) {
 		super();
-
-		scrollFactor.set();
 
 		dPad = new FlxSpriteGroup();
 		dPad.scrollFactor.set();
+		
+		actions = new FlxSpriteGroup();
+		actions.scrollFactor.set();
 
 		buttonA = new FlxButton(0, 0);
 		buttonB = new FlxButton(0, 0);
@@ -82,8 +64,7 @@ class FlxVirtualPad extends FlxSpriteGroup
 		buttonRight2 = new FlxButton(0, 0);
 		buttonDown2 = new FlxButton(0, 0);
 
-		switch (DPad)
-		{
+		switch (DPad) {
 			case UP_DOWN:
 				dPad.add(add(buttonUp = createButton(0, FlxG.height - 255, 132, 127, "up", 0x00FF00)));
 				dPad.add(add(buttonDown = createButton(0, FlxG.height - 135, 132, 127, "down", 0x00FFFF)));
@@ -103,11 +84,7 @@ class FlxVirtualPad extends FlxSpriteGroup
 				// do nothing
 		}
 
-		actions = new FlxSpriteGroup();
-		actions.scrollFactor.set();
-
-		switch (Action)
-		{
+		switch (Action) {
 			case A:
 				dPad.add(add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, 132, 127, "a", 0xFF0000)));
 			case B:
@@ -175,63 +152,55 @@ class FlxVirtualPad extends FlxSpriteGroup
 		}
 	}
 
-	override public function destroy():Void
-	{
-		super.destroy();
-
-		dPad = FlxDestroyUtil.destroy(dPad);
-		dPad = null;
-
-		actions = FlxDestroyUtil.destroy(actions);
-		actions = null;
-
-		buttonLeft = null;
-		buttonUp = null;
-		buttonDown = null;
-		buttonRight = null;
-		buttonLeft2 = null;
-		buttonUp2 = null;
-		buttonDown2 = null;
-		buttonRight2 = null;
-		buttonA = null;
-		buttonB = null;
-		buttonC = null;
-		buttonD = null;
-		buttonE = null;
-		buttonV = null;
-		buttonX = null;
-		buttonY = null;
-		buttonZ = null;
-	}
-
-	/**
-	 * @param   X          The x-position of the button.
-	 * @param   Y          The y-position of the button.
-	 * @param   Width      The width of the button.
-	 * @param   Height     The height of the button.
-	 * @param   Graphic    The image of the button. It must contains 3 frames (`NORMAL`, `HIGHLIGHT`, `PRESSED`).
-	 * @param   Color      The color of the button.
-	 * @return  The button
-	 */
-	public function createButton(X:Float, Y:Float, Width:Int, Height:Int, Graphic:String, ?Color:Int = 0xFFFFFF):FlxButton
-	{
-		var button:FlxButton = new FlxButton(X, Y);
-		button.frames = FlxTileFrames.fromFrame(FlxAtlasFrames.fromSparrow('assets/android/virtualpad.png', 'assets/android/virtualpad.xml').getByName(Graphic), FlxPoint.get(Width, Height));
+	public function createButton(x:Float, y:Float, width:Int, height:Int, frames:String, Color:Int = 0xFFFFFF):FlxButton {
+		var button = new FlxButton(x, y);
+		button.frames = FlxTileFrames.fromFrame(getFrames().getByName(frames), FlxPoint.get(width, height));
 		button.resetSizeFromFrame();
 		button.solid = false;
 		button.immovable = true;
 		button.scrollFactor.set();
 		button.color = Color;
-		button.alpha = 0.6;
-		#if FLX_DEBUG
-		button.ignoreDrawDebug = true;
-		#end
+		button.alpha = 0.5;
+		button.antialiasing = true;
+
 		return button;
+	}
+
+	public static function getFrames():FlxAtlasFrames {
+		return Paths.getPackerAtlas('mobileControls/virtualpad');
+	}
+
+	override public function destroy():Void {
+		super.destroy();
+
+		dPad = FlxDestroyUtil.destroy(dPad);
+		actions = FlxDestroyUtil.destroy(actions);
+
+		dPad = null;
+		actions = null;
+
+		buttonA = null;
+		buttonB = null;
+		buttonC = null;
+		buttonD = null;
+		buttonE = null;
+		buttonF = null;
+		buttonG = null;
+		buttonS = null;
+
+		buttonV = null;
+		buttonX = null;
+		buttonY = null;
+		buttonZ = null;
+
+		buttonLeft = null;
+		buttonUp = null;
+		buttonDown = null;
+		buttonRight = null;
 	}
 }
 
-enum FlxDPadMode
-{
+enum FlxDPadMode {
 	UP_DOWN;
 	LEFT_RIGHT;
 	UP_LEFT_RIGHT;
@@ -239,8 +208,7 @@ enum FlxDPadMode
 	NONE;
 }
 
-enum FlxActionMode
-{
+enum FlxActionMode {
 	A;
 	B;
 	D;

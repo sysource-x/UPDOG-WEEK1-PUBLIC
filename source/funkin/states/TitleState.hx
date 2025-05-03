@@ -395,7 +395,7 @@ class TitleState extends MusicBeatState
 			// IF CAN PRESS ON THING
 			if (transitioning)
 			{
-				#if android
+				#if mobile
 				if (_virtualpad == null) {
 					addVirtualPad(FULL, A_B);
 				}
@@ -468,15 +468,15 @@ class TitleState extends MusicBeatState
 				
 				if (canSelect)
 				{
-					if (controls.UI_DOWN_P #if android || _virtualpad.buttonDown.justPressed #end)
+					if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
 					{
 						changeSel(1, 1);
 					}
-					if (controls.UI_UP_P #if android || _virtualpad.buttonUp.justPressed #end)
+					if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
 					{
 						changeSel(-1, 1);
 					}
-					if (controls.UI_RIGHT_P #if android || _virtualpad.buttonRight.justPressed #end)
+					if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end)
 					{
 						if (curSel == 3)
 						{
@@ -484,7 +484,7 @@ class TitleState extends MusicBeatState
 							changeSel(0, 1);
 						}
 					}
-					if (controls.UI_LEFT_P #if android || _virtualpad.buttonLeft.justPressed #end)
+					if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end)
 					{
 						if (curSel == 4)
 						{
@@ -492,7 +492,7 @@ class TitleState extends MusicBeatState
 							changeSel(0, 1);
 						}
 					}
-					if (controls.ACCEPT #if android || _virtualpad.buttonAccept.justPressed #end)
+					if (controls.ACCEPT #if mobile || _virtualpad.buttonAccept.justPressed #end)
 					{
 						selectedOption();
 					}
@@ -518,7 +518,7 @@ class TitleState extends MusicBeatState
 						FlxTween.tween(spr, {x: buttons[spr.ID][0] + (spr.ID > 2 ? 0 : 9.4)}, 1, {ease: FlxEase.quadOut, startDelay: spr.ID / 6});
 					});
 					// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
-					#if android
+					#if mobile
 					addVirtualPad(FULL,A_B);
 					#end
 				}

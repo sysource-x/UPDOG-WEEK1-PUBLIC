@@ -160,7 +160,7 @@ class PauseSubState extends MusicBeatSubstate
 			cameras = [cam];		
 		}
 
-		#if android
+		#if mobile
 		addVirtualPad(UP_DOWN, A);
 	    addVirtualPadCamera();
 	    #end
@@ -180,11 +180,11 @@ class PauseSubState extends MusicBeatSubstate
 		if(isHardcodedState()){
 			if (skipTimeText != null && skipTimeTracker != null) updateSkipTextStuff();
 
-			if (controls.UI_UP_P #if android || _virtualpad.buttonUp.justPressed #end)
+			if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
 			{
 				changeSelection(-1);
 			}
-			if (controls.UI_DOWN_P #if android || _virtualpad.buttonDown.justPressed #end)
+			if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
 			{
 				changeSelection(1);
 			}
@@ -220,7 +220,7 @@ class PauseSubState extends MusicBeatSubstate
 					}
 			}
 	
-			if (controls.ACCEPT #if android || _virtualpad.buttonA.justPressed #end)
+			if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
 			{
 				if (menuItems == difficultyChoices)
 				{

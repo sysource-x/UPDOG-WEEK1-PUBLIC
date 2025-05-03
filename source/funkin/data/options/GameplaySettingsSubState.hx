@@ -32,7 +32,6 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			'bool',
 			false);
 		addOption(option);
-
 		/*
 		var option:Option = new Option('Mechanics', 'Check this if you want to enable mechanics!',
 		'mechanics', 'bool', true);

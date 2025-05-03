@@ -123,8 +123,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			updateTextFrom(optionsArray[i]);
 		}
 
-		#if android
-		addVirtualPad(UP_DOWN, A_B_X); // testing
+		#if mobile
+		addVirtualPad(FULL,A_B_X);
 		#end
 
 		changeSelection();
@@ -150,24 +150,23 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P #if android || FlxG.android.buttonUp.justPressed #end)
+		if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if android || FlxG.android.buttonDown.justPressed #end)
+		if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
 		{
 			changeSelection(1);
 		}
 
-		if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
+		if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 		{
-			#if android
-			flixel.addons.transition.FlxTransitionableState.skipNextTransOut = true;
-			FlxG.resetState();
-			#else
 			ClientPrefs.saveSettings();
-			close();
-			#end
+			#if mobile
+ 			closeSs();
+ 			#else
+ 			close();
+ 			#end
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
 
@@ -181,7 +180,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 			if (usesCheckbox)
 			{
-				if (controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end)
+				if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					curOption.setValue((curOption.getValue() == true) ? false : true);
@@ -191,13 +190,13 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 			else if (curOption.type == 'button')
 			{
-				if (controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end) curOption.callback();
+				if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) curOption.callback();
 			}
 			else if (curOption.type != 'label')
 			{
-				if (controls.UI_LEFT || controls.UI_RIGHT #if android || FlxG.android.buttonLeft.pressed || FlxG.android.buttonRight.pressed #end)
+				if (controls.UI_LEFT || controls.UI_RIGHT #if mobile || _virtualpad.buttonLeft.pressed || FlxG.android.buttonRight.pressed #end)
 				{
-					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P #if android || FlxG.android.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end);
+					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || _virtualpad.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end);
 					if (holdTime > 0.5 || pressed)
 					{
 						if (pressed)
@@ -205,7 +204,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 							var add:Dynamic = null;
 							if (curOption.type != 'string')
 							{
-								add = controls.UI_LEFT #if android || FlxG.android.buttonLeft.pressed #end ? -curOption.changeValue : curOption.changeValue;
+								add = controls.UI_LEFT #if mobile || _virtualpad.buttonLeft.pressed #end ? -curOption.changeValue : curOption.changeValue;
 							}
 
 							switch (curOption.type)
@@ -229,7 +228,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 								case 'string':
 									var num:Int = curOption.curOption; // lol
-									if (controls.UI_LEFT_P #if android || FlxG.android.buttonLeft.justPressed #end) --num;
+									if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) --num;
 									else num++;
 
 									if (num < 0)
@@ -252,7 +251,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 						}
 						else if (curOption.type != 'string')
 						{
-							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT #if android || FlxG.android.buttonLeft.justPressed #end ? -1 : 1);
+							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT #if mobile || _virtualpad.buttonLeft.justPressed #end ? -1 : 1);
 							if (holdValue < curOption.minValue) holdValue = curOption.minValue;
 							else if (holdValue > curOption.maxValue) holdValue = curOption.maxValue;
 
@@ -275,13 +274,13 @@ class BaseOptionsMenu extends MusicBeatSubstate
 						holdTime += elapsed;
 					}
 				}
-				else if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if android || FlxG.android.buttonLeft.justReleased || FlxG.android.buttonRight.justReleased #end)
+				else if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || _virtualpad.buttonLeft.justReleased || FlxG.android.buttonRight.justReleased #end)
 				{
 					clearHold();
 				}
 			}
 
-			if (controls.RESET #if android || FlxG.android.buttonUp.justReleased #end)
+			if (controls.RESET #if mobile || _virtualpad.buttonUp.justReleased #end)
 			{
 				for (i in 0...optionsArray.length)
 				{

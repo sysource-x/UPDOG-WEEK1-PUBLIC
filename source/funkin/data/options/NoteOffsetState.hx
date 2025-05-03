@@ -140,7 +140,7 @@ class NoteOffsetState extends MusicBeatState
 		blackBox.cameras = [camHUD];
 		add(blackBox);
 
-		#if android
+		#if mobile
  		addVirtualPad(LEFT_RIGHT,B_X);
  		addVirtualPadCamera();
  		#end
@@ -157,25 +157,25 @@ class NoteOffsetState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
 		
-		if (controls.UI_LEFT_P #if android || FlxG.android.buttonLeft.justPressed #end)
+		if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end)
 		{
 			barPercent = Math.max(delayMin, Math.min(ClientPrefs.noteOffset - 1, delayMax));
 			updateNoteDelay();
 		}
-		else if (controls.UI_RIGHT_P #if android || FlxG.android.buttonRight.justPressed #end)
+		else if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end)
 		{
 			barPercent = Math.max(delayMin, Math.min(ClientPrefs.noteOffset + 1, delayMax));
 			updateNoteDelay();
 		}
 		
 		var mult:Int = 1;
-		if (controls.UI_LEFT || controls.UI_RIGHT #if android || FlxG.android.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end)
+		if (controls.UI_LEFT || controls.UI_RIGHT #if mobile || _virtualpad.buttonLeft.justPressed || FlxG.android.buttonRight.justPressed #end)
 		{
 			holdTime += elapsed;
 			if (controls.UI_LEFT) mult = -1;
 		}
 		
-		if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if android || FlxG.android.buttonLeft.justPressed #end #if android || FlxG.android.buttonRight.justPressed #end) holdTime = 0;
+		if (controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || _virtualpad.buttonLeft.justPressed #end #if mobile || _virtualpad.buttonRight.justPressed #end) holdTime = 0;
 		
 		if (holdTime > 0.5)
 		{
@@ -184,14 +184,14 @@ class NoteOffsetState extends MusicBeatState
 			updateNoteDelay();
 		}
 		
-		if (controls.RESET #if android || FlxG.android.buttonX.justPressed #end)
+		if (controls.RESET #if mobile || _virtualpad.buttonX.justPressed #end)
 		{
 			holdTime = 0;
 			barPercent = 0;
 			updateNoteDelay();
 		}
 		
-		if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
+		if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 		{
 			if (zoomTween != null) zoomTween.cancel();
 			if (beatTween != null) beatTween.cancel();

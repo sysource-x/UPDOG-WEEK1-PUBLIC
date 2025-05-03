@@ -160,8 +160,8 @@ class FreeplayState extends MusicBeatState
 		changeSong(0);
 		refreshDiffText();
 		super.create();
-		#if android
-		addVirtualPad(UP_DOWN,A_B_C_X_Y_Z);
+		#if mobile
+		addVirtualPad(FULL,A_B_C_X_Y_Z);
 		#end
 	}
 	
@@ -393,25 +393,28 @@ class FreeplayState extends MusicBeatState
 		
 		if (!controlsLocked)
 		{
-			if (FlxG.keys.justPressed.CONTROL #if android || FlxG.android.buttonC.justPressed #end)
+			if (FlxG.keys.justPressed.CONTROL #if mobile || _virtualpad.buttonC.justPressed #end)
 			{
 				persistentUpdate = false;
+				#if mobile
+			    removeVirtualPad();
+			    #end
 				openSubState(new GameplayChangersSubstate());
 			}
 			
-			if (controls.UI_UP_P #if android || FlxG.android.buttonUp.justPressed #end) changeSong(-1);
-			if (controls.UI_DOWN_P #if android || FlxG.android.buttonDown.justPressed #end) changeSong(1);
-			if (controls.UI_LEFT_P #if android || FlxG.android.buttonLeft.justPressed #end) changeWeek(-1);
-			if (controls.UI_RIGHT_P #if android || FlxG.android.buttonRight.justPressed #end) changeWeek(1);
-			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if android || FlxG.android.buttonY.justPressed || FlxG.android.buttonZ.justPressed #end) changeDiff();
-			if (controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end) startSong();
-			if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
+			if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end) changeSong(-1);
+			if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end) changeSong(1);
+			if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) changeWeek(-1);
+			if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end) changeWeek(1);
+			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonY.justPressed || FlxG.android.buttonZ.justPressed #end) changeDiff();
+			if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) startSong();
+			if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 			{
 				controlsLocked = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				FlxG.switchState(() -> new TitleState());
 			}
-			if (FlxG.keys.justPressed.R #if android || FlxG.android.buttonX.justPressed #end)
+			if (FlxG.keys.justPressed.R #if mobile || _virtualpad.buttonX.justPressed #end)
 			{
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubStateImpostor(songs[curSong][0], curDiff));
@@ -426,9 +429,9 @@ class FreeplayState extends MusicBeatState
 		persistentUpdate = true;
 		changeSong(0);
 		super.closeSubState();
-		#if android
+		#if mobile
 		removeVirtualPad();
-		addVirtualPad(UP_DOWN,A_B_C_X_Y_Z);
+		addVirtualPad(FULL,A_B_C_X_Y_Z);
 		#end
 	}
 }

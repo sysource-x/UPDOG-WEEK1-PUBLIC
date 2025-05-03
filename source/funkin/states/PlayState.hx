@@ -769,12 +769,8 @@ class PlayState extends MusicBeatState
 		setOnScripts('botplayTxt', botplayTxt);
 		callOnLuas('onCreate', []);
 
-		// addHitbox(3);
-   		// _hitbox.visible = false;
-		#if android
-		addAndroidControls();
-		androidControls.visible = false;
-		#end
+		addHitbox(3);
+   		_hitbox.visible = false;
 		
 		startingSong = true;
 		
@@ -1186,12 +1182,9 @@ class PlayState extends MusicBeatState
 	
 	public function startCountdown():Void
 	{
-		#if android
-        androidControls.visible = true;
-        #end
-		// #if mobile
-   		// _hitbox.visible = true;
-   		// #end
+		#if mobile
+   		_hitbox.visible = true;
+   		#end
 
 		if (startedCountdown)
 		{
@@ -3386,12 +3379,9 @@ class PlayState extends MusicBeatState
 		inCutscene = false;
 		updateTime = false;
 
-		// #if mobile
-   		// _hitbox.visible = false;
-   		// #end
-		#if android
-		androidControls.visible = false;
-		#end
+		#if mobile
+   		_hitbox.visible = false;
+   		#end
 		
 		deathCounter = 0;
 		seenCutscene = false;
@@ -3742,8 +3732,6 @@ class PlayState extends MusicBeatState
 		return -1;
 	}
 
-	public var _hitbox:FlxHitbox;
-
 	private function hitboxDataKeyIsPressed(data:Int):Bool
 	{
 		if (_hitbox.array[data].pressed) 
@@ -3766,21 +3754,16 @@ class PlayState extends MusicBeatState
 		var controlHoldArray:Array<Bool> = [left, down, up, right, dodge];
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if (ClientPrefs.controllerMode)
+		if(!ClientPrefs.controllerMode)
 		{
-			var controlArray:Array<Bool> = [
-				controls.NOTE_LEFT_P,
-				controls.NOTE_DOWN_P,
-				controls.NOTE_UP_P,
-				controls.NOTE_RIGHT_P
-			];
-			if (controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+			#if android
+			for (i in 0..._hitbox.array.length) {
+				if (_hitbox.array[i].justPressed)
 				{
-					if (controlArray[i]) onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
+				       onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
 				}
 			}
+			#end
 		}
 		
 		// FlxG.watch.addQuick('asdfa', upP);
@@ -3789,6 +3772,17 @@ class PlayState extends MusicBeatState
 			// rewritten inputs???
 			
 			notes.forEachAlive(function(daNote:Note) {
+				if(!ClientPrefs.controllerMode && !ClientPrefs.keyboardEnabled)
+				{
+				// mobile hold note functions
+				if(!daNote.playField.autoPlayed && daNote.playField.inControl && daNote.playField.playerControls){
+					if (daNote.isSustainNote && hitboxDataKeyIsPressed(daNote.noteData) && daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit || (daNote.doAutoSustain && daNote.noteData > 4)) {
+						daNote.playField.noteHitCallback(daNote, daNote.playField);
+					}
+				}
+				}
+				else
+				{
 				// hold note functions
 				if (!daNote.playField.autoPlayed && daNote.playField.inControl && daNote.playField.playerControls)
 				{
@@ -3802,6 +3796,7 @@ class PlayState extends MusicBeatState
 						if (daNote.playField.noteHitCallback != null) daNote.playField.noteHitCallback(daNote, daNote.playField);
 					}
 				}
+			    }
 			});
 			
 			if (controlHoldArray.contains(true) && !endingSong)
@@ -3824,21 +3819,16 @@ class PlayState extends MusicBeatState
 		}
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if (ClientPrefs.controllerMode)
+		if(!ClientPrefs.controllerMode)
 		{
-			var controlArray:Array<Bool> = [
-				controls.NOTE_LEFT_R,
-				controls.NOTE_DOWN_R,
-				controls.NOTE_UP_R,
-				controls.NOTE_RIGHT_R
-			];
-			if (controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+			#if android
+			for (i in 0..._hitbox.array.length) {
+				if (_hitbox.array[i].justReleased)
 				{
-					if (controlArray[i]) onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
+				       onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
 				}
 			}
+			#end
 		}
 	}
 	
@@ -4929,10 +4919,15 @@ class PlayState extends MusicBeatState
 		if (isPixelStage != stageData.isPixelStage) isPixelStage = stageData.isPixelStage;
 		super.startOutro(onOutroComplete);
 	}
-	
+	/*
 	function getPresence()
 	{
 		// Get the discord presence
+
 		return ClientPrefs.disc_rpc ? SONG.song : FlxG.random.getObject(DiscordClient.discordPresences);
 	}
+
+
+	*/
+
 }

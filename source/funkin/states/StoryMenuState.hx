@@ -182,7 +182,7 @@ class StoryMenuState extends MusicBeatState
 		}
 		
 		reloadSongList();
-		#if android
+		#if mobile
 		addVirtualPad(LEFT_RIGHT,A_B_X_C_D);
 		#end
 		super.create();
@@ -266,21 +266,22 @@ class StoryMenuState extends MusicBeatState
 		scoreText.text = "Score: " + FlxStringUtil.formatMoney(lerpScore, false, true);
 		if (!selectedWeek)
 		{
-			if (controls.UI_LEFT_P #if android || FlxG.android.buttonLeft.justPressed #end) changeWeek(-1);
-			if (controls.UI_RIGHT_P #if android || FlxG.android.buttonRight.justPressed #end) changeWeek(1);
-			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if android || FlxG.android.buttonD.justPressed || FlxG.android.buttonC.justPressed #end) changeDiff();
-			if (controls.ACCEPT #if android || FlxG.android.buttonA.justPressed #end) selectWeek();
-			if (controls.BACK #if android || FlxG.android.buttonB.justPressed #end)
+			if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) changeWeek(-1);
+			if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end) changeWeek(1);
+			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonD.justPressed || FlxG.android.buttonC.justPressed #end) changeDiff();
+			if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) selectWeek();
+			if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 			{
 				FlxG.switchState(new TitleState());
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
-			if (FlxG.keys.justPressed.R #if android || FlxG.android.buttonX.justPressed #end) 
+			if (FlxG.keys.justPressed.R #if mobile || _virtualpad.buttonX.justPressed #end) 
 			{
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubStateImpostor('', curDiff, curWeek));
 			}
 		}
+		super.update(elapsed);
 	}
 	
 	function reloadDiff()
@@ -343,7 +344,7 @@ class StoryMenuState extends MusicBeatState
 		persistentUpdate = true;
 		changeWeek();
 		super.closeSubState();
-		#if android
+		#if mobile
 		removeVirtualPad();
 		addVirtualPad(LEFT_RIGHT,A_B_X_C_D);
 		#end

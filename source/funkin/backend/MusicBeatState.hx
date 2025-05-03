@@ -5,15 +5,10 @@ import funkin.backend.BaseTransitionState;
 import funkin.states.transitions.SwipeTransition;
 import flixel.addons.ui.FlxUIState;
 import flixel.FlxG;
+import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.data.*;
 import funkin.data.scripts.*;
-#if android
-import android.AndroidControls;
-import android.flixel.FlxVirtualPad;
-import flixel.input.actions.FlxActionInput;
-import flixel.util.FlxDestroyUtil;
-#end
 
 class MusicBeatState extends FlxUIState
 {
@@ -87,108 +82,37 @@ class MusicBeatState extends FlxUIState
 
 	inline function get_controls():Controls return PlayerSettings.player1.controls;
 
-	#if android
-	var virtualPad:FlxVirtualPad;
-	var androidControls:AndroidControls;
+	#if mobile
 	var _virtualpad:FlxVirtualPad;
 	var _hitbox:FlxHitbox;
-	var trackedinputsUI:Array<FlxActionInput> = [];
-	var trackedinputsNOTES:Array<FlxActionInput> = [];
 
-	public function addVirtualPad(DPad:FlxDPadMode, Action:FlxActionMode)
-	{
-		virtualPad = new FlxVirtualPad(DPad, Action);
-		add(virtualPad);
+	public function addHitbox(?keyCount:Int = 3) {
+		_hitbox = new FlxHitbox(keyCount);
 
-		controls.setVirtualPadUI(virtualPad, DPad, Action);
-		trackedinputsUI = controls.trackedinputsUI;
-		controls.trackedinputsUI = [];
+		var camMobile = new FlxCamera();
+	    camMobile.bgColor.alpha = 0;
+		FlxG.cameras.add(camMobile, false);
+
+		_hitbox.cameras = [camMobile];
+ 		add(_hitbox);
 	}
 
-	public function removeVirtualPad()
-	{
-		if (trackedinputsUI != [])
-			controls.removeFlxInput(trackedinputsUI);
-
-		if (virtualPad != null)
-			remove(virtualPad);
+	public function addVirtualPad(?DPad:FlxDPadMode, ?Action:FlxActionMode) {
+        _virtualpad = new FlxVirtualPad(DPad, Action);
+		add(_virtualpad);
 	}
 
-	public function addAndroidControls()
-	{
-		androidControls = new AndroidControls();
-                androidControls.alpha = 0.8;
+    	public function addVirtualPadCamera() {
+		var virtualpadcam = new FlxCamera();
+		virtualpadcam.bgColor.alpha = 0;
+		FlxG.cameras.add(virtualpadcam, false);
+		_virtualpad.cameras = [virtualpadcam];
+    	}
 
-		switch (AndroidControls.getMode())
-		{
-			case 0 | 1 | 2: // RIGHT_FULL | LEFT_FULL | CUSTOM
-				controls.setVirtualPadNOTES(androidControls.virtualPad, RIGHT_FULL, NONE);
-			case 3: // BOTH_FULL
-				controls.setVirtualPadNOTES(androidControls.virtualPad, BOTH_FULL, NONE);
-			case 4: // HITBOX
-				controls.setHitBox(androidControls.hitbox);
-			case 5: // KEYBOARD
-		}
-
-		trackedinputsNOTES = controls.trackedinputsNOTES;
-		controls.trackedinputsNOTES = [];
-
-		var camControls = new flixel.FlxCamera();
-		FlxG.cameras.add(camControls, false);
-		camControls.bgColor.alpha = 0;
-
-		androidControls.cameras = [camControls];
-		androidControls.visible = false;
-		add(androidControls);
-	}
-
-	public function removeAndroidControls()
-	{
-		if (trackedinputsNOTES != [])
-			controls.removeFlxInput(trackedinputsNOTES);
-
-		if (androidControls != null)
-			remove(androidControls);
-	}
-
-	public function addPadCamera()
-	{
-		if (virtualPad != null)
-		{
-			var camControls = new flixel.FlxCamera();
-			FlxG.cameras.add(camControls, false);
-			camControls.bgColor.alpha = 0;
-			virtualPad.cameras = [camControls];
-		}
+	public function removeVirtualPad() {
+		remove(_virtualpad);
 	}
 	#end
-
-	override function destroy()
-	{
-		#if android
-		if (trackedinputsNOTES != [])
-			controls.removeFlxInput(trackedinputsNOTES);
-
-		if (trackedinputsUI != [])
-			controls.removeFlxInput(trackedinputsUI);
-		#end
-
-		super.destroy();
-
-		#if android
-		if (virtualPad != null)
-		{
-			virtualPad = FlxDestroyUtil.destroy(virtualPad);
-			virtualPad = null;
-		}
-
-		if (androidControls != null)
-		{
-			androidControls = FlxDestroyUtil.destroy(androidControls);
-			androidControls = null;
-		}
-		#end
-	}
 
 	override function create()
 	{
@@ -293,6 +217,11 @@ class MusicBeatState extends FlxUIState
 	{
 		return cast FlxG.state;
 	}
+
+	public static function switchState(nextState:FlxState)
+	{
+		FlxG.switchState(nextState); // just because im too lazy to goto every instance of switchState and change it to a FlxG call
+	}	
 
 	public function stepHit():Void
 	{

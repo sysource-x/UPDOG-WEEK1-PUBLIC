@@ -66,7 +66,7 @@ class ResetScoreSubStateImpostor extends MusicBeatSubstate
 		noText.borderSize = 1.25;
 		noText.antialiasing = ClientPrefs.globalAntialiasing;
 		add(noText);
-		#if android
+		#if mobile
 		addVirtualPad(LEFT_RIGHT, A_B);
 		#end
 		updateOptions();
@@ -77,18 +77,22 @@ class ResetScoreSubStateImpostor extends MusicBeatSubstate
 		bg.alpha += elapsed * 1.5;
 		if (bg.alpha > 0.6) bg.alpha = 0.6;
 
-		if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if android || _virtualpad.buttonLeft.justPressed || _virtualpad.buttonRight.justPressed #end)
+		if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || _virtualpad.buttonLeft.justPressed || _virtualpad.buttonRight.justPressed #end)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'), 1);
 			onYes = !onYes;
 			updateOptions();
 		}
-		if (controls.BACK #if android || _virtualpad.buttonB.justPressed #end)
+		if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
+			#if mobile
+			closeSs();
+            #else
 			close();
+			#end
 		}
-		else if (controls.ACCEPT #if android || _virtualpad.buttonA.justPressed #end)
+		else if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
 		{
 			if (onYes)
 			{
@@ -102,7 +106,11 @@ class ResetScoreSubStateImpostor extends MusicBeatSubstate
 				}
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
+			#if mobile
+			closeSs();
+			#else
 			close();
+            #end
 		}
 		super.update(elapsed);
 	}

@@ -37,7 +37,6 @@ After that is complete, run `lime test windows` and you should be compiling
 <details>
   <summary><h2>Some Credits because i rob some codes from that people</h2></summary>
 
-- Credits to [Heropowerbrine](ttps://youtube.com/@Heropowerbrine) to some codes of mobile and fixing
-- Credits to [FNF BR](https://youtube.com/@FNFBR) to mobile controls
+- Credits to [Heropowerbrine](ttps://youtube.com/@Heropowerbrine) to some codes of mobile,fixing and the controls base
 - Credits to [MaysLastPlay](https://youtube.com/@MaysLastPlay) of some codes and fixing for mobile
 </details>
