@@ -116,4 +116,4 @@ class CrashHandler
 			trace('Couldn\'t save error message. (${e.message})');
 	}
 	#end
-      }
+}

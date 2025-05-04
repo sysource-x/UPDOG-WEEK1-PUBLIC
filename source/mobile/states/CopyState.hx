@@ -22,7 +22,6 @@
 
 package mobile.states;
 
--------- /*
 #if mobile
 import funkin.states.TitleState;
 import lime.utils.Assets as LimeAssets;
@@ -32,13 +31,12 @@ import haxe.io.Path;
 import flixel.ui.FlxBar;
 import flixel.ui.FlxBar.FlxBarFillDirection;
 import lime.system.ThreadPool;
--------- */
 
 /**
  * ...
  * @author: Karim Akra
  */
- -------- /*
+
 class CopyState extends MusicBeatState
 {
 	private static final textFilesExtensions:Array<String> = ['ini', 'txt', 'xml', 'hxs', 'hx', 'lua', 'json', 'frag', 'vert'];
@@ -140,41 +138,33 @@ class CopyState extends MusicBeatState
 
 	public function copyAsset(file:String)
 	{
-		if (!FileSystem.exists(file))
+		try
 		{
-			var directory = Path.directory(file);
-			if (!FileSystem.exists(directory))
-				FileSystem.createDirectory(directory);
-			try
+			if (OpenFLAssets.exists(Paths.getPath(file, null)))
 			{
-				if (OpenFLAssets.exists(getFile(file)))
-				{
-					if (textFilesExtensions.contains(Path.extension(file)))
-						createContentFromInternal(file);
-					else
-						File.saveBytes(file, getFileBytes(getFile(file)));
-				}
+				if (textFilesExtensions.contains(Path.extension(file)))
+					createContentFromInternal(file);
 				else
-				{
-					failedFiles.push(getFile(file) + " (File Dosen't Exist)");
-					failedFilesStack.push('Asset ${getFile(file)} does not exist.');
-				}
+					trace("File is already embedded: " + file);
 			}
-			catch (e:haxe.Exception)
+			else
 			{
-				failedFiles.push('${getFile(file)} (${e.message})');
-				failedFilesStack.push('${getFile(file)} (${e.stack})');
+				trace("File doesn't exist internally: " + file);
 			}
+		}
+		catch (e:haxe.Exception)
+		{
+			trace("Error copying asset: " + e.message);
 		}
 	}
 
 	public function createContentFromInternal(file:String)
 	{
 		var fileName = Path.withoutDirectory(file);
-		var directory = Path.directory(file);
+		var directory = Paths.getPath(Path.directory(file), null);
 		try
 		{
-			var fileData:String = OpenFLAssets.getText(getFile(file));
+			var fileData:String = OpenFLAssets.getText(Paths.getPath(file, null));
 			if (fileData == null)
 				fileData = '';
 			if (!FileSystem.exists(directory))
@@ -183,8 +173,8 @@ class CopyState extends MusicBeatState
 		}
 		catch (e:haxe.Exception)
 		{
-			failedFiles.push('${getFile(file)} (${e.message})');
-			failedFilesStack.push('${getFile(file)} (${e.stack})');
+			failedFiles.push('${Paths.getPath(file, null)} (${e.message})');
+			failedFilesStack.push('${Paths.getPath(file, null)} (${e.stack})');
 		}
 	}
 
@@ -201,17 +191,17 @@ class CopyState extends MusicBeatState
 
 	public static function getFile(file:String):String
 	{
-		if (OpenFLAssets.exists(file))
-			return file;
+		if (OpenFLAssets.exists(Paths.getPath(file, null)))
+			return Paths.getPath(file, null);
 
 		@:privateAccess
 		for (library in LimeAssets.libraries.keys())
 		{
-			if (OpenFLAssets.exists('$library:$file') && library != 'default')
-				return '$library:$file';
+			if (OpenFLAssets.exists('$library:${Paths.getPath(file, null)}') && library != 'default')
+				return '$library:${Paths.getPath(file, null)}';
 		}
 
-		return file;
+		return Paths.getPath(file, null);
 	}
 
 	public static function checkExistingFiles():Bool
@@ -219,10 +209,10 @@ class CopyState extends MusicBeatState
 		locatedFiles = OpenFLAssets.list();
 
 		// removes unwanted assets
-		var assets = locatedFiles.filter(folder -> folder.startsWith('assets/'));
-		var mods = locatedFiles.filter(folder -> folder.startsWith('content/'));
+		var assets = locatedFiles.filter(folder -> folder.startsWith(Paths.getPath('assets/', null)));
+		var mods = locatedFiles.filter(folder -> folder.startsWith(Paths.getPath('content/', null)));
 		locatedFiles = assets.concat(mods);
-		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(file));
+		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(Paths.getPath(file, null)));
 
 		var filesToRemove:Array<String> = [];
 
@@ -252,4 +242,3 @@ class CopyState extends MusicBeatState
 	}
 }
 #end
--------- */

@@ -41,7 +41,8 @@ class Main extends Sprite
 	{
 		super();
 
-		mobile.backend.CrashHandler.init();
+		// test
+		// mobile.backend.CrashHandler.init();
 
 		Splash.nextState = Init;
 		ClientPrefs.loadDefaultKeys();

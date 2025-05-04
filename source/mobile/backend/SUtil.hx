@@ -26,11 +26,11 @@ package mobile.backend;
  * A storage class for mobile.
  * @author Karim Akra and Homura Akemi (HomuHomu833)
  */
-#if android
-import android.content.Context;
-import android.widget.Toast;
-import android.os.Environment;
-#end
+// #if android
+// import android.content.Context;
+// import android.widget.Toast;
+// import android.os.Environment;
+// #end
 import haxe.CallStack;
 import haxe.io.Path;
 import lime.app.Application;
@@ -283,8 +283,9 @@ class SUtil
 			else
 				trace('$fileName couldn\'t be saved. (${e.message})');
 	}
+	*/
 
-	#if android
+	#if android // TEST PERMISSIONS, i dont want a fnf using external acess this are boring...
 	public static function requestPermissions():Void
 	{
 		if (AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU)
@@ -316,4 +317,3 @@ class SUtil
 	#end
 	#end
 }
-*/
