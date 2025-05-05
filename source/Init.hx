@@ -19,7 +19,7 @@ class Init extends FlxState
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
-		// Paths.pushGlobalMods();
+		Paths.pushGlobalMods();
 		
 		funkin.data.WeekData.loadTheFirstEnabledMod();
 		
