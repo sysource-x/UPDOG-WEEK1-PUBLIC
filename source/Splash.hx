@@ -1,5 +1,6 @@
 package;
 
+import openfl.utils.Assets;
 import flixel.FlxState;
 
 using StringTools;
@@ -20,7 +21,10 @@ class Splash extends FlxState
 		FlxG.autoPause = false;
 
 		FlxTimer.wait(1, () -> {
-			var folder = FileSystem.readDirectory('assets/shared/images/branding');
+			var folder = Assets.list().filter(folder -> folder.contains('assets/shared/images/branding')).map(folder -> {
+			    var idx = folder.lastIndexOf('/');
+			    return idx != -1 ? folder.substring(idx + 1) : folder;
+			});
 			var img = folder[FlxG.random.int(0, folder.length - 1)];
 			trace(folder);
 

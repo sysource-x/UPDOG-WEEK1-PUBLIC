@@ -138,28 +138,28 @@ class Character extends FlxSprite
 		return cast Json.parse(json);
 
 
-		// #if MODS_ALLOWED
-		// var path:String = Paths.modFolders(characterPath);
-		// if (!FileSystem.exists(path))
-		// {
-		// 	path = Paths.getSharedPath(characterPath);
-		// }
+		#if desktop // MODS_ALLOWED
+		var path:String = Paths.modFolders(characterPath);
+		if (!FileSystem.exists(path))
+		{
+		 	path = Paths.getSharedPath(characterPath);
+		}
 
-		// if (!FileSystem.exists(path))
-		// #else
-		// var path:String = Paths.getSharedPath(characterPath);
-		// if (!Assets.exists(path))
-		// #end
-		// {
-		// 	path = Paths.getSharedPath('characters/' + DEFAULT_CHARACTER +
-		// 		'.json'); // If a character couldn't be found, change him to BF just to prevent a crash
-		// }
+		if (!FileSystem.exists(path))
+		#else
+		var path:String = Paths.getSharedPath(characterPath);
+		if (!Assets.exists(path))
+		#end
+		{
+	     	path = Paths.getSharedPath('characters/' + DEFAULT_CHARACTER +
+		 		'.json'); // If a character couldn't be found, change him to BF just to prevent a crash
+		}
 
-		// #if MODS_ALLOWED
-		// var rawJson = File.getContent(path);
-		// #else
-		// var rawJson = Assets.getText(path);
-		// #end
+		#if desktop // MODS_ALLOWED
+		var rawJson = File.getContent(path);
+	    #else
+		var rawJson = Assets.getText(path);
+		#end
 
 		// return cast Json.parse(rawJson);
 	}
@@ -192,7 +192,7 @@ class Character extends FlxSprite
 				// sparrow
 				// packer
 				// texture
-				#if MODS_ALLOWED
+				#if desktop // MODS_ALLOWED
 				var modTxtToFind:String = Paths.modsTxt(json.image);
 				var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT);
 
@@ -207,7 +207,7 @@ class Character extends FlxSprite
 					spriteType = "packer";
 				}
 
-				#if MODS_ALLOWED
+				#if desktop // MODS_ALLOWED
 				var modAnimToFind:String = Paths.modFolders('images/' + json.image + '/Animation.json');
 				var animToFind:String = Paths.getPath('images/' + json.image + '/Animation.json', TEXT);
 

@@ -283,7 +283,7 @@ class SUtil
 			else
 				trace('$fileName couldn\'t be saved. (${e.message})');
 	}
-	*/
+	
 
 	#if android // TEST PERMISSIONS, i dont want a fnf using external acess this are boring...
 	public static function requestPermissions():Void
@@ -314,6 +314,6 @@ class SUtil
 			lime.system.System.exit(1);
 		}
 	}
-	#end
+	#end*/
 	#end
 }

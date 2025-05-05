@@ -48,7 +48,7 @@ class Main extends Sprite
 		ClientPrefs.loadDefaultKeys();
 
 		final game = new
-			#if CRASH_HANDLER
+			#if desktop // CRASH_HANDLER
 			FNFGame
 			#else
 			FlxGame

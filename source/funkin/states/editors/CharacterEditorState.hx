@@ -1168,7 +1168,7 @@ class CharacterEditorState extends MusicBeatState
 	{
 		var charsLoaded:Map<String, Bool> = new Map();
 
-		#if MODS_ALLOWED
+		#if desktop
 		characterList = [];
 		var directories:Array<String> = [
 			Paths.mods('characters/'),

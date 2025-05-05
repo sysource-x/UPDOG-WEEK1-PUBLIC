@@ -206,7 +206,7 @@ class Paths
 	
 	inline static public function modsNoteskin(key:String)
 	{
-		return modFolders('noteskins/$key.json');
+		return getPath('noteskins/$key.json');
 	}
 	
 	inline static public function shaderFragment(key:String, ?library:String)
@@ -226,7 +226,7 @@ class Paths
 	
 	inline static public function getContent(asset:String):Null<String>
 	{
-		#if sys
+		#if desktop // sys
 		if (FileSystem.exists(asset)) return File.getContent(asset);
 		#end
 		if (Assets.exists(asset)) return Assets.getText(asset);
@@ -237,7 +237,7 @@ class Paths
 	
 	static public function video(key:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var file:String = modsVideo(key);
 		if (FileSystem.exists(file))
 		{
@@ -249,7 +249,7 @@ class Paths
 	
 	inline static public function modTextureAtlas(key:String)
 	{
-		return modFolders('images/$key');
+		return getPath('images/$key');
 	}
 	
 	static public function textureAtlas(key:String, ?library:String)
@@ -292,9 +292,9 @@ class Paths
 		return inst;
 	}
 	
-	inline static public function modsShaderFragment(key:String, ?library:String) return modFolders('shaders/' + key + '.frag');
+	inline static public function modsShaderFragment(key:String, ?library:String) return getPath('shaders/' + key + '.frag');
 	
-	inline static public function modsShaderVertex(key:String, ?library:String) return modFolders('shaders/' + key + '.vert');
+	inline static public function modsShaderVertex(key:String, ?library:String) return getPath('shaders/' + key + '.vert');
 	
 	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
@@ -304,10 +304,10 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		#if sys
-		#if MODS_ALLOWED
+		// #if sys
+		#if desktop
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
-		#end
+		// #end
 		
 		if (FileSystem.exists(getSharedPath(key))) return File.getContent(getSharedPath(key));
 		
@@ -324,12 +324,12 @@ class Paths
 			if (FileSystem.exists(levelPath)) return File.getContent(levelPath);
 		}
 		#end
-		return Assets.getText(getPath(key, TEXT));
+		return Assets.getText(getPath(key, TEXT)); // The internal config to get some files
 	}
 	
 	inline static public function font(key:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
 		{
@@ -341,7 +341,7 @@ class Paths
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
 		{
 			return true;
@@ -357,7 +357,7 @@ class Paths
 	
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var xmlExists:Bool = false;
 		var xml = modsXml(key);
@@ -380,7 +380,7 @@ class Paths
 	
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var txtExists:Bool = false;
 		if (FileSystem.exists(modsTxt(key)))
@@ -407,7 +407,7 @@ class Paths
 		var bitmap:BitmapData = null;
 		var file:String = null;
 		
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		file = modsImages(key);
 		if (currentTrackedAssets.exists(file))
 		{
@@ -450,7 +450,7 @@ class Paths
 	{
 		if (bitmap == null)
 		{
-			#if MODS_ALLOWED
+			#if desktop // MODS_ALLOWED
 			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
 			else
 			#end
@@ -482,7 +482,7 @@ class Paths
 	
 	public static function returnSound(path:Null<String>, key:String, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var modLibPath:String = '';
 		if (library != null) modLibPath = '$library';
 		if (path != null) modLibPath += '$path';
@@ -525,7 +525,7 @@ class Paths
 	
 	inline public static function strip(path:String) return path.indexOf(':') != -1 ? path.substr(path.indexOf(':') + 1, path.length) : path;
 	
-	#if MODS_ALLOWED
+	#if desktop
 	inline static public function mods(key:String = '')
 	{
 		return '$MODS_DIRECTORY/' + key;
@@ -570,11 +570,11 @@ class Paths
 
 		inline static public function modsShaderFragment(key:String, ?library:String)
 		{
-			return modFolders('shaders/'+key+'.frag');
+			return getPath('shaders/'+key+'.frag');
 		}
 		inline static public function modsShaderVertex(key:String, ?library:String)
 		{
-			return modFolders('shaders/'+key+'.vert');
+			return getPath('shaders/'+key+'.vert');
 		}
 		inline static public function modsAchievements(key:String) {
 			return modFolders('achievements/' + key + '.json');

@@ -65,7 +65,8 @@
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
 	<library name="songs"         preload="true" />
 
-	<assets path='content' embed='false' if="MODS_ALLOWED"/>
+	<!-- <assets path='content' embed='false' if="MODS_ALLOWED"/> i got a idea -->
+	<assets path='content' embed='false' if="MODS_ALLOWED" rename='assets/shared'/>
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">
@@ -105,12 +106,19 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<haxedef name="CRASH_HANDLER" />
+	<!-- <haxedef name="CRASH_HANDLER" />
 
 	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_TRACE" if="CRASH_HANDLER" />
-	<haxedef name="HXCPP_CATCH_SEGV" if="CRASH_HANDLER" />
+	<haxedef name="HXCPP_CATCH_SEGV" if="CRASH_HANDLER" /> -->
+
+	<section if="cpp">
+		<haxedef name="HXCPP_CHECK_POINTER" />
+		<haxedef name="HXCPP_STACK_LINE" />
+		<haxedef name="HXCPP_STACK_TRACE" />
+		<haxedef name="HXCPP_CATCH_SEGV" />
+	</section>
 
 	<!-- <define name="DISABLE_TRACES" if="desktop release"/> -->
 
@@ -164,6 +172,9 @@
 	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
 
 	<!--Disable the Flixel core focus lost screen-->
+
+	<!-- Do whatever you want I'm tired uninstall and install everytime -->
+	<certificate path="key.keystore" password="vincetomroyalsys" alias="sys" alias-password="vincetomroyalsys" if="android" unless="debug" />
 	
 	<!-- _________________________________ Custom _______________________________ -->
 

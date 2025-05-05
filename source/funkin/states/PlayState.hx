@@ -576,53 +576,34 @@ class PlayState extends MusicBeatState
 		}
 		
 		// "GLOBAL" SCRIPTS
-		var filesPushed:Array<String> = [];
-		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
-		
-		#if MODS_ALLOWED
-		foldersToCheck.insert(0, Paths.mods('scripts/'));
-		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
-		
-		for (mod in Paths.getGlobalMods())
-			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		var doPush:Bool = false; 
+		if (OpenFlAssets.exists('assets/scripts/camTweenEvent.hx')) {
+		  doPush = true;
+		}
+
+		if(doPush)
+		luaArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/camTweenEvent.hx')));
 		#end
 		
-		for (folder in foldersToCheck)
-		{
-			if (FileSystem.exists(folder))
-			{
-				for (file in FileSystem.readDirectory(folder))
-				{
-					if (!filesPushed.contains(file))
-					{
-						if (file.endsWith('.lua'))
-						{
-							#if LUA_ALLOWED
-							var script = new FunkinLua(folder + file);
-							luaArray.push(script);
-							funkyScripts.push(script);
-							filesPushed.push(file);
-							#end
-						}
-						else
-						{
-							for (ext in FunkinIris.exts)
-							{
-								if (file.endsWith('.$ext'))
-								{
-									var script = initFunkinIris(folder + file);
-									if (script != null)
-									{
-										filesPushed.push(file);
-									}
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
+		#if LUA_ALLOWED
+		var doPush:Bool = false; 
+		if (OpenFlAssets.exists('assets/scripts/countdown.hx')) {
+		  doPush = true;
 		}
+
+		if(doPush)
+		luaArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/countdown.hx'))); // It doesn't have to be "script1", "script2", you can put whatever name you want. 
+		#end
+
+		#if LUA_ALLOWED
+		var doPush:Bool = false; 
+		if (OpenFlAssets.exists('assets/scripts/noteCovers.hx')) {
+		  doPush = true;
+		}
+
+		if(doPush)
+		luaArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/noteCovers.hx'))); // It doesn't have to be "script1", "script2", you can put whatever name you want. 
+		#end
 		
 		var gfVersion:String = SONG.gfVersion;
 		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
@@ -775,54 +756,24 @@ class PlayState extends MusicBeatState
 		startingSong = true;
 		
 		// SONG SPECIFIC SCRIPTS
-		var filesPushed:Array<String> = [];
-		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
-		
-		#if MODS_ALLOWED
-		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
-		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
-			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
-			
-		for (mod in Paths.getGlobalMods())
-			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		var doPush:Bool = false;
+		if (OpenFlAssets.exists('assets/songs' + Paths.formatToSongPath(SONG.song) + '/script.lua')) {
+		  doPush = true;
+		}
+
+		if(doPush)
+		luaArray.push(new FunkinLua(Asset2File.getPath('assets/songs/' + Paths.formatToSongPath(SONG.song) + '/script.lua')));
 		#end
 		
-		for (folder in foldersToCheck)
-		{
-			if (FileSystem.exists(folder))
-			{
-				for (file in FileSystem.readDirectory(folder))
-				{
-					if (!filesPushed.contains(file))
-					{
-						if (file.endsWith('.lua'))
-						{
-							#if LUA_ALLOWED
-							var script = new FunkinLua(folder + file);
-							luaArray.push(script);
-							funkyScripts.push(script);
-							filesPushed.push(file);
-							#end
-						}
-						else
-						{
-							for (ext in FunkinIris.exts)
-							{
-								if (file.endsWith('.$ext'))
-								{
-									var sc = initFunkinIris(folder + file);
-									if (sc != null)
-									{
-										filesPushed.push(file);
-									}
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
+		#if LUA_ALLOWED
+		var doPush:Bool = false;
+		if (OpenFlAssets.exists('assets/songs/' + Paths.formatToSongPath(SONG.song) + '/script1.lua')) {
+		  doPush = true;
 		}
+
+		if(doPush)
+		luaArray.push(new FunkinLua(Asset2File.getPath('assets/songs/' + Paths.formatToSongPath(SONG.song) + '/script1.lua')));
+		#end
 		
 		if (songStartCallback == null)
 		{
@@ -1100,7 +1051,7 @@ class PlayState extends MusicBeatState
 	#if VIDEOS_ALLOWED
 	var foundFile:Bool = false;
 	var fileName:String = #if MODS_ALLOWED Paths.modFolders('videos/' + name + '.' + Paths.VIDEO_EXT); #else ''; #end
-	#if sys
+	#if desktop // sys
 	if (FileSystem.exists(fileName))
 	{
 		foundFile = true;
@@ -1110,7 +1061,7 @@ class PlayState extends MusicBeatState
 	if (!foundFile)
 	{
 		fileName = Paths.video(name);
-		#if sys
+		#if desktop // sys
 		if (FileSystem.exists(fileName))
 		{
 		#else
@@ -1537,7 +1488,7 @@ class PlayState extends MusicBeatState
 		var events:Array<EventNote> = [];
 		var songName:String = Paths.formatToSongPath(SONG.song);
 		var file:String = Paths.json(songName + '/events');
-		#if MODS_ALLOWED
+		#if desktop
 		if (FileSystem.exists(Paths.modsJson(songName + '/events')) || FileSystem.exists(file) || OpenFlAssets.exists(file))
 		{
 		#else

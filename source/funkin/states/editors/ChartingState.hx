@@ -662,7 +662,7 @@ class ChartingState extends MusicBeatState
 		var loadEventJson:FlxButton = new FlxButton(loadAutosaveBtn.x, loadAutosaveBtn.y + 30, 'Load Events', function() {
 			var songName:String = Paths.formatToSongPath(_song.song);
 			var file:String = Paths.json(songName + '/events');
-			#if sys
+			#if desktop
 			if (#if MODS_ALLOWED FileSystem.exists(Paths.modsJson(songName + '/events')) || #end FileSystem.exists(file))
 			#else
 			if (OpenFlAssets.exists(file))
@@ -716,7 +716,7 @@ class ChartingState extends MusicBeatState
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
 		blockPressWhileTypingOnStepper.push(stepperSpeed);
-		#if MODS_ALLOWED
+		#if desktop
 		var directories:Array<String> = [
 			Paths.mods('characters/'),
 			Paths.mods(Paths.currentModDirectory + '/characters/'),
@@ -735,7 +735,7 @@ class ChartingState extends MusicBeatState
 			tempMap.set(characters[i], true);
 		}
 
-		#if MODS_ALLOWED
+		#if desktop
 		for (i in 0...directories.length)
 		{
 			var directory:String = directories[i];
@@ -782,7 +782,7 @@ class ChartingState extends MusicBeatState
 		player2DropDown.selectedLabel = _song.player2;
 		blockPressWhileScrolling.push(player2DropDown);
 
-		#if MODS_ALLOWED
+		#if desktop
 		var directories:Array<String> = [
 			Paths.mods('stages/'),
 			Paths.mods(Paths.currentModDirectory + '/stages/'),
@@ -806,7 +806,7 @@ class ChartingState extends MusicBeatState
 			}
 			tempMap.set(stageToCheck, true);
 		}
-		#if MODS_ALLOWED
+		#if desktop
 		for (i in 0...directories.length)
 		{
 			var directory:String = directories[i];
@@ -3163,7 +3163,7 @@ class ChartingState extends MusicBeatState
 	function loadHealthIconFromCharacter(char:String)
 	{
 		var characterPath:String = 'characters/' + char + '.json';
-		#if MODS_ALLOWED
+		#if desktop
 		var path:String = Paths.modFolders(characterPath);
 		if (!FileSystem.exists(path))
 		{
@@ -3180,7 +3180,7 @@ class ChartingState extends MusicBeatState
 				'.json'); // If a character couldn't be found, change him to BF just to prevent a crash
 		}
 
-		#if MODS_ALLOWED
+		#if desktop
 		var rawJson = File.getContent(path);
 		#else
 		var rawJson = OpenFlAssets.getText(path);
