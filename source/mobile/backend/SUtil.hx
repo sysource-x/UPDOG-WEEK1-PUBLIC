@@ -43,6 +43,8 @@ import openfl.events.UncaughtErrorEvent;
 import sys.FileSystem;
 import sys.io.File;
 #end
+
+import openfl.utils.Assets;
  
 using StringTools;
 
@@ -54,7 +56,7 @@ enum StorageType
 	MEDIA;
 }
 class SUtil
-{ // I'm lazy to remove the space of the functions
+{// I'm lazy to remove the space of the functions
 	    /**
 	    * This returns the internal storage path that the game will use.
 	    */
@@ -260,7 +262,7 @@ class SUtil
 		}
 		#end
 	}
-	/*
+/*	
 	----THE ORIGINAL CODE----
 	#if sys
 	public static function getStorageDirectory():String
@@ -315,5 +317,5 @@ class SUtil
 		}
 	}
 	#end
-	#end*/
-}
+	#end
+}*/
