@@ -304,10 +304,10 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		// #if sys
+		#if sys
 		#if desktop
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
-		// #end
+		#end
 		
 		if (FileSystem.exists(getSharedPath(key))) return File.getContent(getSharedPath(key));
 		
