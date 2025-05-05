@@ -576,34 +576,35 @@ class PlayState extends MusicBeatState
 		}
 		
 		// "GLOBAL" SCRIPTS
+		// #if LUA_ALLOWED
 		var doPush:Bool = false; 
 		if (OpenFlAssets.exists('assets/scripts/camTweenEvent.hx')) {
 		  doPush = true;
 		}
 
 		if(doPush)
-		luaArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/camTweenEvent.hx')));
-		#end
+			hscriptArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/camTweenEvent.hx')));
+		// #end
 		
-		#if LUA_ALLOWED
+	    // #if LUA_ALLOWED
 		var doPush:Bool = false; 
 		if (OpenFlAssets.exists('assets/scripts/countdown.hx')) {
 		  doPush = true;
 		}
 
 		if(doPush)
-		luaArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/countdown.hx'))); // It doesn't have to be "script1", "script2", you can put whatever name you want. 
-		#end
+			hscriptArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/countdown.hx'))); // It doesn't have to be "script1", "script2", you can put whatever name you want. 
+		// #end
 
-		#if LUA_ALLOWED
+		// #if LUA_ALLOWED
 		var doPush:Bool = false; 
 		if (OpenFlAssets.exists('assets/scripts/noteCovers.hx')) {
 		  doPush = true;
 		}
 
 		if(doPush)
-		luaArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/noteCovers.hx'))); // It doesn't have to be "script1", "script2", you can put whatever name you want. 
-		#end
+			hscriptArray.push(new FunkinLua(Asset2File.getPath('assets/scripts/noteCovers.hx'))); // It doesn't have to be "script1", "script2", you can put whatever name you want. 
+		// #end
 		
 		var gfVersion:String = SONG.gfVersion;
 		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
@@ -756,6 +757,7 @@ class PlayState extends MusicBeatState
 		startingSong = true;
 		
 		// SONG SPECIFIC SCRIPTS
+		#if LUA_ALLOWED
 		var doPush:Bool = false;
 		if (OpenFlAssets.exists('assets/songs' + Paths.formatToSongPath(SONG.song) + '/script.lua')) {
 		  doPush = true;
@@ -763,7 +765,7 @@ class PlayState extends MusicBeatState
 
 		if(doPush)
 		luaArray.push(new FunkinLua(Asset2File.getPath('assets/songs/' + Paths.formatToSongPath(SONG.song) + '/script.lua')));
-		#end
+		#end // replace luaArray.push to hscriptArray.push if you want to use hscript instead of lua
 		
 		#if LUA_ALLOWED
 		var doPush:Bool = false;
