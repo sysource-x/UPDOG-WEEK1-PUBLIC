@@ -206,7 +206,7 @@ class Paths
 	
 	inline static public function modsNoteskin(key:String)
 	{
-		return getPath('noteskins/$key.json');
+		return modFolders('noteskins/$key.json'); // hmm
 	}
 	
 	inline static public function shaderFragment(key:String, ?library:String)
@@ -249,7 +249,7 @@ class Paths
 	
 	inline static public function modTextureAtlas(key:String)
 	{
-		return getPath('images/$key');
+		return modFolders('images/$key'); // hmm
 	}
 	
 	static public function textureAtlas(key:String, ?library:String)
@@ -292,9 +292,9 @@ class Paths
 		return inst;
 	}
 	
-	inline static public function modsShaderFragment(key:String, ?library:String) return getPath('shaders/' + key + '.frag');
+	inline static public function modsShaderFragment(key:String, ?library:String) return modFolders('shaders/' + key + '.frag');
 	
-	inline static public function modsShaderVertex(key:String, ?library:String) return getPath('shaders/' + key + '.vert');
+	inline static public function modsShaderVertex(key:String, ?library:String) return modFolders('shaders/' + key + '.vert');
 	
 	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
