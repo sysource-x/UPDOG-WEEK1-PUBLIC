@@ -5,12 +5,12 @@ import openfl.system.System;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 
-import openfl.utils.AssetType;
-// import openfl.utils.Assets; // idk
-import openfl.utils.Assets as OpenFlAssets;
-
 import lime.utils.Assets;
-import lime.utils.AssetType;
+// Removido lime.utils.AssetType para evitar conflitos
+// import lime.utils.AssetType as LimeAssetType;
+
+import openfl.utils.AssetType; // Usaremos apenas este
+import openfl.utils.Assets as OpenFlAssets;
 
 #if sys
 import sys.io.File;
@@ -110,13 +110,13 @@ class Paths
 			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) && key != null)
 			{
 				// trace('test: ' + dumpExclusions, key);
-				Assets.cache.clear(key);
+				OpenFlAssets.cache.clear(key);
 				currentTrackedSounds.remove(key);
 			}
 		}
 		// flags everything to be cleared out next unused memory clear
 		localTrackedAssets = [];
-		openfl.Assets.cache.clear("songs");
+		OpenFlAssets.cache.clear("songs");
 	}
 	
 	/**
@@ -139,7 +139,7 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 	
-	public static function getPath(file:String, ?type:AssetType = TEXT, ?library:Null<String> = null)
+	public static function getPath(file:String, ?type:AssetType = AssetType.TEXT, ?library:Null<String> = null)
 	{
 		if (library != null) return getLibraryPath(file, library);
 		
@@ -181,29 +181,29 @@ class Paths
 		return '$CORE_DIRECTORY/shared/$file';
 	}
 	
-	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
+	inline static public function file(file:String, type:AssetType = AssetType.TEXT, ?library:String)
 	{
 		return getPath(file, type, library);
 	}
 	
 	inline static public function txt(key:String, ?library:String)
 	{
-		return getPath('data/$key.txt', TEXT, library);
+		return getPath('data/$key.txt', AssetType.TEXT, library);
 	}
 	
 	inline static public function xml(key:String, ?library:String)
 	{
-		return getPath('data/$key.xml', TEXT, library);
+		return getPath('data/$key.xml', AssetType.TEXT, library);
 	}
 	
 	inline static public function json(key:String, ?library:String)
 	{
-		return getPath('songs/$key.json', TEXT, library);
+		return getPath('songs/$key.json', AssetType.TEXT, library);
 	}
 	
 	inline static public function noteskin(key:String, ?library:String)
 	{
-		return getPath('noteskins/$key.json', TEXT, library);
+		return getPath('noteskins/$key.json', AssetType.TEXT, library);
 	}
 	
 	inline static public function modsNoteskin(key:String)
@@ -213,17 +213,17 @@ class Paths
 	
 	inline static public function shaderFragment(key:String, ?library:String)
 	{
-		return getPath('shaders/$key.frag', TEXT, library);
+		return getPath('shaders/$key.frag', AssetType.TEXT, library);
 	}
 	
 	inline static public function shaderVertex(key:String, ?library:String)
 	{
-		return getPath('shaders/$key.vert', TEXT, library);
+		return getPath('shaders/$key.vert', AssetType.TEXT, library);
 	}
 	
 	inline static public function lua(key:String, ?library:String)
 	{
-		return getPath('$key.lua', TEXT, library);
+		return getPath('$key.lua', AssetType.TEXT, library);
 	}
 	
 	inline static public function getContent(asset:String):Null<String>
@@ -231,7 +231,7 @@ class Paths
 		#if sys
 		if (FileSystem.exists(asset)) return File.getContent(asset);
 		#end
-		if (Assets.exists(asset)) return Assets.getText(asset);
+		if (OpenFlAssets.exists(asset)) return OpenFlAssets.getText(asset);
 		
 		trace('oh no its returning null NOOOO ($asset)');
 		return null;
@@ -326,7 +326,7 @@ class Paths
 			if (FileSystem.exists(levelPath)) return File.getContent(levelPath);
 		}
 		#end
-		return Assets.getText(getPath(key, TEXT)); // The internal config to get some files
+		return OpenFlAssets.getText(getPath(key, AssetType.TEXT)); // The internal config to get some files
 	}
 	
 	inline static public function font(key:String)
@@ -420,7 +420,7 @@ class Paths
 		else
 		#end
 		{
-			file = getPath('images/$key.png', IMAGE, library);
+			file = getPath('images/$key.png', AssetType.IMAGE, library);
 			
 			// trace(file);
 			if (currentTrackedAssets.exists(file))
@@ -432,7 +432,7 @@ class Paths
 			{
 				bitmap = BitmapData.fromFile(file);
 			}
-			else if (OpenFlAssets.exists(file, IMAGE))
+			else if (OpenFlAssets.exists(file, AssetType.IMAGE))
 			{
 				bitmap = OpenFlAssets.getBitmapData(file);
 			}
@@ -457,7 +457,7 @@ class Paths
 			else
 			#end
 			{
-				if (OpenFlAssets.exists(file, IMAGE)) bitmap = OpenFlAssets.getBitmapData(file);
+				if (OpenFlAssets.exists(file, AssetType.IMAGE)) bitmap = OpenFlAssets.getBitmapData(file);
 			}
 			
 			if (bitmap == null) return null;
@@ -504,17 +504,17 @@ class Paths
 		// I hate this so god damn much
 		var gottenPath:String = '$key.$SOUND_EXT';
 		if (path != null) gottenPath = '$path/$gottenPath';
-		gottenPath = strip(getPath(gottenPath, SOUND, library));
+		gottenPath = strip(getPath(gottenPath, AssetType.SOUND, library));
 		// trace(gottenPath);
 		if (!currentTrackedSounds.exists(gottenPath))
 		{
 			var retKey:String = (path != null) ? '$path/$key' : key;
-			retKey = ((path == 'songs') ? 'songs:' : '') + getPath('$retKey.$SOUND_EXT', SOUND, library);
+			retKey = ((path == 'songs') ? 'songs:' : '') + getPath('$retKey.$SOUND_EXT', AssetType.SOUND, library);
 			if (FileSystem.exists(strip(gottenPath)))
 			{
 				currentTrackedSounds.set(strip(gottenPath), Sound.fromFile(retKey)); // i wish this was on the newer ver of the engine with the new paths
 			}
-			else if (OpenFlAssets.exists(retKey, SOUND))
+			else if (OpenFlAssets.exists(retKey, AssetType.SOUND))
 			{
 				// embedded sound
 				currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(retKey));
@@ -586,7 +586,7 @@ class Paths
 		if (currentModDirectory != null && currentModDirectory.length > 0)
 		{
 			var fileToCheck:String = mods(currentModDirectory + '/' + key);
-			if (Assets.exists(fileToCheck))
+			if (OpenFlAssets.exists(fileToCheck))
 			{
 				return fileToCheck;
 			}
@@ -598,7 +598,7 @@ class Paths
 		for (mod in lol)
 		{
 			var fileToCheck:String = mods(mod + '/' + key);
-			if (Assets.exists(fileToCheck)) return fileToCheck;
+			if (OpenFlAssets.exists(fileToCheck)) return fileToCheck;
 		}
 		return '$MODS_DIRECTORY/' + key;
 	}
@@ -613,9 +613,9 @@ class Paths
 	public static function pushGlobalMods()
 	{ // prob a better way to do this but idc
 		globalMods = [];
-		if (Assets.exists("modsList.txt"))
+		if (OpenFlAssets.exists("modsList.txt"))
 		{
-			var list:Array<String> = CoolUtil.listFromString(Assets.getText("modsList.txt"));
+			var list:Array<String> = CoolUtil.listFromString(OpenFlAssets.getText("modsList.txt"));
 			for (i in list)
 			{
 				var dat = i.split("|");
@@ -623,11 +623,11 @@ class Paths
 				{
 					var folder = dat[0];
 					var path = Paths.mods(folder + '/pack.json');
-					if (Assets.exists(path))
+					if (OpenFlAssets.exists(path))
 					{
 						try
 						{
-							var rawJson:String = Assets.getText(path);
+							var rawJson:String = OpenFlAssets.getText(path);
 							if (rawJson != null && rawJson.length > 0)
 							{
 								var stuff:Dynamic = Json.parse(rawJson);
@@ -650,9 +650,9 @@ class Paths
 	{
 		var list:Array<String> = [];
 		var modsFolder:String = mods();
-		if (Assets.exists(modsFolder))
+		if (OpenFlAssets.exists(modsFolder))
 		{
-			for (folder in Assets.list(modsFolder))
+			for (folder in OpenFlAssets.list(modsFolder, AssetType.BINARY))
 			{
 				var path = haxe.io.Path.join([modsFolder, folder]);
 				if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder) && !list.contains(folder))
