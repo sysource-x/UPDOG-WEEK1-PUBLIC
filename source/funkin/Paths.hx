@@ -662,5 +662,5 @@ class Paths
 		}
 		return list;
 	}
-	// #end
+	#end
 }
