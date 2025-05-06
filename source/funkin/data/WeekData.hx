@@ -7,6 +7,8 @@ import sys.FileSystem;
 import haxe.Json;
 import funkin.states.*;
 
+import openfl.utils.Assets as OpenFlAssets;
+
 using StringTools;
 
 typedef WeekFile =
