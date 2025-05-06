@@ -112,12 +112,12 @@ class Song
 		
 		if (rawJson == null)
 		{
-			#if desktop // nothing
 			if (mod)
 			{
+				#if desktop // nothing
 				rawJson = File.getContent(moddyFile).trim();
+				#end
 			}
-			#end
 			else
 			{
 				try
