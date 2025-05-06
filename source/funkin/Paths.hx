@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 import openfl.utils.AssetType;
+// import openfl.utils.Assets; // idk
 import openfl.utils.Assets as OpenFlAssets;
 
 import lime.utils.Assets;
@@ -226,7 +227,7 @@ class Paths
 	
 	inline static public function getContent(asset:String):Null<String>
 	{
-		#if desktop // sys
+		#if sys
 		if (FileSystem.exists(asset)) return File.getContent(asset);
 		#end
 		if (Assets.exists(asset)) return Assets.getText(asset);
@@ -237,7 +238,7 @@ class Paths
 	
 	static public function video(key:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var file:String = modsVideo(key);
 		if (FileSystem.exists(file))
 		{
@@ -305,7 +306,7 @@ class Paths
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
 		// #if sys
-		#if desktop
+		#if desktop // MODS_ALLOWED
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
 		// #end
 		
@@ -329,7 +330,7 @@ class Paths
 	
 	inline static public function font(key:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
 		{
@@ -341,7 +342,7 @@ class Paths
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
 		{
 			return true;
@@ -357,7 +358,7 @@ class Paths
 	
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var xmlExists:Bool = false;
 		var xml = modsXml(key);
@@ -380,7 +381,7 @@ class Paths
 	
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var txtExists:Bool = false;
 		if (FileSystem.exists(modsTxt(key)))
@@ -407,7 +408,7 @@ class Paths
 		var bitmap:BitmapData = null;
 		var file:String = null;
 		
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		file = modsImages(key);
 		if (currentTrackedAssets.exists(file))
 		{
@@ -450,7 +451,7 @@ class Paths
 	{
 		if (bitmap == null)
 		{
-			#if desktop // MODS_ALLOWED
+			#if MODS_ALLOWED
 			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
 			else
 			#end
@@ -482,7 +483,7 @@ class Paths
 	
 	public static function returnSound(path:Null<String>, key:String, ?library:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var modLibPath:String = '';
 		if (library != null) modLibPath = '$library';
 		if (path != null) modLibPath += '$path';
