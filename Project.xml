@@ -52,7 +52,7 @@
 	<define name="MODS_ALLOWED" if="desktop || android" />
 	<define name="LUA_ALLOWED" if="desktop || android" />
 	<define name="VIDEOS_ALLOWED" if="desktop || android" />
-	<!-- <define name="DISCORD_ALLOWED" if="desktop"/> -->
+	<define name="DISCORD_ALLOWED" if="desktop"/>
 
 	<assets path='assets/embeds' 		rename='assets'			embed="false" />
 	<!-- assets path="assets/embeds/songs" rename= "assets/songs" library="songs" embed="false"/ This are not necessary-->
@@ -65,8 +65,8 @@
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
 	<library name="songs"         preload="true" />
 
-	<!-- <assets path='content' embed='false' if="MODS_ALLOWED"/> i got a idea.  -->
-	<assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"  />
+	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
+	<assets path='content' embed='false' if="MODS_ALLOWED" />
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">
@@ -108,17 +108,17 @@
 
 	<haxedef name="CRASH_HANDLER" />
 
-	<!-- <haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
+	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_TRACE" if="CRASH_HANDLER" />
-	<haxedef name="HXCPP_CATCH_SEGV" if="CRASH_HANDLER" /> CPP -->
+	<haxedef name="HXCPP_CATCH_SEGV" if="CRASH_HANDLER" /> 
 
-	<section if="CRASH_HANDLER">
+	<!-- <section if="CRASH_HANDLER">
 		<haxedef name="HXCPP_CHECK_POINTER" />
 		<haxedef name="HXCPP_STACK_LINE" />
 		<haxedef name="HXCPP_STACK_TRACE" />
 		<haxedef name="HXCPP_CATCH_SEGV" />
-	</section>
+	</section> CPP -->
 
 	<!-- <define name="DISABLE_TRACES" if="desktop release"/> -->
 

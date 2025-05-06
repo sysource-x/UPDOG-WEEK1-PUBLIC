@@ -526,10 +526,10 @@ class Paths
 	
 	inline public static function strip(path:String) return path.indexOf(':') != -1 ? path.substr(path.indexOf(':') + 1, path.length) : path;
 	
-	// #if desktop
+	#if MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{
-		return Asset2File.getPath() + '$MODS_DIRECTORY/' + key;
+		return '$MODS_DIRECTORY/' + key;
 	}
 	
 	inline static public function modsFont(key:String)
@@ -662,5 +662,5 @@ class Paths
 		}
 		return list;
 	}
-	// #end
+	#end
 }
