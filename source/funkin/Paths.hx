@@ -528,7 +528,7 @@ class Paths
 	#if desktop
 	inline static public function mods(key:String = '')
 	{
-		return #if mobile Asset2File.getPath() + #end '$MODS_DIRECTORY/' + key;
+		return Asset2File.getPath() + '$MODS_DIRECTORY/' + key;
 	}
 	
 	inline static public function modsFont(key:String)
@@ -584,7 +584,7 @@ class Paths
 		if (currentModDirectory != null && currentModDirectory.length > 0)
 		{
 			var fileToCheck:String = mods(currentModDirectory + '/' + key);
-			if (FileSystem.exists(fileToCheck))
+			if (Assets.exists(fileToCheck))
 			{
 				return fileToCheck;
 			}
@@ -596,7 +596,7 @@ class Paths
 		for (mod in lol)
 		{
 			var fileToCheck:String = mods(mod + '/' + key);
-			if (FileSystem.exists(fileToCheck)) return fileToCheck;
+			if (Assets.exists(fileToCheck)) return fileToCheck;
 		}
 		return #if mobile Asset2File.getPath() + #end '$MODS_DIRECTORY/' + key;
 	}
@@ -611,9 +611,9 @@ class Paths
 	public static function pushGlobalMods()
 	{ // prob a better way to do this but idc
 		globalMods = [];
-		if (FileSystem.exists("modsList.txt"))
+		if (Assets.exists("modsList.txt"))
 		{
-			var list:Array<String> = CoolUtil.listFromString(File.getContent("modsList.txt"));
+			var list:Array<String> = CoolUtil.listFromString(Assets.getText("modsList.txt"));
 			for (i in list)
 			{
 				var dat = i.split("|");
@@ -621,11 +621,11 @@ class Paths
 				{
 					var folder = dat[0];
 					var path = Paths.mods(folder + '/pack.json');
-					if (FileSystem.exists(path))
+					if (Assets.exists(path))
 					{
 						try
 						{
-							var rawJson:String = File.getContent(path);
+							var rawJson:String = Assets.getText(path);
 							if (rawJson != null && rawJson.length > 0)
 							{
 								var stuff:Dynamic = Json.parse(rawJson);
@@ -648,9 +648,9 @@ class Paths
 	{
 		var list:Array<String> = [];
 		var modsFolder:String = mods();
-		if (FileSystem.exists(modsFolder))
+		if (Assets.exists(modsFolder))
 		{
-			for (folder in FileSystem.readDirectory(modsFolder))
+			for (folder in Assets.list(modsFolder))
 			{
 				var path = haxe.io.Path.join([modsFolder, folder]);
 				if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder) && !list.contains(folder))
