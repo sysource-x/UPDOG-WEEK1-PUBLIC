@@ -10,6 +10,7 @@ import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
 import lime.utils.Assets;
+import lime.utils.AssetType;
 
 #if sys
 import sys.io.File;
@@ -599,7 +600,7 @@ class Paths
 			var fileToCheck:String = mods(mod + '/' + key);
 			if (Assets.exists(fileToCheck)) return fileToCheck;
 		}
-		return #if mobile Asset2File.getPath() + #end '$MODS_DIRECTORY/' + key;
+		return '$MODS_DIRECTORY/' + key;
 	}
 	
 	public static var globalMods:Array<String> = [];

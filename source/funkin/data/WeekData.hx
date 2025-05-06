@@ -8,6 +8,7 @@ import haxe.Json;
 import funkin.states.*;
 
 import openfl.utils.Assets as OpenFlAssets;
+import openfl.utils.Assets; //idk if works
 
 using StringTools;
 
