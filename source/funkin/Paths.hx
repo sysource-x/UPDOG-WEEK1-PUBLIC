@@ -533,37 +533,37 @@ class Paths
 	
 	inline static public function modsFont(key:String)
 	{
-		return modFolders('fonts/' + key);
+		return font('fonts/' + key);
 	}
 	
 	inline static public function modsJson(key:String)
 	{
-		return modFolders('songs/' + key + '.json');
+		return json('songs/' + key + '.json');
 	}
 	
 	inline static public function modsVideo(key:String)
 	{
-		return modFolders('videos/' + key + '.' + VIDEO_EXT);
+		return video('videos/' + key + '.' + VIDEO_EXT);
 	}
 	
 	inline static public function modsSounds(path:String, key:String)
 	{
-		return modFolders(path + '/' + key + '.' + SOUND_EXT);
+		return sound(path + '/' + key + '.' + SOUND_EXT);
 	}
 	
 	inline static public function modsImages(key:String)
 	{
-		return modFolders('images/' + key + '.png');
+		return image('images/' + key + '.png');
 	}
 	
 	inline static public function modsXml(key:String)
 	{
-		return modFolders('images/' + key + '.xml');
+		return xml('images/' + key + '.xml');
 	}
 	
 	inline static public function modsTxt(key:String)
 	{
-		return modFolders('images/' + key + '.txt');
+		return txt('images/' + key + '.txt');
 	}
 	
 	/* Goes unused for now

@@ -7,6 +7,7 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+// Use Asset2File.getPath("assets/yourfile.png") to get the path of the file
 class Asset2File
 {
 	public static var path:String = lime.system.System.applicationStorageDirectory;
