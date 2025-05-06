@@ -53,7 +53,7 @@ class MasterEditorMenu extends MusicBeatState
 			grpTexts.add(leText);
 		}
 
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 42).makeGraphic(FlxG.width, 42, 0xFF000000);
 		textBG.alpha = 0.6;
 		add(textBG);
@@ -88,7 +88,7 @@ class MasterEditorMenu extends MusicBeatState
 		{
 			changeSelection(1);
 		}
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		if (controls.UI_LEFT_P)
 		{
 			changeDirectory(-1);
@@ -157,7 +157,7 @@ class MasterEditorMenu extends MusicBeatState
 		if (curSelected >= options.length) curSelected = 0;
 	}
 
-	#if MODS_ALLOWED
+	#if desktop // MODS_ALLOWED
 	function changeDirectory(change:Int = 0)
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
