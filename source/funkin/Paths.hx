@@ -206,7 +206,7 @@ class Paths
 	
 	inline static public function modsNoteskin(key:String)
 	{
-		return modFolders('noteskins/$key.json'); // hmm
+		return getPath('noteskins/$key.json');
 	}
 	
 	inline static public function shaderFragment(key:String, ?library:String)
@@ -226,7 +226,7 @@ class Paths
 	
 	inline static public function getContent(asset:String):Null<String>
 	{
-		#if sys
+		#if desktop // sys
 		if (FileSystem.exists(asset)) return File.getContent(asset);
 		#end
 		if (Assets.exists(asset)) return Assets.getText(asset);
@@ -237,7 +237,7 @@ class Paths
 	
 	static public function video(key:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var file:String = modsVideo(key);
 		if (FileSystem.exists(file))
 		{
@@ -249,7 +249,7 @@ class Paths
 	
 	inline static public function modTextureAtlas(key:String)
 	{
-		return modFolders('images/$key'); // hmm
+		return getPath('images/$key');
 	}
 	
 	static public function textureAtlas(key:String, ?library:String)
@@ -292,9 +292,9 @@ class Paths
 		return inst;
 	}
 	
-	inline static public function modsShaderFragment(key:String, ?library:String) return modFolders('shaders/' + key + '.frag');
+	inline static public function modsShaderFragment(key:String, ?library:String) return getPath('shaders/' + key + '.frag');
 	
-	inline static public function modsShaderVertex(key:String, ?library:String) return modFolders('shaders/' + key + '.vert');
+	inline static public function modsShaderVertex(key:String, ?library:String) return getPath('shaders/' + key + '.vert');
 	
 	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
@@ -304,10 +304,10 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		#if sys
-		#if MODS_ALLOWED
+		// #if sys
+		#if desktop
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
-		#end
+		// #end
 		
 		if (FileSystem.exists(getSharedPath(key))) return File.getContent(getSharedPath(key));
 		
@@ -329,7 +329,7 @@ class Paths
 	
 	inline static public function font(key:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
 		{
@@ -341,7 +341,7 @@ class Paths
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
 		{
 			return true;
@@ -357,7 +357,7 @@ class Paths
 	
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var xmlExists:Bool = false;
 		var xml = modsXml(key);
@@ -380,7 +380,7 @@ class Paths
 	
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var txtExists:Bool = false;
 		if (FileSystem.exists(modsTxt(key)))
@@ -407,7 +407,7 @@ class Paths
 		var bitmap:BitmapData = null;
 		var file:String = null;
 		
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		file = modsImages(key);
 		if (currentTrackedAssets.exists(file))
 		{
@@ -450,7 +450,7 @@ class Paths
 	{
 		if (bitmap == null)
 		{
-			#if MODS_ALLOWED
+			#if desktop // MODS_ALLOWED
 			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
 			else
 			#end
@@ -482,7 +482,7 @@ class Paths
 	
 	public static function returnSound(path:Null<String>, key:String, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		var modLibPath:String = '';
 		if (library != null) modLibPath = '$library';
 		if (path != null) modLibPath += '$path';
@@ -579,7 +579,7 @@ class Paths
 		inline static public function modsAchievements(key:String) {
 			return modFolders('achievements/' + key + '.json');
 	}*/
-	static public function modFolders(key:String, global:Bool = true)
+	public static function modFolders(key:String, global:Bool = true)
 	{
 		if (currentModDirectory != null && currentModDirectory.length > 0)
 		{
@@ -603,9 +603,12 @@ class Paths
 	
 	public static var globalMods:Array<String> = [];
 	
-	static public function getGlobalMods() return globalMods;
-	
-	static public function pushGlobalMods()
+	public static function getGlobalMods()
+	{
+		return globalMods;
+	}
+
+	public static function pushGlobalMods()
 	{ // prob a better way to do this but idc
 		globalMods = [];
 		if (FileSystem.exists("modsList.txt"))
@@ -641,7 +644,7 @@ class Paths
 		return globalMods;
 	}
 	
-	static public function getModDirectories():Array<String>
+	public static function getModDirectories():Array<String>
 	{
 		var list:Array<String> = [];
 		var modsFolder:String = mods();
