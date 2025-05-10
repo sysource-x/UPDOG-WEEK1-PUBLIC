@@ -49,7 +49,7 @@ class Error {
 
         // Botão "LEAVE" para sair do jogo
         var leaveButton:FlxButton = new FlxButton(FlxG.width / 2 - 100, FlxG.height - 60, "LEAVE", function() {
-            FlxG.exit(); // Sai do jogo
+            FlxG.close(); // Sai do jogo
         });
         leaveButton.setGraphicSize(200, 40);
         leaveButton.color = FlxColor.RED;
