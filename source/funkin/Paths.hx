@@ -651,10 +651,10 @@ class Paths
 		var list:Array<String> = [];
 		var modsFolder:String = mods();
 		// if (OpenFlAssets.exists(modsFolder))
-		if (sys.FileSystem.exists(modsFolder))
+		if (OpenFlAssets.exists(modsFolder))
 		{
-			// for (folder in OpenFlAssets.list(modsFolder, AssetType.BINARY))
-			for (folder in sys.FileSystem.readDirectory(modsFolder))
+			// for (folder in sys.FileSystem.readDirectory(modsFolder)
+			for (folder in OpenFlAssets.list(modsFolder, AssetType.BINARY))
 			{
 				var path = haxe.io.Path.join([modsFolder, folder]);
 				if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder) && !list.contains(folder))

@@ -66,7 +66,7 @@
 	<library name="songs"         preload="true" />
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
-	<assets path='content' embed='false' if="MODS_ALLOWED" />
+	<assets path='content' rename='content' embed='false' if="MODS_ALLOWED" />
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">
