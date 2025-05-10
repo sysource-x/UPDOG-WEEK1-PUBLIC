@@ -44,96 +44,109 @@ class LoadingState extends MusicBeatState
 
 	override function create()
 	{
-		var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d);
-		add(bg);
-		funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png', IMAGE));
-		funkay.setGraphicSize(0, FlxG.height);
-		funkay.updateHitbox();
-		funkay.antialiasing = ClientPrefs.globalAntialiasing;
-		add(funkay);
-		funkay.scrollFactor.set();
-		funkay.screenCenter();
+		try {
+			var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d);
+			add(bg);
 
-		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xffff16d2);
-		loadBar.screenCenter(X);
-		loadBar.antialiasing = ClientPrefs.globalAntialiasing;
-		add(loadBar);
+			funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png', IMAGE));
+			funkay.setGraphicSize(0, FlxG.height);
+			funkay.updateHitbox();
+			funkay.antialiasing = ClientPrefs.globalAntialiasing;
+			add(funkay);
+			funkay.scrollFactor.set();
+			funkay.screenCenter();
 
-		initSongsManifest().onComplete(function(lib) {
-			callbacks = new MultiCallback(onLoad);
-			var introComplete = callbacks.add("introComplete");
-			/*if (PlayState.SONG != null) {
-				checkLoadSong(getSongPath());
-				if (PlayState.SONG.needsVoices)
-					checkLoadSong(getVocalPath());
-			}*/
-			checkLibrary("shared");
-			if (directory != null && directory.length > 0 && directory != 'shared')
-			{
-				checkLibrary(directory);
-			}
+			loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xffff16d2);
+			loadBar.screenCenter(X);
+			loadBar.antialiasing = ClientPrefs.globalAntialiasing;
+			add(loadBar);
 
-			var fadeTime = 0.5;
-			FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-			new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-		});
+			initSongsManifest().onComplete(function(lib) {
+				try {
+					callbacks = new MultiCallback(onLoad);
+					var introComplete = callbacks.add("introComplete");
+
+					checkLibrary("shared");
+					if (directory != null && directory.length > 0 && directory != 'shared') {
+						checkLibrary(directory);
+					}
+
+					var fadeTime = 0.5;
+					FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
+					new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+				} catch (e:Dynamic) {
+					Error.showErrorPopUp("Error during library initialization: " + e);
+				}
+			});
+		} catch (e:Dynamic) {
+			Error.showErrorPopUp("Error in create method: " + e);
+		}
 	}
 
 	function checkLoadSong(path:String)
 	{
-		if (!Assets.cache.hasSound(path))
-		{
-			var library = Assets.getLibrary("songs");
-			final symbolPath = path.split(":").pop();
-			// @:privateAccess
-			// library.types.set(symbolPath, SOUND);
-			// @:privateAccess
-			// library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
-			var callback = callbacks.add("song:" + path);
-			Assets.loadSound(path).onComplete(function(_) {
-				callback();
-			});
+		try {
+			if (!Assets.cache.hasSound(path)) {
+				var library = Assets.getLibrary("songs");
+				final symbolPath = path.split(":").pop();
+				var callback = callbacks.add("song:" + path);
+				Assets.loadSound(path).onComplete(function(_) {
+					callback();
+				});
+			}
+		} catch (e:Dynamic) {
+			Error.showErrorPopUp("Error in checkLoadSong method: " + e);
 		}
 	}
 
 	function checkLibrary(library:String)
 	{
-		trace(Assets.hasLibrary(library));
-		if (Assets.getLibrary(library) == null)
-		{
-			@:privateAccess
-			if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
+		try {
+			trace(Assets.hasLibrary(library));
+			if (Assets.getLibrary(library) == null) {
+				@:privateAccess
+				if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
 
-			var callback = callbacks.add("library:" + library);
-			Assets.loadLibrary(library).onComplete(function(_) {
-				callback();
-			});
+				var callback = callbacks.add("library:" + library);
+				Assets.loadLibrary(library).onComplete(function(_) {
+					callback();
+				});
+			}
+		} catch (e:Dynamic) {
+			Error.showErrorPopUp("Error in checkLibrary method: " + e);
 		}
 	}
 
 	override function update(elapsed:Float)
 	{
-		super.update(elapsed);
-		funkay.setGraphicSize(Std.int(0.88 * FlxG.width + 0.9 * (funkay.width - 0.88 * FlxG.width)));
-		funkay.updateHitbox();
-		if (controls.ACCEPT)
-		{
-			funkay.setGraphicSize(Std.int(funkay.width + 60));
-			funkay.updateHitbox();
-		}
+		try {
+			super.update(elapsed);
 
-		if (callbacks != null)
-		{
-			targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
-			loadBar.scale.x += 0.5 * (targetShit - loadBar.scale.x);
+			funkay.setGraphicSize(Std.int(0.88 * FlxG.width + 0.9 * (funkay.width - 0.88 * FlxG.width)));
+			funkay.updateHitbox();
+
+			if (controls.ACCEPT) {
+				funkay.setGraphicSize(Std.int(funkay.width + 60));
+				funkay.updateHitbox();
+			}
+
+			if (callbacks != null) {
+				targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
+				loadBar.scale.x += 0.5 * (targetShit - loadBar.scale.x);
+			}
+		} catch (e:Dynamic) {
+			Error.showErrorPopUp("Error in update method: " + e);
 		}
 	}
 
 	function onLoad()
 	{
-		if (stopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
-
-		FlxG.switchState(target);
+		try {
+			if (stopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
+			FlxG.switchState(target);
+		} catch (e:Dynamic) {
+			Error.showErrorPopUp("Error in onLoad method: " + e);
+		}
 	}
 
 	static function getSongPath()
@@ -200,66 +213,64 @@ class LoadingState extends MusicBeatState
 
 	static function initSongsManifest()
 	{
-		var id = "songs";
-		var promise = new Promise<AssetLibrary>();
+		try {
+			var id = "songs";
+			var promise = new Promise<AssetLibrary>();
 
-		var library = LimeAssets.getLibrary(id);
+			var library = LimeAssets.getLibrary(id);
 
-		if (library != null)
-		{
-			return Future.withValue(library);
-		}
-
-		var path = id;
-		var rootPath = null;
-
-		@:privateAccess
-		var libraryPaths = LimeAssets.libraryPaths;
-		if (libraryPaths.exists(id))
-		{
-			path = libraryPaths[id];
-			rootPath = Path.directory(path);
-		}
-		else
-		{
-			if (StringTools.endsWith(path, ".bundle"))
-			{
-				rootPath = path;
-				path += "/library.json";
+			if (library != null) {
+				return Future.withValue(library);
 			}
-			else
-			{
-				rootPath = Path.directory(path);
-			}
+
+			var path = id;
+			var rootPath = null;
+
 			@:privateAccess
-			path = LimeAssets.__cacheBreak(path);
-		}
-
-		AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest) {
-			if (manifest == null)
-			{
-				promise.error("Cannot parse asset manifest for library \"" + id + "\"");
-				return;
-			}
-
-			var library = AssetLibrary.fromManifest(manifest);
-
-			if (library == null)
-			{
-				promise.error("Cannot open library \"" + id + "\"");
-			}
-			else
-			{
+			var libraryPaths = LimeAssets.libraryPaths;
+			if (libraryPaths.exists(id)) {
+				path = libraryPaths[id];
+				rootPath = Path.directory(path);
+			} else {
+				if (StringTools.endsWith(path, ".bundle")) {
+					rootPath = path;
+					path += "/library.json";
+				} else {
+					rootPath = Path.directory(path);
+				}
 				@:privateAccess
-				LimeAssets.libraries.set(id, library);
-				library.onChange.add(LimeAssets.onChange.dispatch);
-				promise.completeWith(Future.withValue(library));
+				path = LimeAssets.__cacheBreak(path);
 			}
-		}).onError(function(_) {
-			promise.error("There is no asset library with an ID of \"" + id + "\"");
-		});
 
-		return promise.future;
+			AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest) {
+				try {
+					if (manifest == null) {
+						promise.error("Cannot parse asset manifest for library \"" + id + "\"");
+						return;
+					}
+
+					var library = AssetLibrary.fromManifest(manifest);
+
+					if (library == null) {
+						promise.error("Cannot open library \"" + id + "\"");
+					} else {
+						@:privateAccess
+						LimeAssets.libraries.set(id, library);
+						library.onChange.add(LimeAssets.onChange.dispatch);
+						promise.completeWith(Future.withValue(library));
+					}
+				} catch (e:Dynamic) {
+					Error.showErrorPopUp("Error during manifest loading: " + e);
+				}
+			}).onError(function(_) {
+				Error.showErrorPopUp("There is no asset library with an ID of \"" + id + "\"");
+			});
+
+			return promise.future;
+		} catch (e:Dynamic) {
+			Error.showErrorPopUp("Error in initSongsManifest method: " + e);
+			return null;
+		}
 	}
 }
 
