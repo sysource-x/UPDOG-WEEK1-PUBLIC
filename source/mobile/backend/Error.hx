@@ -6,7 +6,7 @@ import sys.io.File;
 import sys.io.FileOutput;
 
 class Error {
-    public static function logError(errorMessage:String):Void {
+    public static function logError(errorMessage:String, fileName:String, lineNumber:Int):Void {
         // Diretório para salvar os logs
         var logDir:String = CoolUtil.getSavePath() + "/logs/";
         var logFile:String = logDir + "error_log.txt";
@@ -18,7 +18,7 @@ class Error {
 
         // Mensagem de erro com timestamp
         var timestamp:String = Date.now().toString();
-        var logMessage:String = "[" + timestamp + "] " + errorMessage;
+        var logMessage:String = "[" + timestamp + "] " + errorMessage + " (File: " + fileName + ", Line: " + lineNumber + ")";
 
         // Salva o log no arquivo
         try {
@@ -33,18 +33,15 @@ class Error {
         trace("Error registered: " + logMessage);
 
         // Exibe o erro em uma janela pop-up
-        showErrorPopUp(logMessage);
+        showErrorPopUp(errorMessage, fileName, lineNumber);
     }
 
-    public static function showErrorPopUp(errorMessage:String):Void {
-        // Configura a janela pop-up
+    public static function showErrorPopUp(errorMessage:String, fileName:String, lineNumber:Int):Void {
+        // Configura a mensagem do pop-up
         var title:String = "Error Detected";
-        var message:String = errorMessage;
-        var buttonText:String = "OK";
+        var message:String = "Error: " + errorMessage + "\nFile: " + fileName + "\nLine: " + lineNumber;
 
         // Mostra a janela pop-up
-        CoolUtil.showPopUp(title, message, buttonText, function() {
-            trace("User closed error window.");
-        });
+        CoolUtil.showPopUp(message, title);
     }
 }
