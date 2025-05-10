@@ -24,7 +24,6 @@ class StoryMenuState extends MusicBeatState
 	public static var curDiff:Int = 1;
 	public static var curWeek:Int = 0;
 	public static var curPlaying:String = 'bf';
-
 	
 	var ext:String = 'menu/story/';
 	var map:FlxSprite;
@@ -62,7 +61,7 @@ class StoryMenuState extends MusicBeatState
 		WeekData.reloadWeekFiles(true);
 		if (curWeek >= WeekData.weeksList.length) curWeek = 0;
 		
-		#if DISCORD_ALLOWED
+		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Story Menu", null);
 		#end

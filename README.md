@@ -29,14 +29,13 @@ In a cmd within the project directory, in order run...
 After that is complete, run `lime test windows` and you should be compiling
 
 <details>
-  <summary><h2>Mobile Port Credits</h2></summary>
+  <summary><h2>Mobile Port Internal Credits</h2></summary>
 
 - Credits to [sys_xyz](ttps://youtube.com/@sysource-xyz) to porting the mod
 </details>
 
 <details>
-  <summary><h2>Some Credits because i rob some codes from that people</h2></summary>
+  <summary><h2>Some Credits because i rob the controls</h2></summary>
 
-- Credits to [Heropowerbrine](https://youtube.com/@Heropowerbrine) to some codes of mobile,fixing and the controls base
-- Credits to [MaysLastPlay](https://youtube.com/@MaysLastPlay) of some codes and fixing for mobile
+- Credits to [Heropowerbrine](https://youtube.com/@Heropowerbrine) of The Mobile Controls
 </details>
