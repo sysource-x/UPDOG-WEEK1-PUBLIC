@@ -113,7 +113,8 @@ class FreeplayState extends MusicBeatState
 			addVirtualPad(FULL, A_B_C_X_Y_Z);
 			#end
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in create method: " + e);
+			Error.logError("Error in create method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -186,7 +187,8 @@ class FreeplayState extends MusicBeatState
 
 			changeSong(0);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in reloadWeekShit method: " + e);
+			Error.logError("Error in reloadWeekShit method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -213,7 +215,8 @@ class FreeplayState extends MusicBeatState
 			weekText.text = 'Week ' + (curWeek + 1);
 			reloadWeekShit();
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in changeWeek method: " + e);
+			Error.logError("Error in changeWeek method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -251,7 +254,8 @@ class FreeplayState extends MusicBeatState
 
 			refreshDiffText();
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in changeSong method: " + e);
+			Error.logError("Error in changeSong method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -272,7 +276,8 @@ class FreeplayState extends MusicBeatState
 				FlxG.sound.music.volume = 0;
 			}
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in startSong method: " + e);
+			Error.logError("Error in startSong method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	

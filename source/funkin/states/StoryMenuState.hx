@@ -182,7 +182,8 @@ class StoryMenuState extends MusicBeatState
 			#end
 			super.create();
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in create method: " + e);
+			Error.logError("Error in create method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -192,7 +193,8 @@ class StoryMenuState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('locked'));
 			FlxG.camera.shake(0.003, 0.1, null, true, FlxAxes.XY);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in nahFuckOff method: " + e);
+			Error.logError("Error in nahFuckOff method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -204,7 +206,8 @@ class StoryMenuState extends MusicBeatState
 				&& leWeek.weekBefore.length > 0
 				&& (!weekCompleted.exists(leWeek.weekBefore) || !weekCompleted.get(leWeek.weekBefore)));
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error on weekIsLocked: " + e);
+			Error.logError("Error on weekIsLocked: " + e);
+			Error.showErrorScreen();
 			return true; // Retorna true como padrão para evitar problemas
 		}
 	}
@@ -233,7 +236,8 @@ class StoryMenuState extends MusicBeatState
 			PlayState.storyWeek = curWeek;
 			reloadSongList();
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error on change week: " + e);
+			Error.logError("Error on change week: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -269,7 +273,8 @@ class StoryMenuState extends MusicBeatState
 
 			checkmark.alpha = ((weekCompleted.exists(leWeek.weekName)) ? 1 : 0.01);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in reloadSongList method: " + e);
+			Error.logError("Error in reloadSongList method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -300,7 +305,8 @@ class StoryMenuState extends MusicBeatState
 			}
 			super.update(elapsed);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in update method: " + e);
+			Error.logError("Error in update method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -317,7 +323,8 @@ class StoryMenuState extends MusicBeatState
 			// Atualiza o rank da semana
 			weekRank.setRank(Highscore.getWeekRating(leWeek.fileName, curDiff));
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in reloadDiff method: " + e);
+			Error.logError("Error in reloadDiff method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -328,7 +335,8 @@ class StoryMenuState extends MusicBeatState
 			curDiff = (curDiff == 1 ? 2 : 1);
 			reloadDiff();
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in changeDiff method: " + e);
+			Error.logError("Error in changeDiff method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -359,7 +367,8 @@ class StoryMenuState extends MusicBeatState
 
 			LoadingState.loadAndSwitchState(new PlayState(), true);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in selectWeek method: " + e);
+			Error.logError("Error in selectWeek method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -374,7 +383,8 @@ class StoryMenuState extends MusicBeatState
 			addVirtualPad(LEFT_RIGHT, A_B_X_C_D);
 			#end
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in closeSubState method: " + e);
+			Error.logError("Error in closeSubState method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 }

@@ -77,11 +77,12 @@ class LoadingState extends MusicBeatState
 					FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
 					new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
 				} catch (e:Dynamic) {
-					Error.showErrorPopUp("Error during library initialization: " + e);
+					Error.logError("Error during library initialization: " + e);
 				}
 			});
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in create method: " + e);
+			Error.logError("Error in create method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -97,7 +98,8 @@ class LoadingState extends MusicBeatState
 				});
 			}
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in checkLoadSong method: " + e);
+			Error.logError("Error in checkLoadSong method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -115,7 +117,8 @@ class LoadingState extends MusicBeatState
 				});
 			}
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in checkLibrary method: " + e);
+			Error.logError("Error in checkLibrary method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -137,7 +140,8 @@ class LoadingState extends MusicBeatState
 				loadBar.scale.x += 0.5 * (targetShit - loadBar.scale.x);
 			}
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in update method: " + e);
+			Error.logError("Error in update method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -147,7 +151,8 @@ class LoadingState extends MusicBeatState
 			if (stopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
 			FlxG.switchState(target);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in onLoad method: " + e);
+			Error.logError("Error in onLoad method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
@@ -262,15 +267,18 @@ class LoadingState extends MusicBeatState
 						promise.completeWith(Future.withValue(library));
 					}
 				} catch (e:Dynamic) {
-					Error.showErrorPopUp("Error during manifest loading: " + e);
+					Error.logError("Error during manifest loading: " + e);
+					Error.showErrorScreen();
 				}
 			}).onError(function(_) {
-				Error.showErrorPopUp("There is no asset library with an ID of \"" + id + "\"");
+				Error.logError("There is no asset library with an ID of \"" + id + "\"");
+				Error.showErrorScreen();
 			});
 
 			return promise.future;
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in initSongsManifest method: " + e);
+			Error.logError("Error in initSongsManifest method: " + e);
+			Error.showErrorScreen();
 			return null;
 		}
 	}

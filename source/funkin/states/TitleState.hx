@@ -130,7 +130,8 @@ class TitleState extends MusicBeatState
 
 			FlxTween.tween(FlxG.camera, {'scroll.y': -700}, 1, {ease: FlxEase.quadIn});
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in selectedOption method: " + e);
+			Error.logError("Error in selectedOption method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -172,7 +173,8 @@ class TitleState extends MusicBeatState
 				}
 			}
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in create method: " + e);
+			Error.logError("Error in create method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -214,7 +216,8 @@ class TitleState extends MusicBeatState
 			// Adicione mais verificações se necessário.
 
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in startIntro method: " + e);
+			Error.logError("Error in startIntro method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 	
@@ -270,7 +273,8 @@ class TitleState extends MusicBeatState
 
 			super.update(elapsed);
 		} catch (e:Dynamic) {
-			Error.showErrorPopUp("Error in update method: " + e);
+			Error.logError("Error in update method: " + e);
+			Error.showErrorScreen();
 		}
 	}
 
