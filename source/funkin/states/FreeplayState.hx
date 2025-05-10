@@ -1,5 +1,7 @@
 package funkin.states;
 
+import mobile.backend.Error;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;

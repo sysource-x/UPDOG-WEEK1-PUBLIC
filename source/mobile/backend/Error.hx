@@ -1,13 +1,11 @@
-package source.mobile;
-
-package funkin.utils;
+package mobile.backend;
 
 import flixel.FlxG;
 import sys.FileSystem;
 import sys.io.File;
 import sys.io.FileOutput;
 
-class CoolUtil {
+class Error {
     public static function logError(errorMessage:String):Void {
         // Diretório para salvar os logs
         var logDir:String = CoolUtil.getSavePath() + "/logs/";

@@ -1,5 +1,7 @@
 package funkin.states;
 
+import mobile.backend.Error;
+
 import flixel.addons.display.FlxBackdrop;
 import flixel.text.FlxText;
 import flixel.math.FlxMath;

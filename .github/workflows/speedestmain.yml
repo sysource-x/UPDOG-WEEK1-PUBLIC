@@ -1,0 +1,74 @@
+name: Android SPEED Main
+
+on:
+  push:
+    branches: [ "test" ]
+    paths:
+      - 'source/**'
+      - 'project.xml'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ "test" ]
+    paths:
+      - 'source/**'
+      - 'project.xml'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  Android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      
+      - name: Cache Haxe Libraries
+        uses: actions/cache@v3
+        with:
+          path: ~/.haxelib
+          key: ${{ runner.os }}-haxelib-${{ hashFiles('haxelib.json') }}
+          restore-keys: |
+            ${{ runner.os }}-haxelib-
+
+      - name: Cache Android SDK/NDK
+        uses: actions/cache@v3
+        with:
+          path: $ANDROID_HOME
+          key: ${{ runner.os }}-android-sdk
+          restore-keys: |
+            ${{ runner.os }}-android-sdk
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@main
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1.1.4
+        with:
+          haxe-version: 4.3.6
+      
+      - name: Install Libraries
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
+      
+      - name: Configure Android
+        run: |
+          haxelib run lime config ANDROID_SDK $ANDROID_HOME
+          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_LATEST_HOME
+          haxelib run lime config JAVA_HOME $JAVA_HOME
+          haxelib run lime config ANDROID_SETUP true
+
+      - name: Compile
+        run: |
+          haxelib run lime build android -debug
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: androidBuild
+          path: export/release/android/bin/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
