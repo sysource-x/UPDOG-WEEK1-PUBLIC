@@ -1,7 +1,5 @@
 package funkin.states;
 
-import mobile.backend.Error;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -23,7 +21,7 @@ import funkin.states.*;
 import funkin.objects.*;
 import funkin.data.options.*;
 import funkin.objects.shader.*;
-
+import funkin.utils.ErrorDisplay;
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
@@ -96,43 +94,45 @@ class TitleState extends MusicBeatState
 	
 	function selectedOption()
 	{
-		try {
-			FlxTransitionableState.skipNextTransIn = false;
-			FlxTransitionableState.skipNextTransOut = false;
-
-			final nextState:Null<NextState> = switch (curSel) {
-				case 0: () -> new StoryMenuState();
-				case 1: () -> new funkin.states.FreeplayState();
-				case 2: () -> {
+		// SELECTING A STATE
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
+		
+		final nextState:Null<NextState> = switch (curSel)
+		{
+			case 0: () -> new StoryMenuState();
+			case 1: () -> new funkin.states.FreeplayState();
+			case 2: () -> {
 					OptionsState.onPlayState = false;
 					return new funkin.data.options.OptionsState();
 				}
-				default: null;
-			};
-
-			if (nextState != null) {
-				FlxG.sound.play(Paths.sound('confirmMenu'));
-				FlxTimer.wait(0.5, FlxG.switchState.bind(nextState));
-			} else {
-				FlxG.sound.play(Paths.sound('locked'));
-				FlxG.camera.shake(0.003, 0.1, null, true, FlxAxes.XY);
-				return;
-			}
-
-			canSelect = false;
-
-			opts.forEach(function(spr:FlxSprite) {
-				if (curSel != spr.ID) FlxTween.tween(spr, {alpha: 0.25}, 0.5, {ease: FlxEase.quadOut});
-			});
-			ott.forEach(function(spr:FlxText) {
-				if (curSel != spr.ID) FlxTween.tween(spr, {alpha: 0.25}, 0.5, {ease: FlxEase.quadOut});
-			});
-
-			FlxTween.tween(FlxG.camera, {'scroll.y': -700}, 1, {ease: FlxEase.quadIn});
-		} catch (e:Dynamic) {
-			Error.logError("Error in selectedOption method: " + e);
-			Error.showErrorScreen();
+			default: null;
 		}
+		
+		if (nextState != null)
+		{
+			FlxG.sound.play(Paths.sound('confirmMenu'));
+			FlxTimer.wait(0.5, FlxG.switchState.bind(nextState));
+		}
+		else
+		{
+			FlxG.sound.play(Paths.sound('locked'));
+			FlxG.camera.shake(0.003, 0.1, null, true, FlxAxes.XY);
+			return;
+		}
+		
+		canSelect = false;
+		
+		// WHEN ITS NOT SELECTED, MAKE BOTH ALPHA GAY
+		opts.forEach(function(spr:FlxSprite) {
+			if (curSel != spr.ID) FlxTween.tween(spr, {alpha: 0.25}, 0.5, {ease: FlxEase.quadOut});
+		});
+		ott.forEach(function(spr:FlxText) {
+			if (curSel != spr.ID) FlxTween.tween(spr, {alpha: 0.25}, 0.5, {ease: FlxEase.quadOut});
+		});
+		
+		// move the scroll instead of everything
+		FlxTween.tween(FlxG.camera, {'scroll.y': -700}, 1, {ease: FlxEase.quadIn});
 	}
 	
 	override public function create():Void
@@ -172,53 +172,179 @@ class TitleState extends MusicBeatState
 					});
 				}
 			}
-		} catch (e:Dynamic) {
-			Error.logError("Error in create method: " + e);
-			Error.showErrorScreen();
+		} catch (e) {
+			ErrorDisplay.show(e);
 		}
 	}
 	
 	public function startIntro()
 	{
-		try {
-			if (!initialized) {
-				if (FlxG.sound.music == null) {
-					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-					FlxG.sound.music.fadeIn(4, 0, 0.7);
+		if (!initialized)
+		{
+			if (FlxG.sound.music == null)
+			{
+				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+				FlxG.sound.music.fadeIn(4, 0, 0.7);
+			}
+		}
+		
+		#if DISCORD_ALLOWED
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menu", null);
+		#end
+		
+		var versionString = 'VS IMPOSTOR WEEK 1';
+		canSelect = true;
+		
+		opts = new FlxTypedGroup<FlxSprite>(); // GROUP ON GOD!
+		ott = new FlxTypedGroup<FlxText>(); // GROUP ON GOD!
+		
+		starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+		starFG.updateHitbox();
+		starFG.antialiasing = ClientPrefs.globalAntialiasing;
+		starFG.scrollFactor.set();
+		add(starFG);
+		
+		starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+		starBG.antialiasing = ClientPrefs.globalAntialiasing;
+		starBG.scrollFactor.set();
+		add(starBG);
+		
+		// Background
+		bg = new FlxSprite(-121, 226.8 + 700).loadGraphic(Paths.image('menu/common/bg'));
+		
+		snowEmitter = new SnowEmitter(200, -100, FlxG.width + 200);
+		snowEmitter.scale.set(0.5);
+		snowEmitter.start(false, 0.05);
+		snowEmitter.scrollFactor.x.set(0.8, 0.8);
+		snowEmitter.scrollFactor.y.set(0.8, 0.8);
+		
+		final snowAlpha = alreadyBeenInMenu ? 1 : 0;
+		
+		snowEmitter.alpha.set(snowAlpha);
+		
+		tv = new FlxSprite(1100, 450);
+		tv.frames = Paths.getSparrowAtlas("menu/main/tv");
+		tv.animation.addByPrefix('idle', 'TVIDLE', 24, false);
+		tv.animation.addByPrefix('on', 'TVON', 24, false);
+		tv.alpha = 0;
+		tv.scale.set(1, 1);
+		tv.scrollFactor.set(1, 1);
+		tv.antialiasing = ClientPrefs.globalAntialiasing;
+		
+		// Logo, probably make it a real sprite for later
+		lg = new FlxSprite(27, 82).loadGraphic(Paths.image('menu/main/Logo'));
+		lg.screenCenter();
+		lg.scrollFactor.set();
+		
+		// Black bars, scaled them up ingame because It's black bars I dont think they need to be 1280x720
+		var bb:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('menu/common/blackbars'));
+		bb.scale.set(2, 2);
+		bb.updateHitbox();
+		bb.scrollFactor.set();
+		
+		// Control panel thing
+		ct = new FlxSprite(42.15, 668.3 + 100).loadGraphic(Paths.image('menu/common/controls'));
+		ct.scrollFactor.set();
+		
+		lt = new FlxText(0, 715, 1280, 'Press Enter to Start');
+		lt.setFormat(Paths.font("bahn.ttf"), 25, 0xFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		lt.y -= lt.height;
+		lt.borderSize = 2.5;
+		lt.antialiasing = ClientPrefs.globalAntialiasing;
+		lt.scrollFactor.set();
+		
+		// This does not optimize anything.
+		
+		for (i in [bg, bb, lg, ct])
+		{
+			add(i);
+			i.antialiasing = ClientPrefs.globalAntialiasing;
+		}
+		add(lt);
+		bg.antialiasing = false;
+		
+		insert(members.indexOf(bb), snowEmitter);
+		
+		zared = new FlxSprite().loadGraphic(Paths.image('menu/secret/zared'));
+		zared.antialiasing = ClientPrefs.globalAntialiasing;
+		zared.scrollFactor.set();
+		
+		// Color swap/grayscale, remove in V2.
+		colorSwap = new ColorSwap();
+		colorSwap.saturation = -1;
+		
+		var versionText:FlxText = new FlxText(0, (alreadyBeenInMenu ? 0 : -70), 1280, versionString);
+		versionText.setFormat(Paths.font("bahn.ttf"), 25, FlxColor.WHITE, FlxTextAlign.CENTER);
+		add(versionText);
+		versionText.antialiasing = ClientPrefs.globalAntialiasing;
+		versionText.scrollFactor.set();
+		
+		if (PLAYED_V3 || PLAYED_V4) // add trophy
+		{
+			var anim = PLAYED_V3 ? PLAYED_V4 ? 'v3-4' : 'v3' : 'v4';
+			
+			trophy = new FlxSprite().loadFromSheet('menu/main/trophy', anim, 0);
+			trophy.scrollFactor.set();
+			trophy.antialiasing = ClientPrefs.globalAntialiasing;
+			
+			trophy.scale.scale(0.4);
+			trophy.updateHitbox();
+			
+			trophy.x = (27 + (lg.width - trophy.width) / 2);
+			trophy.y = (82 - trophy.height) + 30 + (alreadyBeenInMenu ? 0 : -200);
+			insert(members.indexOf(lg), trophy);
+		}
+		
+		add(opts);
+		add(ott);
+		
+		for (i in 0...5)
+		{
+			var but:FlxSprite = new FlxSprite(buttons[i][0] - (alreadyBeenInMenu ? 0 : 500), buttons[i][1]).loadFromSheet('menu/main/menubuttons', 'button' + buttons[i][2], 0);
+			but.antialiasing = ClientPrefs.globalAntialiasing;
+			but.ID = i;
+			//  It's not letting me do it the normal and not stupid way
+			var txt:FlxText = new FlxText(buttons[i][0] + (i > 2 ? 0 : 9.4) - (alreadyBeenInMenu ? 0 : 500), buttons[i][1] + 11.35, (i > 2 ? 113 : -1), buttons[i][3]);
+			txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			if (i > 2)
+			{ // UGH
+				txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				txt.y += but.height;
+				if (v2Check)
+				{
+					but.shader = colorSwap.shader;
+					txt.color = 0x393939;
+					but.color = 0x393939;
 				}
 			}
-
-			#if DISCORD_ALLOWED
-			DiscordClient.changePresence("In the Menu", null);
-			#end
-
-			var versionString = 'VS IMPOSTOR WEEK 1';
-			canSelect = true;
-
-			opts = new FlxTypedGroup<FlxSprite>();
-			ott = new FlxTypedGroup<FlxText>();
-
-			starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
-			starFG.updateHitbox();
-			starFG.antialiasing = ClientPrefs.globalAntialiasing;
-			starFG.scrollFactor.set();
-			add(starFG);
-
-			starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
-			starBG.antialiasing = ClientPrefs.globalAntialiasing;
-			starBG.scrollFactor.set();
-			add(starBG);
-
-			// Background
-			bg = new FlxSprite(-121, 226.8 + 700).loadGraphic(Paths.image('menu/common/bg'));
-
-			// Outros elementos visuais...
-			// Adicione mais verificações se necessário.
-
-		} catch (e:Dynamic) {
-			Error.logError("Error in startIntro method: " + e);
-			Error.showErrorScreen();
+			txt.borderSize = 2.5;
+			txt.ID = i;
+			txt.antialiasing = ClientPrefs.globalAntialiasing;
+			opts.add(but);
+			ott.add(txt);
+			
+			but.scrollFactor.set();
+			txt.scrollFactor.set();
 		}
+		// trace(opts);
+		changeSel(0, 0);
+		if (!alreadyBeenInMenu)
+		{
+			trace('snow here');
+			// WHEN TRANSITIONING FROM TITLESTATE
+			FlxTween.tween(versionText, {y: 0}, 1, {ease: FlxEase.quadOut});
+		}
+		else
+		{
+			moveShitUp(0.01);
+			trace('fuck');
+		}
+		
+		persistentUpdate = true;
+		skipIntro();
+		
+		callOnScript('onCreatePost', []);
 	}
 	
 	public static var transitioning:Bool = false;
@@ -272,9 +398,8 @@ class TitleState extends MusicBeatState
 			}
 
 			super.update(elapsed);
-		} catch (e:Dynamic) {
-			Error.logError("Error in update method: " + e);
-			Error.showErrorScreen();
+		} catch (e) {
+			ErrorDisplay.show(e);
 		}
 	}
 

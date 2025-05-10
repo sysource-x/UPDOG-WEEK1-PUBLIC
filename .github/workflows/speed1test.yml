@@ -20,14 +20,14 @@ jobs:
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.2.5
+          haxe-version: 4.3.6
 
       # 3. Configurar o Android NDK
       - name: Setting up Android NDK
         id: setup-ndk
         uses: nttld/setup-ndk@main
         with:
-          ndk-version: r27c
+          ndk-version: r21e
           add-to-path: false
 
       # 4. Restaurar cache para dependências e arquivos intermediários
