@@ -54,8 +54,8 @@
 	<define name="VIDEOS_ALLOWED" if="desktop || android" />
 	<define name="DISCORD_ALLOWED" if="desktop"/>
 
-	<assets path='assets/embeds' 		rename='assets'			embed="false" />
-	<!-- assets path="assets/embeds/songs" rename= "assets/songs" library="songs" embed="false"/ This are not necessary-->
+	<assets path="assets/embeds" 		rename="assets"			embed="false" />
+	<!-- assets path="assets/embeds/songs" rename="assets/songs" library="songs" embed="false"/ This are not necessary-->
 
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
@@ -66,7 +66,7 @@
 	<library name="songs"         preload="true" />
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
-	<assets path='content' rename='content' embed='false' if="MODS_ALLOWED" />
+	<assets path="content" rename="content" embed="false" if="MODS_ALLOWED" />
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">
