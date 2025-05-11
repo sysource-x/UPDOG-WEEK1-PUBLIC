@@ -412,7 +412,7 @@ class FreeplayState extends MusicBeatState {
     }
 
     function weekIsLocked(weekName:String):Bool {
-        // Exemplo básico: Verifica se a semana está bloqueada
-        return !WeekData.weekUnlocked(weekName);
+        // Verifica se a semana está bloqueada
+        return FlxG.save.data.unlockedWeeks != null && !FlxG.save.data.unlockedWeeks.exists(weekName);
     }
 }

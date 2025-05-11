@@ -299,4 +299,9 @@ class WeekData
 		}
 		#end
 	}
+
+	public static function weekUnlocked(weekName:String):Bool {
+		// Exemplo básico: Verifica se a semana está desbloqueada
+		return FlxG.save.data.unlockedWeeks != null && FlxG.save.data.unlockedWeeks.exists(weekName);
+	}
 }
