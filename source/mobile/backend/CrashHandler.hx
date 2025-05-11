@@ -27,7 +27,8 @@ class CrashHandler
 		#end
 	}
 
-	private static function onUncaughtError(e:UncaughtErrorEvent):Void
+	// Now are public because they are used in others classes
+	public static function onUncaughtError(e:UncaughtErrorEvent):Void
 	{
 		e.preventDefault();
 		e.stopPropagation();
