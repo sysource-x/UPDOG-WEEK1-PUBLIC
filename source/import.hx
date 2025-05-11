@@ -29,6 +29,7 @@ import funkin.Paths;
 import funkin.data.ClientPrefs;
 import funkin.data.Conductor;
 import funkin.utils.CoolUtil;
+import funkin.utils.CrashHandler;
 import funkin.data.Highscore;
 import funkin.states.*;
 import funkin.objects.BGSprite;

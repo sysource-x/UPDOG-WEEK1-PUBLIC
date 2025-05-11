@@ -47,6 +47,8 @@ class Main extends Sprite
 		Splash.nextState = Init;
 		ClientPrefs.loadDefaultKeys();
 
+		CrashHandler.init();
+
 		final game = new
 			#if CRASH_HANDLER
 			FNFGame
