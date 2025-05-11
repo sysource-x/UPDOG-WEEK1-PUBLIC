@@ -49,9 +49,9 @@
 	<classpath name="source" />
 	
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
-	<define name="MODS_ALLOWED" if="desktop || android" />
-	<define name="LUA_ALLOWED" if="desktop || android" />
-	<define name="VIDEOS_ALLOWED" if="desktop || android" />
+	<define name="MODS_ALLOWED" if="desktop || android || mobile" />
+	<define name="LUA_ALLOWED" if="desktop || android || mobile" />
+	<define name="VIDEOS_ALLOWED" if="desktop || android || mobile" />
 	<define name="DISCORD_ALLOWED" if="desktop"/>
 
 	<assets path="assets/embeds" 		rename="assets"			embed="false" />

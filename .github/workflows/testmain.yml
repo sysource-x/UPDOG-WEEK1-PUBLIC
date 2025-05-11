@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
 
       - name: Setup Java JDK
         uses: actions/setup-java@v3
@@ -53,7 +53,7 @@ jobs:
         run: haxelib run lime build android
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@main
         with:
           name: androidBuild
           path: export/release/android/bin/app/build/outputs/apk/release/*.apk
