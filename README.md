@@ -35,7 +35,9 @@ After that is complete, run `lime test windows` and you should be compiling
 </details>
 
 <details>
-  <summary><h2>Some Credits because i rob the controls</h2></summary>
+  <summary><h2>Some Credits because i rob the controls and code</h2></summary>
 
 - Credits to [Heropowerbrine](https://youtube.com/@Heropowerbrine) of The Mobile Controls
+- Credits to some people because i dont know the name:P
+- Credits to [Idklel01](https://github.com/Idklel01) of some codes:0 (i don't know his url bruh:c )
 </details>

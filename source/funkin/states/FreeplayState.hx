@@ -19,7 +19,7 @@ import funkin.objects.RankIcon;
 import funkin.backend.FunkinShader.FunkinRuntimeShader;
 import funkin.utils.DifficultyUtil;
 import funkin.states.substates.GameplayChangersSubstate;
-import funkin.utils.CrashHandler;
+import mobile.backend.CrashHandler; // Importa o CrashHandler existente
 
 class FreeplayState extends MusicBeatState {
     public static var curWeek:Int = 0;
@@ -149,7 +149,7 @@ class FreeplayState extends MusicBeatState {
             addVirtualPad(FULL, A_B_C_X_Y_Z);
             #end
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in create method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -190,7 +190,7 @@ class FreeplayState extends MusicBeatState {
 
             super.update(elapsed);
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in update method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -204,7 +204,7 @@ class FreeplayState extends MusicBeatState {
             addVirtualPad(FULL, A_B_C_X_Y_Z);
             #end
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in closeSubState method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -279,7 +279,7 @@ class FreeplayState extends MusicBeatState {
 
             changeSong(0);
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in reloadWeekShit method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -335,7 +335,7 @@ class FreeplayState extends MusicBeatState {
 
             refreshDiffText();
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in changeSong method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -355,7 +355,7 @@ class FreeplayState extends MusicBeatState {
             weekText.text = 'Week ' + (curWeek + 1);
             reloadWeekShit();
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in changeWeek method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -375,7 +375,7 @@ class FreeplayState extends MusicBeatState {
                 FlxG.sound.music.volume = 0;
             }
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in startSong method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -385,7 +385,7 @@ class FreeplayState extends MusicBeatState {
             curDiff = (curDiff == 1 ? 2 : 1);
             refreshDiffText();
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in changeDiff method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -398,7 +398,7 @@ class FreeplayState extends MusicBeatState {
                 rankgrp.members[i].setRank(Highscore.getRating(songs[i][0], curDiff) * 100);
             }
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in refreshDiffText method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 

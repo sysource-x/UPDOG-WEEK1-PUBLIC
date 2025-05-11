@@ -16,7 +16,7 @@ import funkin.data.*;
 import funkin.states.*;
 import funkin.states.substates.ResetScoreSubStateImpostor;
 import funkin.objects.RankIcon;
-import funkin.utils.CrashHandler;
+import mobile.backend.CrashHandler; // Importa o CrashHandler existente
 
 class StoryMenuState extends MusicBeatState {
     public static var weekCompleted:Map<String, Bool> = new Map<String, Bool>();
@@ -174,7 +174,7 @@ class StoryMenuState extends MusicBeatState {
             #end
             super.create();
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in create method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -201,7 +201,7 @@ class StoryMenuState extends MusicBeatState {
             }
             super.update(elapsed);
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in update method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -216,7 +216,7 @@ class StoryMenuState extends MusicBeatState {
 
             weekRank.setRank(Highscore.getWeekRating(leWeek.fileName, curDiff));
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in reloadDiff method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -241,7 +241,7 @@ class StoryMenuState extends MusicBeatState {
             PlayState.storyWeek = curWeek;
             reloadSongList();
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in changeWeek method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -273,7 +273,7 @@ class StoryMenuState extends MusicBeatState {
 
             checkmark.alpha = ((weekCompleted.exists(leWeek.weekName)) ? 1 : 0.01);
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in reloadSongList method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -283,7 +283,7 @@ class StoryMenuState extends MusicBeatState {
             curDiff = (curDiff == 1 ? 2 : 1);
             reloadDiff();
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in changeDiff method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -312,7 +312,7 @@ class StoryMenuState extends MusicBeatState {
 
             LoadingState.loadAndSwitchState(new PlayState(), true);
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in selectWeek method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 
@@ -326,7 +326,7 @@ class StoryMenuState extends MusicBeatState {
             addVirtualPad(LEFT_RIGHT, A_B_X_C_D);
             #end
         } catch (e:Dynamic) {
-            CrashHandler.showSingleError("Error in closeSubState method: " + e);
+            CrashHandler.onUncaughtError(e); // Usa o CrashHandler existente
         }
     }
 

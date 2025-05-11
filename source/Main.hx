@@ -41,13 +41,11 @@ class Main extends Sprite
 	{
 		super();
 
-		// test
-	    // mobile.backend.CrashHandler.init();
+		// test mobile.backend.
+	    CrashHandler.init();
 
 		Splash.nextState = Init;
 		ClientPrefs.loadDefaultKeys();
-
-		CrashHandler.init();
 
 		final game = new
 			#if CRASH_HANDLER
