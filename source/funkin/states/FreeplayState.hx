@@ -401,4 +401,18 @@ class FreeplayState extends MusicBeatState {
             CrashHandler.showSingleError("Error in refreshDiffText method: " + e);
         }
     }
+
+    function nahFuckOff():Void {
+        FlxG.sound.play(Paths.sound('cancelMenu'));
+        trace("Action not allowed!");
+    }
+
+    function createShader(shaderName:String):FunkinRuntimeShader {
+        return new FunkinRuntimeShader(shaderName);
+    }
+
+    function weekIsLocked(weekName:String):Bool {
+        // Exemplo básico: Verifica se a semana está bloqueada
+        return !WeekData.weekUnlocked(weekName);
+    }
 }

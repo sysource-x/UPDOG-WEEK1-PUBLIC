@@ -329,4 +329,9 @@ class StoryMenuState extends MusicBeatState {
             CrashHandler.showSingleError("Error in closeSubState method: " + e);
         }
     }
+
+    function nahFuckOff():Void {
+        FlxG.sound.play(Paths.sound('cancelMenu'));
+        trace("Action not allowed!");
+    }
 }
