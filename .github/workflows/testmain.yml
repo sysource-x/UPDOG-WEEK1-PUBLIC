@@ -78,14 +78,3 @@ jobs:
                 console.log("Cache cleared.")
               }
             }
-
-      - name: New cache
-        uses: actions/cache@v3
-        with:
-          key: cache-build-android
-          path: |
-            .haxelib/
-            export/release/android/haxe/
-            export/release/android/obj/
-          restore-keys: |
-            cache-build-android
