@@ -1,0 +1,53 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"cameraOffset": [
+				0,
+				0
+			],
+			"offsets": [
+				-35,
+				-17
+			],
+			"anim": "sabotage",
+			"fps": 24,
+			"name": "gf gunned",
+			"indices": []
+		},
+		{
+			"offsets": [
+				-40,
+				-1
+			],
+			"indices": [],
+			"fps": 24,
+			"cameraOffset": [
+				0,
+				0
+			],
+			"anim": "idle",
+			"loop": true,
+			"name": "gf clap loop"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/gf",
+	"position": [
+		0,
+		280
+	],
+	"healthicon": "red",
+	"flip_x": false,
+	"healthbar_colors": [
+		161,
+		161,
+		161
+	],
+	"camera_position": [
+		0,
+		0
+	],
+	"sing_duration": 6.1,
+	"scale": 1.1
+}

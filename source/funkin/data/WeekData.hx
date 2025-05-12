@@ -103,7 +103,7 @@ class WeekData
 	{
 		weeksList = [];
 		weeksLoaded.clear();
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var disabledMods:Array<String> = [];
 		var modsListPath:String = 'modsList.txt';
 		var directories:Array<String> = [Paths.mods(), Paths.getSharedPath()];

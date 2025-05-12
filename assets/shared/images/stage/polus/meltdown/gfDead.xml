@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gfDead.png">
+	<!-- Created with Adobe Animate version 24.0.8.70 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="gf DEAD0000" x="0" y="0" width="542" height="244"/>
+	<SubTexture name="gf DEAD0001" x="0" y="0" width="542" height="244"/>
+	<SubTexture name="gf DEAD0002" x="0" y="0" width="542" height="244"/>
+	<SubTexture name="gf DEAD0003" x="0" y="0" width="542" height="244"/>
+	<SubTexture name="gf DEAD0004" x="0" y="249" width="542" height="244"/>
+	<SubTexture name="gf DEAD0005" x="0" y="249" width="542" height="244"/>
+	<SubTexture name="gf DEAD0006" x="0" y="249" width="542" height="244"/>
+	<SubTexture name="gf DEAD0007" x="0" y="249" width="542" height="244"/>
+</TextureAtlas>

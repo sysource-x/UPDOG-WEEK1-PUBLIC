@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="boombox.png">
+	<!-- Created with Adobe Animate version 24.0.8.70 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="boombox alert0000" x="0" y="0" width="146" height="64" frameX="-40" frameY="-239" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0001" x="0" y="0" width="146" height="64" frameX="-40" frameY="-239" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0002" x="151" y="0" width="115" height="166" frameX="-58" frameY="-43" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0003" x="151" y="0" width="115" height="166" frameX="-58" frameY="-43" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0004" x="151" y="0" width="115" height="166" frameX="-58" frameY="-43" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0005" x="271" y="0" width="179" height="160" frameX="-24" frameY="-27" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0006" x="271" y="0" width="179" height="160" frameX="-24" frameY="-27" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0007" x="455" y="0" width="214" height="187" frameX="-6" frameY="0" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0008" x="455" y="0" width="214" height="187" frameX="-6" frameY="0" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0009" x="674" y="0" width="225" height="187" frameX="0" frameY="0" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0010" x="674" y="0" width="225" height="187" frameX="0" frameY="0" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0011" x="0" y="192" width="184" height="161" frameX="-17" frameY="-26" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0012" x="0" y="192" width="184" height="161" frameX="-17" frameY="-26" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0013" x="189" y="192" width="216" height="178" frameX="0" frameY="-9" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0014" x="189" y="192" width="216" height="178" frameX="0" frameY="-9" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0015" x="410" y="192" width="181" height="163" frameX="-21" frameY="-33" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0016" x="410" y="192" width="181" height="163" frameX="-21" frameY="-33" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0017" x="410" y="192" width="181" height="163" frameX="-21" frameY="-33" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0018" x="596" y="192" width="206" height="252" frameX="-7" frameY="-28" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0019" x="596" y="192" width="206" height="252" frameX="-7" frameY="-28" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0020" x="596" y="192" width="206" height="252" frameX="-7" frameY="-28" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0021" x="807" y="192" width="213" height="256" frameX="-6" frameY="-25" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0022" x="807" y="192" width="213" height="256" frameX="-6" frameY="-25" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox alert0023" x="0" y="453" width="144" height="120" frameX="-44" frameY="-160" frameWidth="225" frameHeight="303"/>
+	<SubTexture name="boombox anim0000" x="149" y="453" width="181" height="111" frameX="-22" frameY="-38" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0001" x="335" y="453" width="182" height="111" frameX="-25" frameY="-38" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0002" x="522" y="453" width="181" height="111" frameX="-19" frameY="-38" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0003" x="708" y="453" width="184" height="139" frameX="-18" frameY="-11" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0004" x="708" y="453" width="184" height="139" frameX="-18" frameY="-11" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0005" x="0" y="597" width="215" height="149" frameX="0" frameY="0" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0006" x="0" y="597" width="215" height="149" frameX="0" frameY="0" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0007" x="220" y="597" width="204" height="145" frameX="-4" frameY="-4" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0008" x="220" y="597" width="204" height="145" frameX="-4" frameY="-4" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0009" x="429" y="597" width="144" height="120" frameX="-37" frameY="-29" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0010" x="429" y="597" width="144" height="120" frameX="-37" frameY="-29" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="boombox anim0011" x="429" y="597" width="144" height="120" frameX="-37" frameY="-29" frameWidth="215" frameHeight="150"/>
+	<SubTexture name="floor boombox0000" x="578" y="597" width="143" height="74" frameX="0" frameY="0" frameWidth="144" frameHeight="74"/>
+	<SubTexture name="floor boombox0001" x="578" y="597" width="143" height="74" frameX="0" frameY="0" frameWidth="144" frameHeight="74"/>
+	<SubTexture name="floor boombox0002" x="578" y="597" width="143" height="74" frameX="0" frameY="0" frameWidth="144" frameHeight="74"/>
+	<SubTexture name="floor boombox0003" x="578" y="597" width="143" height="74" frameX="0" frameY="0" frameWidth="144" frameHeight="74"/>
+	<SubTexture name="floor boombox0004" x="726" y="597" width="144" height="74"/>
+	<SubTexture name="floor boombox0005" x="726" y="597" width="144" height="74"/>
+	<SubTexture name="floor boombox0006" x="726" y="597" width="144" height="74"/>
+	<SubTexture name="floor boombox0007" x="726" y="597" width="144" height="74"/>
+</TextureAtlas>

@@ -850,7 +850,7 @@ class PlayState extends MusicBeatState
 			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
 		}
 		
-		#if DISCORD_ALLOWED
+		#if desktop // DISCORD_ALLOWED
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText, getPresence(), null);
 		#end
@@ -2325,7 +2325,7 @@ class PlayState extends MusicBeatState
 					vocals.pause();
 				}
 				openSubState(new funkin.states.substates.ImpostorPause());
-				#if DISCORD_ALLOWED
+				#if desktop // DISCORD_ALLOWED
 				DiscordClient.changePresence(detailsPausedText, getPresence());
 				#end
 			}

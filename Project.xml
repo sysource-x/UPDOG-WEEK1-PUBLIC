@@ -54,23 +54,19 @@
 	<define name="VIDEOS_ALLOWED" if="desktop || android || mobile" />
 	<define name="DISCORD_ALLOWED" if="desktop"/>
 
-	<assets path="assets/embeds" 		rename="assets"			embed="false" />
+	<assets path='assets/embeds' 		rename='assets'			embed="true" />
 	<!-- assets path="assets/embeds/songs" rename="assets/songs" library="songs" embed="false"/ This are not necessary-->
 
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
-	<assets path="assets/shared/characters" /> <!-- json -->
-	<assets path="assets/shared/stages" /> <!-- json and hxs -->
-	<assets path="assets/shared/music" exclude="*.mp3" /> <!-- musics -->
-	<assets path="assets/shared/sounds" exclude="*.mp3" />
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
 	<library name="songs"         preload="true" />
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
-	<assets path="content" rename="content" embed="false" if="MODS_ALLOWED" />
+	<assets path='content' embed='false' if="MODS_ALLOWED"/>
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">

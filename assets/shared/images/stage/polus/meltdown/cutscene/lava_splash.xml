@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="lava_splash.png" width="1877" height="1879">
+	<SubTexture name="lava splash0000" x="1011" y="895" width="808" height="573" frameX="-93" frameY="-391" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0001" x="1011" y="895" width="808" height="573" frameX="-93" frameY="-391" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0002" x="1" y="987" width="1005" height="891" frameX="-61" frameY="-95" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0003" x="1" y="1" width="1002" height="981" frameX="-9" frameY="-0" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0004" x="1" y="1" width="1002" height="981" frameX="-9" frameY="-0" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0005" x="1008" y="1" width="868" height="889" frameX="-0" frameY="-92" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0006" x="1008" y="1" width="868" height="889" frameX="-0" frameY="-92" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0007" x="1011" y="1473" width="728" height="313" rotated="true" frameX="-333" frameY="-230" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0008" x="1011" y="1473" width="728" height="313" rotated="true" frameX="-333" frameY="-230" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0009" x="1744" y="1473" width="46" height="74" frameX="-547" frameY="-350" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0010" x="1795" y="1473" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0011" x="1795" y="1473" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0012" x="1795" y="1473" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1066" frameHeight="986"/>
+	<SubTexture name="lava splash0013" x="1795" y="1473" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1066" frameHeight="986"/>
+</TextureAtlas>

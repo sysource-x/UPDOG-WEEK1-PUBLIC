@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="crewInside.png" width="8072" height="1578">
+	<SubTexture name="CYAN PEEP0000" x="1755" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="CYAN PEEP0001" x="1755" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="CYAN PEEP0002" x="2627" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="CYAN PEEP0003" x="2627" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="GREEN ANGER LOOP0000" x="6747" y="1" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN ANGER LOOP0001" x="6747" y="1" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN ANGER LOOP0002" x="7234" y="1" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN ANGER LOOP0003" x="7234" y="1" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN FACEPALM0000" x="1" y="397" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN FACEPALM0001" x="1" y="397" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN FACEPALM0002" x="488" y="397" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN FACEPALM0003" x="488" y="397" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN FACEPALM0004" x="975" y="397" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN FACEPALM0005" x="975" y="397" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0000" x="1462" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0001" x="1462" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0002" x="1949" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0003" x="1949" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0004" x="2436" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0005" x="2436" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0006" x="2923" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0007" x="2923" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0008" x="3410" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0009" x="3410" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0010" x="2923" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0011" x="2923" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0012" x="2923" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GREEN LOOP0013" x="2923" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0000" x="3897" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0001" x="3897" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0002" x="4384" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0003" x="4384" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0004" x="4871" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0005" x="4871" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0006" x="5358" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0007" x="5358" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0008" x="5845" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0009" x="5845" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0010" x="5358" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0011" x="5358" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0012" x="5358" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="GRELOOKATRED0013" x="5358" y="407" width="482" height="469" rotated="true" frameX="-0" frameY="-1" frameWidth="470" frameHeight="484"/>
+	<SubTexture name="LIME MEETING0000" x="6332" y="475" width="867" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="LIME MEETING0001" x="6332" y="475" width="867" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="LIME MEETING0002" x="7204" y="475" width="867" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="LIME MEETING0003" x="7204" y="475" width="867" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="LIMELOOK0000" x="1" y="871" width="872" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="874"/>
+	<SubTexture name="LIMELOOK0001" x="1" y="871" width="872" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="874"/>
+	<SubTexture name="LIMELOOK0002" x="878" y="881" width="872" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="874"/>
+	<SubTexture name="LIMELOOK0003" x="878" y="881" width="872" height="695" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="874"/>
+	<SubTexture name="LOOKING ROSE0000" x="1579" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0001" x="1579" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0002" x="2225" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0003" x="2225" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0004" x="2871" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0005" x="2871" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0006" x="3517" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="LOOKING ROSE0007" x="3517" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="MEETING CYAN0000" x="3499" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="MEETING CYAN0001" x="3499" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="MEETING CYAN0002" x="4371" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="MEETING CYAN0003" x="4371" y="881" width="867" height="696" rotated="true" frameX="-1" frameY="-1" frameWidth="697" frameHeight="869"/>
+	<SubTexture name="METING ROSE0000" x="4163" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0001" x="4163" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0002" x="4809" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0003" x="4809" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0004" x="5455" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0005" x="5455" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0006" x="6101" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="METING ROSE0007" x="6101" y="1" width="641" height="401" rotated="true" frameX="-1" frameY="-1" frameWidth="403" frameHeight="643"/>
+	<SubTexture name="PURPLE MEETING0000" x="1" y="1" width="784" height="391" frameX="-0" frameY="-0" frameWidth="784" frameHeight="391"/>
+	<SubTexture name="PURPLE MEETING0001" x="1" y="1" width="784" height="391" frameX="-0" frameY="-0" frameWidth="784" frameHeight="391"/>
+	<SubTexture name="PURPLE MEETING0002" x="790" y="1" width="784" height="391" frameX="-0" frameY="-0" frameWidth="784" frameHeight="391"/>
+	<SubTexture name="PURPLE MEETING0003" x="790" y="1" width="784" height="391" frameX="-0" frameY="-0" frameWidth="784" frameHeight="391"/>
+</TextureAtlas>

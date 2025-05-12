@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="red_meltdown_cutscene.png" width="1858" height="1957">
+	<SubTexture name="falling buddy0000" x="903" y="1" width="317" height="569" rotated="true" frameX="-0" frameY="-3" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0001" x="580" y="1" width="318" height="573" rotated="true" frameX="-0" frameY="-3" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0002" x="580" y="1" width="318" height="573" rotated="true" frameX="-0" frameY="-3" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0003" x="1" y="648" width="573" height="321" frameX="-0" frameY="-0" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0004" x="1" y="1" width="574" height="319" frameX="-0" frameY="-0" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0005" x="1" y="1" width="574" height="319" frameX="-0" frameY="-0" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0006" x="1" y="325" width="574" height="318" frameX="-0" frameY="-1" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0007" x="579" y="648" width="569" height="319" frameX="-0" frameY="-1" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="falling buddy0008" x="579" y="648" width="569" height="319" frameX="-0" frameY="-1" frameWidth="574" frameHeight="321"/>
+	<SubTexture name="nervous buddy0000" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0001" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0002" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0003" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0004" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0005" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0006" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0007" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0008" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0009" x="1547" y="1" width="310" height="441" rotated="true" frameX="-8" frameY="-2" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0010" x="1547" y="447" width="305" height="441" rotated="true" frameX="-8" frameY="-4" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0011" x="1547" y="447" width="305" height="441" rotated="true" frameX="-8" frameY="-4" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0012" x="459" y="1274" width="451" height="321" frameX="-2" frameY="-0" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0013" x="459" y="1274" width="451" height="321" frameX="-2" frameY="-0" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0014" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-1" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0015" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-1" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0016" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-1" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0017" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-1" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0018" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-1" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous buddy0019" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-1" frameWidth="453" frameHeight="322"/>
+	<SubTexture name="nervous getting pushed0000" x="1" y="1274" width="453" height="321" frameX="-0" frameY="-42" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0001" x="1225" y="1" width="317" height="482" rotated="true" frameX="-32" frameY="-29" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0002" x="1153" y="965" width="319" height="445" rotated="true" frameX="-48" frameY="-0" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0003" x="1153" y="965" width="319" height="445" rotated="true" frameX="-48" frameY="-0" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0004" x="1532" y="893" width="308" height="440" rotated="true" frameX="-57" frameY="-1" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0005" x="1532" y="893" width="308" height="440" rotated="true" frameX="-57" frameY="-1" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0006" x="1225" y="488" width="302" height="472" rotated="true" frameX="-72" frameY="-32" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0007" x="1225" y="488" width="302" height="472" rotated="true" frameX="-72" frameY="-32" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="nervous getting pushed0008" x="1" y="974" width="525" height="295" frameX="-64" frameY="-78" frameWidth="589" frameHeight="373"/>
+	<SubTexture name="thumb up0000" x="1" y="1600" width="410" height="356" frameX="-1" frameY="-1" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0001" x="1" y="1600" width="410" height="356" frameX="-1" frameY="-1" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0002" x="831" y="1600" width="409" height="356" frameX="-1" frameY="-0" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0003" x="831" y="1600" width="409" height="356" frameX="-1" frameY="-0" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0004" x="416" y="1600" width="410" height="356" frameX="-1" frameY="-0" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0005" x="416" y="1600" width="410" height="356" frameX="-1" frameY="-0" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0006" x="1477" y="1338" width="356" height="409" rotated="true" frameX="-0" frameY="-2" frameWidth="411" frameHeight="358"/>
+	<SubTexture name="thumb up0007" x="1477" y="1338" width="356" height="409" rotated="true" frameX="-0" frameY="-2" frameWidth="411" frameHeight="358"/>
+</TextureAtlas>
