@@ -1,0 +1,83 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"cameraOffset": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle-left",
+			"indices": [],
+			"name": "leftidle"
+		},
+		{
+			"offsets": [
+				-2,
+				0
+			],
+			"cameraOffset": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle-right",
+			"indices": [],
+			"name": "rightidle"
+		},
+		{
+			"offsets": [
+				1,
+				7
+			],
+			"cameraOffset": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "turn-left",
+			"indices": [],
+			"name": "turnleft"
+		},
+		{
+			"offsets": [
+				-3,
+				7
+			],
+			"cameraOffset": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "turn-right",
+			"indices": [],
+			"name": "turnright"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/detectiveRoom",
+	"position": [
+		-5,
+		440
+	],
+	"healthicon": "red",
+	"flip_x": false,
+	"healthbar_colors": [
+		161,
+		161,
+		161
+	],
+	"camera_position": [
+		0,
+		0
+	],
+	"sing_duration": 6.1,
+	"scale": 0.85
+}

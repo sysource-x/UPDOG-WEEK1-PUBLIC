@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="bf_meltdown_cutscene.png" width="1786" height="406">
+	<SubTexture name="bf push him0000" x="1" y="1" width="327" height="354" frameX="-0" frameY="-9" frameWidth="327" frameHeight="363"/>
+	<SubTexture name="bf push him0001" x="1" y="1" width="327" height="354" frameX="-0" frameY="-9" frameWidth="327" frameHeight="363"/>
+	<SubTexture name="bf push him0002" x="333" y="1" width="324" height="363" frameX="-2" frameY="-0" frameWidth="327" frameHeight="363"/>
+	<SubTexture name="bf push him0003" x="333" y="1" width="324" height="363" frameX="-2" frameY="-0" frameWidth="327" frameHeight="363"/>
+	<SubTexture name="bf ready to push0000" x="662" y="1" width="279" height="404" frameX="-0" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0001" x="662" y="1" width="279" height="404" frameX="-0" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0002" x="662" y="1" width="279" height="404" frameX="-0" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0003" x="946" y="1" width="274" height="404" frameX="-5" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0004" x="946" y="1" width="274" height="404" frameX="-5" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0005" x="946" y="1" width="274" height="404" frameX="-5" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0006" x="1225" y="1" width="278" height="404" frameX="-1" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0007" x="1225" y="1" width="278" height="404" frameX="-1" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0008" x="1225" y="1" width="278" height="404" frameX="-1" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0009" x="1508" y="1" width="277" height="404" frameX="-2" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0010" x="1508" y="1" width="277" height="404" frameX="-2" frameY="-0" frameWidth="279" frameHeight="404"/>
+	<SubTexture name="bf ready to push0011" x="1508" y="1" width="277" height="404" frameX="-2" frameY="-0" frameWidth="279" frameHeight="404"/>
+</TextureAtlas>

@@ -2,9 +2,9 @@ name: Android Main test
 
 on:
   push:
-    branches: [ "restaurar-antigo-commit" ]
+    branches: [ "android-back" ]
   pull_request:
-    branches: [ "restaurar-antigo-commit" ]
+    branches: [ "android-back" ]
   workflow_dispatch:
 
 jobs:

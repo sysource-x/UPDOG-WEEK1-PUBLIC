@@ -1,5 +1,0 @@
-Eu movi tudo daqui para o assets :P
-
-Este port é exclusivamente interno.
-Sendo assim; sem necessidade de permissoes mesmo se for usado por um dispositivo
-atual ex:Android 14(Eu tenho e uso), mesmo assim ira ser interno:D

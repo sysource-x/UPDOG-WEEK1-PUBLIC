@@ -1,0 +1,9 @@
+Camera Tween Event!
+Value1 = New Camera Position (x,y)
+Value2 = Timing + Tweentype (time,tweenType)
+
+if changing the camera zoom as well, add a third
+number to Value1 (x,y,zoom)
+
+if NOTHING is in either value, camera goes back to normal
+If only one value is in value1, it's exclusively a ZOOM tween

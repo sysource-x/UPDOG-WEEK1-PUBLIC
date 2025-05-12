@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="guylmao.png" width="434" height="3001">
+	<SubTexture name="REACTOR_THING0000" x="1" y="1" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0001" x="1" y="1" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0002" x="1" y="752" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0003" x="1" y="752" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0004" x="1" y="1503" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0005" x="1" y="1503" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0006" x="1" y="2254" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+	<SubTexture name="REACTOR_THING0007" x="1" y="2254" width="432" height="746" frameX="-0" frameY="-0" frameWidth="432" frameHeight="746"/>
+</TextureAtlas>

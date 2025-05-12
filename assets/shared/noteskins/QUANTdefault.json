@@ -1,0 +1,283 @@
+{
+	"extraSkin": "QUANTNOTE_assets",
+	"singAnimations": [
+		"singLEFT",
+		"singDOWN",
+		"singUP",
+		"singRIGHT"
+	],
+	"playerSkin": "QUANTNOTE_assets",
+	"receptorAnimations": [
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "arrowLEFT",
+				"anim": "static"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "left press",
+				"anim": "pressed"
+			},
+			{
+				"offsets": [
+					-1,
+					-1
+				],
+				"xmlName": "left confirm",
+				"anim": "confirm"
+			}
+		],
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "arrowDOWN",
+				"anim": "static"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "down press",
+				"anim": "pressed"
+			},
+			{
+				"offsets": [
+					-2,
+					0
+				],
+				"xmlName": "down confirm",
+				"anim": "confirm"
+			}
+		],
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "arrowUP",
+				"anim": "static"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "up press",
+				"anim": "pressed"
+			},
+			{
+				"offsets": [
+					-1,
+					-1
+				],
+				"xmlName": "up confirm",
+				"anim": "confirm"
+			}
+		],
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "arrowRIGHT",
+				"anim": "static",
+				"color": null
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "right press",
+				"anim": "pressed"
+			},
+			{
+				"offsets": [
+					-1,
+					0
+				],
+				"xmlName": "right confirm",
+				"anim": "confirm"
+			}
+		]
+	],
+	"noteSplashAnimations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"xmlName": "note splash purple",
+			"anim": "note0"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"xmlName": "note splash blue",
+			"anim": "note1"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"xmlName": "note splash green",
+			"anim": "note2"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"xmlName": "note splash red",
+			"anim": "note3"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"xmlName": "note splash red",
+			"anim": "note4"
+		}
+	],
+	"noteAnimations": [
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "purple",
+				"anim": "purpleScroll",
+				"color": "purple"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "purple hold piece",
+				"anim": "purplehold",
+				"color": "purple"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "pruple end hold",
+				"anim": "purpleholdend",
+				"color": "purple"
+			}
+		],
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "blue",
+				"anim": "blueScroll",
+				"color": "blue"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "blue hold piece",
+				"anim": "bluehold",
+				"color": "blue"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "blue hold end",
+				"anim": "blueholdend",
+				"color": "blue"
+			}
+		],
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "green",
+				"anim": "greenScroll",
+				"color": "green"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "green hold piece",
+				"anim": "greenhold",
+				"color": "green"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "green hold end",
+				"anim": "greenholdend",
+				"color": "green"
+			}
+		],
+		[
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "red",
+				"anim": "redScroll",
+				"color": "red"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "red hold piece",
+				"anim": "redhold",
+				"color": "red"
+			},
+			{
+				"offsets": [
+					0,
+					0
+				],
+				"xmlName": "red hold end",
+				"anim": "redholdend",
+				"color": "red"
+			}
+		]
+	],
+	"hasQuants": false,
+	"noteSplashSkin": "QUANTnoteSplashes",
+	"isQuants": true,
+	"globalSkin": "QUANTNOTE_assets",
+	"isPixel": false,
+	"opponentSkin": "QUANTNOTE_assets"
+}

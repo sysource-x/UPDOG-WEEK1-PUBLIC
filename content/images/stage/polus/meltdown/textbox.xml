@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="textbox.png" width="2999" height="3073">
+	<SubTexture name="BlueBubbleBoil0000" x="1250" y="1" width="611" height="1071" rotated="true" frameX="-0" frameY="-0" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0001" x="1250" y="1" width="611" height="1071" rotated="true" frameX="-0" frameY="-0" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0002" x="1250" y="1" width="611" height="1071" rotated="true" frameX="-0" frameY="-0" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0003" x="1077" y="1373" width="1053" height="591" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0004" x="1077" y="1373" width="1053" height="591" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0005" x="1077" y="1373" width="1053" height="591" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0006" x="1077" y="1969" width="1004" height="577" frameX="-30" frameY="-11" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0007" x="1077" y="1969" width="1004" height="577" frameX="-30" frameY="-11" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0008" x="1077" y="1969" width="1004" height="577" frameX="-30" frameY="-11" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0009" x="1077" y="1373" width="1053" height="591" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0010" x="1077" y="1373" width="1053" height="591" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleBoil0011" x="1077" y="1373" width="1053" height="591" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="BlueBubbleOut0000" x="1" y="1" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0001" x="1" y="1" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0002" x="2462" y="1" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0003" x="2462" y="1" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0004" x="1010" y="2551" width="900" height="501" frameX="-181" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0005" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0006" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0007" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0008" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0009" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0010" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0011" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0012" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0013" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubbleOut0014" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0000" x="1010" y="2551" width="900" height="501" frameX="-181" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0001" x="2462" y="1" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0002" x="2462" y="1" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0003" x="1" y="1" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0004" x="1" y="1" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0005" x="1" y="1989" width="1004" height="577" frameX="-113" frameY="-112" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0006" x="1" y="1989" width="1004" height="577" frameX="-113" frameY="-112" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0007" x="1077" y="1373" width="1053" height="591" frameX="-86" frameY="-111" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0008" x="1077" y="1373" width="1053" height="591" frameX="-86" frameY="-111" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="BlueBubblePop0009" x="1077" y="1373" width="1053" height="591" frameX="-86" frameY="-111" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleBoil0000" x="1" y="1373" width="1071" height="611" frameX="-0" frameY="-0" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0001" x="1" y="1373" width="1071" height="611" frameX="-0" frameY="-0" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0002" x="1" y="1373" width="1071" height="611" frameX="-0" frameY="-0" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0003" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0004" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0005" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0006" x="2135" y="1059" width="577" height="1004" rotated="true" frameX="-30" frameY="-11" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0007" x="2135" y="1059" width="577" height="1004" rotated="true" frameX="-30" frameY="-11" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0008" x="2135" y="1059" width="577" height="1004" rotated="true" frameX="-30" frameY="-11" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0009" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0010" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleBoil0011" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-3" frameY="-10" frameWidth="1071" frameHeight="611"/>
+	<SubTexture name="RedBubbleOut0000" x="1" y="687" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0001" x="1" y="687" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0002" x="2086" y="2068" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0003" x="2086" y="2068" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0004" x="1" y="2571" width="900" height="501" frameX="-181" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0005" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0006" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0007" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0008" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0009" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0010" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0011" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0012" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0013" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubbleOut0014" x="2086" y="1969" width="1" height="1" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0000" x="1" y="2571" width="900" height="501" frameX="-181" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0001" x="2086" y="2068" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0002" x="2086" y="2068" width="536" height="981" rotated="true" frameX="-120" frameY="-181" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0003" x="1" y="687" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0004" x="1" y="687" width="1244" height="681" frameX="-0" frameY="-0" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0005" x="2135" y="1059" width="577" height="1004" rotated="true" frameX="-113" frameY="-112" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0006" x="2135" y="1059" width="577" height="1004" rotated="true" frameX="-113" frameY="-112" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0007" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-86" frameY="-111" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0008" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-86" frameY="-111" frameWidth="1244" frameHeight="717"/>
+	<SubTexture name="RedBubblePop0009" x="1866" y="1" width="591" height="1053" rotated="true" frameX="-86" frameY="-111" frameWidth="1244" frameHeight="717"/>
+</TextureAtlas>
