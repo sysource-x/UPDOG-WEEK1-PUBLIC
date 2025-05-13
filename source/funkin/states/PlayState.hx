@@ -579,7 +579,7 @@ class PlayState extends MusicBeatState
 		var filesPushed:Array<String> = [];
 		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
 		
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		foldersToCheck.insert(0, Paths.mods('scripts/'));
 		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
 		
@@ -778,7 +778,7 @@ class PlayState extends MusicBeatState
 		var filesPushed:Array<String> = [];
 		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
 		
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
 		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
 			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
@@ -1563,7 +1563,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 			// this is mainly to shut my syntax highlighting up
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		}
 		#else
 		}
@@ -1669,8 +1669,8 @@ class PlayState extends MusicBeatState
 			for (ext in exts)
 			{
 				if (doPush) break;
-				var baseFile = '$baseScriptFile.$ext'; // MODS_ALLOWED
-				var files = [#if desktop Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
+				var baseFile = '$baseScriptFile.$ext';
+				var files = [#if MODS_ALLOWED Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
 				for (file in files)
 				{
 					if (FileSystem.exists(file))
@@ -1716,8 +1716,8 @@ class PlayState extends MusicBeatState
 			for (ext in exts)
 			{
 				if (doPush) break;
-				var baseFile = '$baseScriptFile.$ext'; // MODS_ALLOWED
-				var files = [#if desktop Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
+				var baseFile = '$baseScriptFile.$ext';
+				var files = [#if MODS_ALLOWED Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
 				for (file in files)
 				{
 					if (FileSystem.exists(file))

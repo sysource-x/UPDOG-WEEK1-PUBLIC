@@ -47,7 +47,7 @@ class CreditsState extends MusicBeatState
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);
 
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var path:String = 'modsList.txt';
 		if (FileSystem.exists(path))
 		{

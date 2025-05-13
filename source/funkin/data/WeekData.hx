@@ -182,7 +182,7 @@ class WeekData
 			}
 		}
 
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		for (i in 0...directories.length)
 		{
 			var directory:String = directories[i] + 'weeks/';

@@ -239,7 +239,7 @@ class Paths
 	
 	static public function video(key:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var file:String = modsVideo(key);
 		if (FileSystem.exists(file))
 		{
@@ -307,7 +307,7 @@ class Paths
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
 		// #if sys
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
 		// #end
 		
@@ -331,7 +331,7 @@ class Paths
 	
 	inline static public function font(key:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
 		{
@@ -343,7 +343,7 @@ class Paths
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
 		{
 			return true;
@@ -359,7 +359,7 @@ class Paths
 	
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var xmlExists:Bool = false;
 		var xml = modsXml(key);
@@ -382,7 +382,7 @@ class Paths
 	
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var txtExists:Bool = false;
 		if (FileSystem.exists(modsTxt(key)))
@@ -536,39 +536,39 @@ class Paths
 	
 	inline static public function modsFont(key:String)
 	{
-		return font('fonts/' + key);
+		return modFolders('fonts/' + key); // font // modFolders
 	}
 	
 	inline static public function modsJson(key:String)
 	{
-		return json('songs/' + key + '.json');
+		return modFolders('songs/' + key + '.json'); // json
 	}
 	
 	inline static public function modsVideo(key:String)
 	{
-		return video('videos/' + key + '.' + VIDEO_EXT);
+		return modFolders('videos/' + key + '.' + VIDEO_EXT); // video
 	}
-	
+
 	inline static public function modsSounds(path:String, key:String)
 	{
-		return sound(path + '/' + key + '.' + SOUND_EXT);
+		return modFolders(path + '/' + key + '.' + SOUND_EXT); // sound
 	}
 	
 	inline static public function modsImages(key:String)
 	{
-		return image('images/' + key + '.png');
+		return modFolders('images/' + key + '.png'); // image
 	}
-	
+
 	inline static public function modsXml(key:String)
 	{
-		return xml('images/' + key + '.xml');
+		return modFolders('images/' + key + '.xml'); // xml
 	}
-	
+
 	inline static public function modsTxt(key:String)
 	{
-		return txt('images/' + key + '.txt');
+		return modFolders('images/' + key + '.txt'); // txt
 	}
-	
+
 	/* Goes unused for now
 
 		inline static public function modsShaderFragment(key:String, ?library:String)
