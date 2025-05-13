@@ -26,11 +26,11 @@ package mobile.backend;
  * A storage class for mobile.
  * @author Karim Akra and Homura Akemi (HomuHomu833)
  */
-#if android
+/*#if android
 import android.content.Context;
 import android.widget.Toast;
 import android.os.Environment;
-#end
+#end*/
 import haxe.CallStack;
 import haxe.io.Path;
 import lime.app.Application;
