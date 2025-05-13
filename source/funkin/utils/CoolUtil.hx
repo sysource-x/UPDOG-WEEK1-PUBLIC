@@ -285,7 +285,8 @@ class CoolUtil
 			return FlxEase.linear;
 		}
 		
-		return eases.get(name.toLowerCase()) ?? FlxEase.linear;
+		var ease = eases.get(name.toLowerCase());
+		return ease != null ? ease : FlxEase.linear;
 	}
 	public static function showPopUp(message:String, title:String):Void
 	{
