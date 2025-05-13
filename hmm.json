@@ -21,8 +21,8 @@
             "name": "hxcpp",
             "type": "git",
             "dir": null,
-            "ref": "main",
-            "url": "https://github.com/MobilePorting/hxcpp"
+            "ref": "master",
+            "url": "https://github.com/HaxeFoundation/hxcpp"
         },
         {
             "name": "hscript",
@@ -59,7 +59,7 @@
             "type": "git",
             "dir": null,
             "ref": "master",
-            "url": "https://github.com/MobilePorting/linc_luajit"
+            "url": "https://github.com/MaysLastPlays-Stuff/linc_luajit"
         },
         {
             "name": "flxanimate",
