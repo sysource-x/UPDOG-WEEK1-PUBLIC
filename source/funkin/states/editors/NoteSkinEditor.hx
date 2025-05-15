@@ -90,7 +90,7 @@ class NoteSkinEditor extends MusicBeatState
 	{
 		super();
 
-		path ??= 'default';
+		if (path == null) path = 'default';
 		setupHelper(path, oh);		
 	}
 
@@ -103,7 +103,7 @@ class NoteSkinEditor extends MusicBeatState
 		else if (FileSystem.exists(Paths.noteskin(n)))
 			noteskin = new NoteSkinHelper(Paths.noteskin(n));
 
-		noteskin ??= new NoteSkinHelper(Paths.noteskin('default'));
+		if (noteskin == null) noteskin = new NoteSkinHelper(Paths.noteskin('default'));
 
 		return noteskin;
 	}

@@ -32,13 +32,17 @@ class StageData
 	public static var forceNextDirectory:String = null;
 
 	public static function loadDirectory(SONG:SwagSong)
-	{
-		var stage:String = SONG.stage ?? 'stage';
+    {
+        var stage:String = (SONG.stage != null) ? SONG.stage : 'stage';
 
-		var stageFile:StageFile = getStageFile(stage);
+        var stageFile:StageFile = getStageFile(stage);
 
-		forceNextDirectory = stageFile?.directory ?? '';
-	}
+        if (stageFile != null && stageFile.directory != null) {
+            forceNextDirectory = stageFile.directory;
+        } else {
+            forceNextDirectory = '';
+        }
+    }
 
 	public static function getStageFile(stage:String):StageFile
 	{

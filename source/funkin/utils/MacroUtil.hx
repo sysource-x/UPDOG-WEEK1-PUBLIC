@@ -147,8 +147,8 @@ class MacroUtil
 				],
 				expr: macro
 				{
-					scaleY ??= scaleX;
-					shouldUpdateHitbox ??= true;
+					if (scaleY == null) scaleY = scaleX;
+					if (shouldUpdateHitbox == null) shouldUpdateHitbox = true;
 
 					this.scale.set(scaleX, scaleY);
 					if (shouldUpdateHitbox)
@@ -170,8 +170,8 @@ class MacroUtil
 				],
 				expr: macro
 				{
-					height ??= 0;
-					shouldUpdateHitbox ??= true;
+					if (height == null) height = 0;
+					if (shouldUpdateHitbox == null) shouldUpdateHitbox = true;
 
 					this.setGraphicSize(width, height);
 					if (shouldUpdateHitbox)
@@ -215,7 +215,7 @@ class MacroUtil
 				],
 				expr: macro
 				{
-					axes ??= flixel.util.FlxAxes.XY;
+					if (axes == null) axes = flixel.util.FlxAxes.XY;
 					if (axes.x)
 						this.x = object.x + (object.width - this.width) / 2;
 					if (axes.y)

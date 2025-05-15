@@ -135,7 +135,9 @@ class MusicBeatState extends FlxUIState
 
 	public function refreshZ(?group:FlxTypedGroup<FlxBasic>)
 	{
-		group ??= FlxG.state;
+		if (group == null) {
+			group = FlxG.state;
+		}
 		group.sort(CoolUtil.sortByZ, flixel.util.FlxSort.ASCENDING);
 	}
 
@@ -221,7 +223,7 @@ class MusicBeatState extends FlxUIState
 	public static function switchState(nextState:FlxState)
 	{
 		FlxG.switchState(nextState); // just because im too lazy to goto every instance of switchState and change it to a FlxG call
-	}	
+	}
 
 	public function stepHit():Void
 	{
@@ -243,7 +245,9 @@ class MusicBeatState extends FlxUIState
 	@:access(funkin.states.FreeplayState)
 	override function startOutro(onOutroComplete:() -> Void)
 	{
-		FlxG.sound?.music?.fadeTween?.cancel();
+		if (FlxG.sound != null && FlxG.sound.music != null && FlxG.sound.music.fadeTween != null) {
+			FlxG.sound.music.fadeTween.cancel();
+		}
 		//FreeplayState.vocals?.fadeTween?.cancel();
 
 		if (FlxG.sound != null && FlxG.sound.music != null) FlxG.sound.music.onComplete = null;

@@ -18,8 +18,8 @@ class FlxPoint2 implements IFlxPooled
 
 	public function new(minX:Float = 0, minY:Float = 0, ?maxX:Float, ?maxY:Float)
 	{
-		maxX ??= minX;
-		maxY ??= minY;
+		if (maxX == null) maxX = minX;
+		if (maxY == null) maxY = minY;
 
 		x.set(minX, maxX);
 		y.set(minY, maxY);

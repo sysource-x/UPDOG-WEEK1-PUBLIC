@@ -204,7 +204,8 @@ class SusHUD extends BaseHUD
 		});
 		
 		// remap
-		ratingText.text = customTextMap.get(ratingName.toLowerCase()) ?? ratingText.text;
+		var customText = customTextMap.get(ratingName.toLowerCase());
+		ratingText.text = customText != null ? customText : ratingText.text;
 		
 		ratingText.visible = (!ClientPrefs.hideHud && showRating);
 		ratingText.scale.set(0.8, 0.8);

@@ -71,7 +71,13 @@ class FunkinScript
 			set('weekRaw', PlayState.storyWeek);
 			set('seenCutscene', PlayState.seenCutscene);
 			set('week', WeekData.weeksList[PlayState.storyWeek]);
-			set('mustHitSection', PlayState.SONG.notes[0]?.mustHitSection ?? false);
+			
+			var mustHitSection = false;
+			if (PlayState.SONG != null && PlayState.SONG.notes != null && PlayState.SONG.notes.length > 0 && PlayState.SONG.notes[0] != null) {
+				mustHitSection = PlayState.SONG.notes[0].mustHitSection;
+			}
+			set('mustHitSection', mustHitSection);
+			
 			set('difficultyName', DifficultyUtil.difficulties[PlayState.storyDifficulty]);
 			set('songLength', flixel.FlxG.sound.music.length);
 			set('healthGainMult', PlayState.instance.healthGain);

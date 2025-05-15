@@ -297,26 +297,23 @@ class NoteSkinHelper
 
 	public static function resolveData(data:NoteSkinData)
 	{
-		data.globalSkin ??= defaultTexture;
-		data.playerSkin ??= data.globalSkin;
-		data.opponentSkin ??= data.globalSkin;
-		data.extraSkin ??= data.globalSkin;
-		data.noteSplashSkin ??= defaultSplashTexture;
-		data.noteCoverSkin ??= defaultCoverTexture;
-		data.hasQuants ??= false;
-		data.isQuants ??= false;
-
-		data.isPixel ??= false;
-		data.pixelSize ??= [4, 5];
-		data.antialiasing ??=true;
-		data.sustainSuffix ??= 'ENDS';
-
-		data.noteAnimations ??= defaultNoteAnimations;
-		data.receptorAnimations ??= defaultReceptorAnimations;
-		data.noteSplashAnimations ??= defaultNoteSplashAnimations;
-		data.noteCoverAnimations ??= defaultNoteCoverAnimations;
-
-		data.singAnimations ??= defaultSingAnimations;
+		if (data.globalSkin == null) data.globalSkin = defaultTexture;
+		if (data.playerSkin == null) data.playerSkin = data.globalSkin;
+		if (data.opponentSkin == null) data.opponentSkin = data.globalSkin;
+		if (data.extraSkin == null) data.extraSkin = data.globalSkin;
+		if (data.noteSplashSkin == null) data.noteSplashSkin = defaultSplashTexture;
+		if (data.noteCoverSkin == null) data.noteCoverSkin = defaultCoverTexture;
+		if (data.hasQuants == null) data.hasQuants = false;
+		if (data.isQuants == null) data.isQuants = false;
+		if (data.isPixel == null) data.isPixel = false;
+		if (data.pixelSize == null) data.pixelSize = [4, 5];
+		if (data.antialiasing == null) data.antialiasing = true;
+		if (data.sustainSuffix == null) data.sustainSuffix = 'ENDS';
+		if (data.noteAnimations == null) data.noteAnimations = defaultNoteAnimations;
+		if (data.receptorAnimations == null) data.receptorAnimations = defaultReceptorAnimations;
+		if (data.noteSplashAnimations == null) data.noteSplashAnimations = defaultNoteSplashAnimations;
+		if (data.noteCoverAnimations == null) data.noteCoverAnimations = defaultNoteCoverAnimations;
+		if (data.singAnimations == null) data.singAnimations = defaultSingAnimations;
 	}
 
 	public static function parseJSON(rawJson:String):NoteSkinData

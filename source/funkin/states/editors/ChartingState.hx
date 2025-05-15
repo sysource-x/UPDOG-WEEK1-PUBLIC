@@ -99,7 +99,9 @@ class OurLittleFriend extends FlxSprite
 
 	function buildOffsets(?path:String)
 	{
-		path ??= _offsetPath;
+		if (path == null) {
+			path = _offsetPath;
+		}
 		if (FileSystem.exists(Paths.getSharedPath('$path.txt'))) for (k => i in File.getContent(Paths.getSharedPath('$path.txt')).trim().split('\n'))
 		{
 			var value = i.trim().split(',');
@@ -608,8 +610,12 @@ class ChartingState extends MusicBeatState
 
 	inline function resetLittleFriends()
 	{
-		littleBF?.sing(4);
-		littleDad?.sing(4);
+		if (littleBF != null) {
+			littleBF.sing(4);
+		}
+		if (littleDad != null) {
+			littleDad.sing(4);
+		}
 	}
 
 	var check_mute_inst:FlxUICheckBox = null;
@@ -1848,7 +1854,8 @@ class ChartingState extends MusicBeatState
 		add(vocals);
 
 		var playerSound = Paths.voices(currentSongName, 'player');
-		vocals.addPlayerVocals(new FlxSound().loadEmbedded(playerSound ?? Paths.voices(currentSongName)));
+		var soundPath = playerSound != null ? playerSound : Paths.voices(currentSongName);
+		vocals.addPlayerVocals(new FlxSound().loadEmbedded(soundPath));
 
 		var opponentSound = Paths.voices(currentSongName, 'opp');
 		if (opponentSound != null)
@@ -3883,7 +3890,9 @@ class ChartingState extends MusicBeatState
 	// why is this static
 	public static function togglePause()
 	{
-		instance?.resetLittleFriends();
+		if (instance != null) {
+			instance.resetLittleFriends();
+		}
 
 		if (FlxG.sound.music.playing)
 		{
@@ -3902,6 +3911,10 @@ class ChartingState extends MusicBeatState
 
 	public static function pause()
 	{
+		if (instance != null) {
+			instance.resetLittleFriends();
+		}
+
 		if (FlxG.sound.music.playing)
 		{
 			FlxG.sound.music.pause();

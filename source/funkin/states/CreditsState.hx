@@ -354,7 +354,9 @@ class CreditsState extends MusicBeatState
 			}
 			if (controls.BACK)
 			{
-				colorTween?.cancel();
+				if (colorTween != null) {
+					colorTween.cancel();
+				}
 
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				FlxG.switchState(new TitleState());
@@ -397,7 +399,9 @@ class CreditsState extends MusicBeatState
 		trace(newColor);
 		if (newColor != intendedColor)
 		{
-			colorTween?.cancel();
+			if (colorTween != null) {
+                colorTween.cancel();
+            }
 			intendedColor = newColor;
 
 			colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {onComplete: function(twn:FlxTween) {

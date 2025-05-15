@@ -393,12 +393,12 @@ class PlayState extends MusicBeatState
 		
 		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
 		
-		boyfriendCameraOffset = stageData.camera_boyfriend ?? [0, 0];
-		
-		opponentCameraOffset = stageData.camera_opponent ?? [0, 0];
-		
-		girlfriendCameraOffset = stageData.camera_girlfriend ?? [0, 0];
-		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
 		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
 		else
 		{
@@ -456,10 +456,10 @@ class PlayState extends MusicBeatState
 		PauseSubState.songName = null; // Reset to default
 		
 		keysArray = [
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
 		];
 		
 		songStartCallback = startCountdown;
@@ -471,7 +471,11 @@ class PlayState extends MusicBeatState
 			keysPressed.push(false);
 		}
 		
-		FlxG.sound.music?.stop();
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
 		
 		// Gameplay settings
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
@@ -879,9 +883,15 @@ class PlayState extends MusicBeatState
 		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
 		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
 		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+		
 		arrowSkin = skin;
 		
-		noteSkin ??= new NoteSkinHelper(Paths.noteskin('default'));
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
 	}
 	
 	function initNoteSkinning()
@@ -1616,8 +1626,9 @@ class PlayState extends MusicBeatState
 		if (SONG.needsVoices)
 		{
 			var playerSound = Paths.voices(PlayState.SONG.song, 'player');
-			vocals.addPlayerVocals(new FlxSound().loadEmbedded(playerSound ?? Paths.voices(PlayState.SONG.song)));
-			
+			var playerVocalsPath = playerSound != null ? playerSound : Paths.voices(PlayState.SONG.song);
+			vocals.addPlayerVocals(new FlxSound().loadEmbedded(playerVocalsPath));
+
 			var opponentSound = Paths.voices(PlayState.SONG.song, 'opp');
 			if (opponentSound != null)
 			{
@@ -2160,7 +2171,7 @@ class PlayState extends MusicBeatState
 				{
 					for (s in i.members)
 					{
-						if (s.animation.curAnim?.name != 'static')
+						if (s.animation.curAnim != null && s.animation.curAnim.name != 'static')
 						{
 							s.playAnim('static');
 							s.resetAnim = 0;
@@ -2740,7 +2751,9 @@ class PlayState extends MusicBeatState
 				paused = true;
 				
 				vocals.stop();
-				FlxG.sound.music.stop();
+				if (FlxG.sound != null && FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+                }
 				
 				persistentUpdate = false;
 				persistentDraw = false;
@@ -3453,7 +3466,9 @@ class PlayState extends MusicBeatState
 					
 					if (SONG.song == 'Meltdown') // hardcoded we are in a rush.
 					{
-						FlxG.sound.music.stop();
+						if (FlxG.sound != null && FlxG.sound.music != null) {
+    FlxG.sound.music.stop();
+}
 						cancelMusicFadeTween();
 						
 						FlxG.switchState(() -> new funkin.states.ImpostorCredits());
@@ -3501,8 +3516,10 @@ class PlayState extends MusicBeatState
 					var songLowercase = Paths.formatToSongPath(storyPlaylist[0].toLowerCase());
 					
 					PlayState.SONG = Song.loadFromJson(songLowercase + difficulty, songLowercase);
-					FlxG.sound.music.stop();
-					
+					if (FlxG.sound != null && FlxG.sound.music != null) {
+                    FlxG.sound.music.stop();
+                    }
+
 					cancelMusicFadeTween();
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
@@ -4550,7 +4567,9 @@ class PlayState extends MusicBeatState
 	
 	override function refreshZ(?group:FlxTypedGroup<FlxBasic>)
 	{
-		group ??= stage;
+		if (group == null) {
+            group = stage;
+        }
 		group.sort(CoolUtil.sortByZ, flixel.util.FlxSort.ASCENDING);
 	}
 	

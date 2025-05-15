@@ -36,7 +36,7 @@ class InterpEX extends crowplexus.hscript.Interp
 	public function new(?parent:Dynamic)
 	{
 		super();
-		parent ??= FlxG.state;
+		if (parent == null) parent = FlxG.state;
 		this.parent = parent;
 		showPosOnLog = false;
 	}
@@ -260,7 +260,9 @@ class FunkinIris extends FunkinScript
 		Iris.warn = (x, ?pos) ->
 		{
 			final message:String = '[${pos.fileName}]: WARN: ${pos.lineNumber} -> $x';
-			PlayState.instance?.addTextToDebug(message, FlxColor.YELLOW);
+			if (PlayState.instance != null) {
+			    PlayState.instance.addTextToDebug(message, FlxColor.YELLOW);
+			}
 
 			FlxG.log.warn(message);
 			// trace(message);
@@ -271,7 +273,9 @@ class FunkinIris extends FunkinScript
 		Iris.error = (x, ?pos) ->
 		{
 			final message:String = '[${pos.fileName}]: ERROR: ${pos.lineNumber} -> $x';
-			PlayState.instance?.addTextToDebug(message, FlxColor.RED);
+			if (PlayState.instance != null) {
+			    PlayState.instance.addTextToDebug(message, FlxColor.RED);
+			}
 
 			FlxG.log.error(message);
 			// trace(message);
@@ -282,7 +286,9 @@ class FunkinIris extends FunkinScript
 		Iris.print = (x, ?pos) ->
 		{
 			final message:String = '[${pos.fileName}]: TRACE: ${pos.lineNumber} -> $x';
-			PlayState.instance?.addTextToDebug(message);
+			if (PlayState.instance != null) {
+                PlayState.instance.addTextToDebug(message);
+            }
 
 			// FlxG.log.add(message);
 
@@ -328,8 +334,10 @@ class FunkinIris extends FunkinScript
 		{
 			parsingException = Std.string(e);
 
-			PlayState.instance?.addTextToDebug('[${scriptName}]: PARSING ERROR: $e', FlxColor.RED);
-			trace("fialed to exucutue my willy! " + e);
+			if (PlayState.instance != null) {
+			    PlayState.instance.addTextToDebug('[${scriptName}]: PARSING ERROR: $e', FlxColor.RED);
+			}
+			trace("failed to execute my willy! " + e);
 		}
 		return ret;
 	}
@@ -356,8 +364,13 @@ class FunkinIris extends FunkinScript
 	override function call(func:String, ?args:Array<Dynamic>):Dynamic
 	{
 		var ret:Dynamic = funkin.data.scripts.Globals.Function_Continue;
-		if (exists(func))
-			ret = _script.call(func, args)?.returnValue ?? funkin.data.scripts.Globals.Function_Continue;
+		if (exists(func)) {
+		    var callResult = _script.call(func, args);
+		    if (callResult != null && callResult.returnValue != null)
+		        ret = callResult.returnValue;
+		    else
+		        ret = funkin.data.scripts.Globals.Function_Continue;
+		}
 
 		return ret;
 	}
@@ -370,7 +383,7 @@ class FunkinIris extends FunkinScript
 	// kept for notescript stuff
 	public function executeFunc(func:String, ?parameters:Array<Dynamic>, ?theObject:Any, ?extraVars:Map<String, Dynamic>):Dynamic
 	{
-		extraVars ??= [];
+		if (extraVars == null) extraVars = [];
 
 		if (exists(func))
 		{
@@ -574,7 +587,11 @@ class FunkinIris extends FunkinScript
 				trace("Shader compilation error:" + e.message);
 			}
 
-			return runtime ?? new flixel.addons.display.FlxRuntimeShader();
+			if (runtime != null) {
+			    return runtime;
+			} else {
+			    return new flixel.addons.display.FlxRuntimeShader();
+			}
 		});
 	}
 }
