@@ -178,6 +178,8 @@ class Note extends FlxSprite
 
 	public var animOffsets:Map<String, Array<Float>> = new Map();
 
+	public var baseAlpha:Null<Float>;
+
 	public function set_playField(field:PlayField)
 	{
 		if (playField != field)
@@ -622,7 +624,7 @@ class Note extends FlxSprite
 			}
 		}
 
-		var baseAlpha = (playField != null && playField.baseAlpha != null) ? playField.baseAlpha : 1;
+		var baseAlpha = (playField != null) ? playField.baseAlpha : 1;
 		colorSwap.daAlpha = (alphaMod * alphaMod2) * baseAlpha;
 
 		var actualHitbox:Float = hitbox * earlyHitMult;
