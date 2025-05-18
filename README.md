@@ -28,10 +28,18 @@ In a cmd within the project directory, in order run...
 
 After that is complete, run `lime test windows` and you should be compiling
 
+### Credits of this repository
+
 <details>
   <summary><h2>Mobile Port Internal Credits</h2></summary>
 
-- Credits to [sys_xyz](ttps://youtube.com/@sysource-xyz) to porting the mod
+- Credits to [sysource_xyz](ttps://youtube.com/@sysource-xyz) to porting the mod
+</details>
+
+<details>
+  <summary><h2>Support Credits</h2></summary>
+
+- Credits to [gbl_studios](ttps://youtube.com/@gblstudios-u5v) to helping me in discord
 </details>
 
 <details>
@@ -39,5 +47,5 @@ After that is complete, run `lime test windows` and you should be compiling
 
 - Credits to [Heropowerbrine](https://youtube.com/@Heropowerbrine) of The Mobile Controls
 - Credits to some people because i dont know the name:P
-- Credits to [Idklel01](https://github.com/Idklel01) of some codes:0 (i don't know his url bruh:c )
+- Credits to [Idklel01](https://github.com/Idklel01) of some codes:0, I dont know his yt url.(i recently removed the codes maked by he :c)
 </details>

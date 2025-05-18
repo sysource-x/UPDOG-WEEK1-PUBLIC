@@ -2,10 +2,8 @@
     "dependencies": [
         {
             "name": "lime",
-            "type": "git",
-            "dir": null,
-            "ref": "dev-funkin-arm64",
-            "url": "https://github.com/FunkinDroidTeam/lime"
+            "type": "haxelib",
+            "version": "8.1.3"
         },
         {
             "name": "openfl",
@@ -34,10 +32,10 @@
             "type": "haxelib",
             "version": null
         },
-        {  
+        {
             "name": "flixel",
             "type": "haxelib",
-            "version": "6.0.0"
+            "version": null
         },
         {
             "name": "flixel-addons",
@@ -59,7 +57,7 @@
             "type": "git",
             "dir": null,
             "ref": "master",
-            "url": "https://github.com/MaysLastPlays-Stuff/linc_luajit"
+            "url": "https://github.com/superpowers04/linc_luajit.git"
         },
         {
             "name": "flxanimate",
@@ -69,10 +67,14 @@
         },
         {
             "name": "hxvlc",
+            "type": "haxelib",
+            "version": "2.1.2"
+        },
+        {
+            "name": "linc_discord-rpc",
             "type": "git",
             "dir": null,
-            "ref": "70e7f5f3e76d526ac6fb8f0e6665efe7dfda589d",
-            "url": "https://github.com/MAJigsaw77/hxvlc"
+            "url": "https://github.com/Aidan63/linc_discord-rpc"
         }
     ]
 }
