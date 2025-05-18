@@ -173,11 +173,11 @@
 
 	<!--Disable the Flixel core focus lost screen-->
 
-	<!-- <haxedef name="mobile" />
 	<section if="android">
-	<android target-sdk-version="34" />
- 	<android min-sdk-version="19" />
-	</section> -->
+    <android target-sdk-version="34" />
+    <android min-sdk-version="19" />
+    <android manifest="include/AndroidManifest.xml" />
+    </section>
 
 	<!-- Do whatever you want I'm tired uninstall and install everytime -->
 	<certificate path="key.keystore" password="vincetomroyalsys" alias="sys" alias-password="vincetomroyalsys" if="android" unless="debug" />
