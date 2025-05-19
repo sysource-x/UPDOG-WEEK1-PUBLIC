@@ -49,11 +49,8 @@ jobs:
 
       - name: Installing Libraries
         run: |
-          haxelib setup ~/haxelib
-          haxe -cp commandline -D analyzer-optimize --run Main setup -s
-          haxelib run lime rebuild hxcpp
-          haxelib install hxcpp-debug-server
-          haxelib list
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
 
       - name: Configure Android
         run: |
@@ -66,7 +63,7 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Building
-        run: haxelib run lime build android # haxelib run lime build android -final
+        run: haxelib run lime build android -final
 
       - name: Upload Artifact
         uses: actions/upload-artifact@main
