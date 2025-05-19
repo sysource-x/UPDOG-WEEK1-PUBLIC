@@ -208,7 +208,7 @@ class Paths
 	
 	inline static public function modsNoteskin(key:String)
 	{
-		return getPath('noteskins/$key.json');
+		return modFolders('noteskins/$key.json'); // getPath
 	}
 	
 	inline static public function shaderFragment(key:String, ?library:String)
@@ -251,7 +251,7 @@ class Paths
 	
 	inline static public function modTextureAtlas(key:String)
 	{
-		return getPath('images/$key');
+		return modFolders('images/$key'); // getPath
 	}
 	
 	static public function textureAtlas(key:String, ?library:String)
@@ -294,9 +294,9 @@ class Paths
 		return inst;
 	}
 	
-	inline static public function modsShaderFragment(key:String, ?library:String) return getPath('shaders/' + key + '.frag');
+	inline static public function modsShaderFragment(key:String, ?library:String) return modFolders('shaders/' + key + '.frag');//getPath
 	
-	inline static public function modsShaderVertex(key:String, ?library:String) return getPath('shaders/' + key + '.vert');
+	inline static public function modsShaderVertex(key:String, ?library:String) return modFolders('shaders/' + key + '.vert');//getPath
 	
 	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
@@ -306,10 +306,10 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		// #if sys
+		#if sys
 		#if MODS_ALLOWED
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
-		// #end
+		#end
 		
 		if (FileSystem.exists(getSharedPath(key))) return File.getContent(getSharedPath(key));
 		
@@ -409,7 +409,7 @@ class Paths
 		var bitmap:BitmapData = null;
 		var file:String = null;
 		
-		#if desktop
+		#if MODS_ALLOWED
 		file = modsImages(key);
 		if (currentTrackedAssets.exists(file))
 		{
@@ -452,7 +452,7 @@ class Paths
 	{
 		if (bitmap == null)
 		{
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
 			else
 			#end
@@ -484,7 +484,7 @@ class Paths
 	
 	public static function returnSound(path:Null<String>, key:String, ?library:String)
 	{
-		#if desktop
+		#if MODS_ALLOWED
 		var modLibPath:String = '';
 		if (library != null) modLibPath = '$library';
 		if (path != null) modLibPath += '$path';

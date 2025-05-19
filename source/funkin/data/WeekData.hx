@@ -162,7 +162,7 @@ class WeekData
 					{
 						var weekFile:WeekData = new WeekData(week, sexList[i]);
 
-						#if desktop
+						#if MODS_ALLOWED
 						if (j >= originalLength)
 						{
 							weekFile.folder = directories[j].substring(Paths.mods().length, directories[j].length - 1);
@@ -221,7 +221,7 @@ class WeekData
 				var weekFile:WeekData = new WeekData(week, weekToCheck);
 				if (i >= originalLength)
 				{
-					#if desktop
+					#if MODS_ALLOWED
 					weekFile.folder = directory.substring(Paths.mods().length, directory.length - 1);
 					#end
 				}
@@ -237,7 +237,7 @@ class WeekData
 	private static function getWeekFile(path:String):WeekFile
 	{
 		var rawJson:String = null;
-		#if desktop
+		#if MODS_ALLOWED
 		if (FileSystem.exists(path))
 		{
 			rawJson = File.getContent(path);
@@ -282,7 +282,7 @@ class WeekData
 	{
 		Paths.currentModDirectory = '';
 
-		#if desktop
+		#if MODS_ALLOWED
 		if (FileSystem.exists("modsList.txt"))
 		{
 			var list:Array<String> = CoolUtil.listFromString(File.getContent("modsList.txt"));
