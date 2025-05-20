@@ -7,7 +7,6 @@
             "ref": "main",
             "url": "https://github.com/sysource-x/lime-8.1.2"
         },
-        },
         {
             "name": "openfl",
             "type": "haxelib",
