@@ -527,7 +527,7 @@ class Paths
 	
 	inline public static function strip(path:String) return path.indexOf(':') != -1 ? path.substr(path.indexOf(':') + 1, path.length) : path;
 	
-	#if desktop //MODS_ALLOWED
+	//#if MODS_ALLOWED
 	// idk // desktop // MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{
@@ -668,5 +668,5 @@ class Paths
 		}
 		return list;
 	}
-	#end
+	// #end
 }

@@ -114,7 +114,7 @@ class Song
 		{
 			if (mod)
 			{
-				#if desktop
+				#if desktop // nothing
 				rawJson = File.getContent(moddyFile).trim();
 				#end
 			}
@@ -126,7 +126,7 @@ class Song
 				}
 				catch (e)
 				{
-					#if sys
+					#if desktop // sys
 					rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
 					#else
 					rawJson = openfl.Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
