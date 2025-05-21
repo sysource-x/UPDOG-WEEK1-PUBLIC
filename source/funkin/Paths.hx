@@ -531,7 +531,7 @@ class Paths
 	// idk // desktop // MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{
-		return '$MODS_DIRECTORY/' + key;
+		return '$CORE_DIRECTORY/' + key; // MODS replace the "CORE"
 	}
 	
 	inline static public function modsFont(key:String)
@@ -601,7 +601,7 @@ class Paths
 			var fileToCheck:String = mods(mod + '/' + key);
 			if (OpenFlAssets.exists(fileToCheck)) return fileToCheck;
 		}
-		return '$MODS_DIRECTORY/' + key;
+		return '$CORE_DIRECTORY/' + key; // MODS replace the "CORE"
 	}
 	
 	public static var globalMods:Array<String> = [];
