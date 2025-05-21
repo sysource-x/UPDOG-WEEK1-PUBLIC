@@ -72,7 +72,7 @@ class FNFSprite extends FlxSprite
 		// sparrow
 		// packer
 		// texture
-		#if MODS_ALLOWED
+		#if desktop
 		var modTxtToFind:String = Paths.modsTxt(json.image);
 		var txtToFind:String = Paths.getPath('images/' + json.image + '.txt', TEXT);
 
@@ -87,7 +87,7 @@ class FNFSprite extends FlxSprite
 			spriteType = "packer";
 		}
 
-		#if MODS_ALLOWED
+		#if desktop
 		var modAnimToFind:String = Paths.modFolders('images/' + json.image + '/Animation.json');
 		var animToFind:String = Paths.getPath('images/' + json.image + '/Animation.json', TEXT);
 

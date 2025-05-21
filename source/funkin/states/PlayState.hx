@@ -583,7 +583,7 @@ class PlayState extends MusicBeatState
 		var filesPushed:Array<String> = [];
 		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
 		
-		#if MODS_ALLOWED
+		#if desktop
 		foldersToCheck.insert(0, Paths.mods('scripts/'));
 		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
 		
@@ -782,7 +782,7 @@ class PlayState extends MusicBeatState
 		var filesPushed:Array<String> = [];
 		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
 		
-		#if MODS_ALLOWED
+		#if desktop
 		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
 		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
 			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
@@ -854,7 +854,7 @@ class PlayState extends MusicBeatState
 			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
 		}
 		
-		#if desktop // DISCORD_ALLOWED
+		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText, getPresence(), null);
 		#end
@@ -1573,7 +1573,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 			// this is mainly to shut my syntax highlighting up
-		#if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		}
 		#else
 		}
@@ -1681,7 +1681,7 @@ class PlayState extends MusicBeatState
 			{
 				if (doPush) break;
 				var baseFile = '$baseScriptFile.$ext';
-				var files = [#if MODS_ALLOWED Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
+				var files = [#if desktop Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
 				for (file in files)
 				{
 					if (FileSystem.exists(file))
@@ -1728,7 +1728,7 @@ class PlayState extends MusicBeatState
 			{
 				if (doPush) break;
 				var baseFile = '$baseScriptFile.$ext';
-				var files = [#if MODS_ALLOWED Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
+				var files = [#if desktop Paths.modFolders(baseFile), #end Paths.getSharedPath(baseFile)];
 				for (file in files)
 				{
 					if (FileSystem.exists(file))
@@ -2336,7 +2336,7 @@ class PlayState extends MusicBeatState
 					vocals.pause();
 				}
 				openSubState(new funkin.states.substates.ImpostorPause());
-				#if desktop // DISCORD_ALLOWED
+				#if DISCORD_ALLOWED
 				DiscordClient.changePresence(detailsPausedText, getPresence());
 				#end
 			}

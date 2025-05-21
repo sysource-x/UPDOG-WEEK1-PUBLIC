@@ -78,7 +78,7 @@ class CrashHandler
 
 		CoolUtil.showPopUp('$m\n$stackLabel', "Error!");
 		// DISCORD_ALLOWED
-		#if desktop DiscordClient.shutdown(); #end
+		#if DISCORD_ALLOWED DiscordClient.shutdown(); #end
 		lime.system.System.exit(1);
 	}
 
@@ -98,7 +98,7 @@ class CrashHandler
 
 		CoolUtil.showPopUp(log.join('\n'), "Critical Error!");
 		// DISCORD_ALLOWED
-		#if desktop DiscordClient.shutdown(); #end
+		#if DISCORD_ALLOWED DiscordClient.shutdown(); #end
 		lime.system.System.exit(1);
 	}
 	#end

@@ -58,7 +58,7 @@ class FreeplayState extends MusicBeatState
 	override function create()
 	{
 		Paths.clearStoredMemory();
-		Paths.clearUnusedMemory();
+		// Paths.clearUnusedMemory();
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
