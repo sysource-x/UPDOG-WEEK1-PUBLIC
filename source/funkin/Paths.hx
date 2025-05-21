@@ -208,7 +208,7 @@ class Paths
 	
 	inline static public function modsNoteskin(key:String)
 	{
-		return modFolders('noteskins/$key.json'); // getPath
+		return getPath('noteskins/$key.json'); // getPath
 	}
 	
 	inline static public function shaderFragment(key:String, ?library:String)
@@ -239,9 +239,9 @@ class Paths
 	
 	static public function video(key:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop
 		var file:String = modsVideo(key);
-		if (FileSystem.exists(file))
+		if (OpenFlAssets.exists(file))
 		{
 			return file;
 		}
@@ -251,7 +251,7 @@ class Paths
 	
 	inline static public function modTextureAtlas(key:String)
 	{
-		return modFolders('images/$key'); // getPath
+		return getPath('images/$key'); // getPath
 	}
 	
 	static public function textureAtlas(key:String, ?library:String)
@@ -294,9 +294,9 @@ class Paths
 		return inst;
 	}
 	
-	inline static public function modsShaderFragment(key:String, ?library:String) return modFolders('shaders/' + key + '.frag');//getPath
+	inline static public function modsShaderFragment(key:String, ?library:String) return getPath('shaders/' + key + '.frag');//getPath
 	
-	inline static public function modsShaderVertex(key:String, ?library:String) return modFolders('shaders/' + key + '.vert');//getPath
+	inline static public function modsShaderVertex(key:String, ?library:String) return getPath('shaders/' + key + '.vert');//getPath
 	
 	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
@@ -306,8 +306,8 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		#if sys
-		#if MODS_ALLOWED
+		//#if sys
+		#if desktop//MODS_ALLOWED
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
 		#end
 		
@@ -325,13 +325,13 @@ class Paths
 			levelPath = getLibraryPathForce(key, 'shared');
 			if (FileSystem.exists(levelPath)) return File.getContent(levelPath);
 		}
-		#end
+		//#end
 		return OpenFlAssets.getText(getPath(key, AssetType.TEXT)); // The internal config to get some files
 	}
 	
 	inline static public function font(key:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
 		{
@@ -343,7 +343,7 @@ class Paths
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
 		{
 			return true;
@@ -359,7 +359,7 @@ class Paths
 	
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		#if MODS_ALLOWED
+		#if desktop
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var xmlExists:Bool = false;
 		var xml = modsXml(key);
@@ -382,7 +382,7 @@ class Paths
 	
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if desktop
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var txtExists:Bool = false;
 		if (FileSystem.exists(modsTxt(key)))
@@ -409,7 +409,7 @@ class Paths
 		var bitmap:BitmapData = null;
 		var file:String = null;
 		
-		#if MODS_ALLOWED
+		#if desktop
 		file = modsImages(key);
 		if (currentTrackedAssets.exists(file))
 		{
@@ -452,7 +452,7 @@ class Paths
 	{
 		if (bitmap == null)
 		{
-			#if MODS_ALLOWED
+			#if desktop
 			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
 			else
 			#end
@@ -484,7 +484,7 @@ class Paths
 	
 	public static function returnSound(path:Null<String>, key:String, ?library:String)
 	{
-		#if MODS_ALLOWED
+		#if dekstop
 		var modLibPath:String = '';
 		if (library != null) modLibPath = '$library';
 		if (path != null) modLibPath += '$path';
@@ -527,7 +527,7 @@ class Paths
 	
 	inline public static function strip(path:String) return path.indexOf(':') != -1 ? path.substr(path.indexOf(':') + 1, path.length) : path;
 	
-	#if MODS_ALLOWED
+	#if desktop //MODS_ALLOWED
 	// idk // desktop // MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{

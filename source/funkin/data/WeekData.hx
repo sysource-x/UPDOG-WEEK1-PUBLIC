@@ -162,7 +162,7 @@ class WeekData
 					{
 						var weekFile:WeekData = new WeekData(week, sexList[i]);
 
-						#if MODS_ALLOWED
+						#if desktop
 						if (j >= originalLength)
 						{
 							weekFile.folder = directories[j].substring(Paths.mods().length, directories[j].length - 1);
@@ -221,7 +221,7 @@ class WeekData
 				var weekFile:WeekData = new WeekData(week, weekToCheck);
 				if (i >= originalLength)
 				{
-					#if MODS_ALLOWED
+					#if desktop
 					weekFile.folder = directory.substring(Paths.mods().length, directory.length - 1);
 					#end
 				}
@@ -237,7 +237,7 @@ class WeekData
 	private static function getWeekFile(path:String):WeekFile
 	{
 		var rawJson:String = null;
-		#if MODS_ALLOWED
+		#if desktop
 		if (FileSystem.exists(path))
 		{
 			rawJson = File.getContent(path);
@@ -282,7 +282,7 @@ class WeekData
 	{
 		Paths.currentModDirectory = '';
 
-		#if MODS_ALLOWED
+		#if desktop
 		if (FileSystem.exists("modsList.txt"))
 		{
 			var list:Array<String> = CoolUtil.listFromString(File.getContent("modsList.txt"));
@@ -300,8 +300,8 @@ class WeekData
 		#end
 	}
 
-	public static function weekUnlocked(weekName:String):Bool {
+	/*public static function weekUnlocked(weekName:String):Bool {
 		// Exemplo básico: Verifica se a semana está desbloqueada
 		return FlxG.save.data.unlockedWeeks != null && FlxG.save.data.unlockedWeeks.exists(weekName);
-	}
+	}*/
 }
