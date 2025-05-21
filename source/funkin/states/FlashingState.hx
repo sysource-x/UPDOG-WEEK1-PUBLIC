@@ -36,7 +36,7 @@ class FlashingState extends MusicBeatState
 	{
 		FlxG.sound.playMusic(Paths.music('whatsUpDog'), 0.3);
 		persistentUpdate = true;
-		#if desktop // DISCORD_ALLOWED
+		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Startup Config Screen", null);
 		#end
