@@ -65,7 +65,6 @@
     <!--               Assets for assets/manifest/*.xml              -->
 	<assets path="assets" include="**/*" unless="web"/> <!-- Get all folders, files and etc. of assets folder -->
     <assets path="assets/songs" library="songs" unless="web"/>
-    <assets path="assets/images" include="**/*" unless="web"/>
     <assets path="assets/shared/data" include="**/*" unless="web"/>
 	<assets path="assets/shared/custom_events" include="**/*" unless="web"/>
 	<assets path="assets/shared/characters" include="**/*" unless="web"/>
@@ -76,6 +75,7 @@
 	<assets path="assets/shared/sounds" include="**/*" unless="web"/>
 	<assets path="assets/shared/stages" include="**/*" unless="web"/>
 	<assets path="assets/shared/weeks" include="**/*" unless="web"/>
+	<assets path="assets/shared/images" include="**/*" unless="web"/>
 	<assets path="assets/shared/images/branding" include="**/*" unless="web"/>
 	<assets path="assets/shared/images/characters" include="**/*" unless="web"/>
 	<assets path="assets/shared/images/credits" include="**/*" unless="web"/>
