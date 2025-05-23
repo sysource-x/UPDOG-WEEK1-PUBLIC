@@ -42,6 +42,7 @@ import mobile.backend.SUtil;
 import mobile.backend.Asset2File;
 
 /*
+*/
 //Android
 #if android
 import android.content.Context as AndroidContext;
@@ -54,6 +55,7 @@ import android.os.Build.VERSION as AndroidVersion;
 import android.os.Build.VERSION_CODES as AndroidVersionCode;
 import android.os.BatteryManager as AndroidBatteryManager;
 #end
+/*
 */
 
 using StringTools;

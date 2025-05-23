@@ -1,25 +1,3 @@
-/*
- * Copyright (C) 2025 Mobile Porting Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
 package mobile.states;
 
 #if mobile
@@ -36,7 +14,6 @@ import lime.system.ThreadPool;
  * ...
  * @author: Karim Akra
  */
-
 class CopyState extends MusicBeatState
 {
 	private static final textFilesExtensions:Array<String> = ['ini', 'txt', 'xml', 'hxs', 'hx', 'lua', 'json', 'frag', 'vert'];
@@ -117,12 +94,12 @@ class CopyState extends MusicBeatState
 						FileSystem.createDirectory('logs');
 					File.saveContent('logs/' + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
 				}
-				
+
 				FlxG.sound.play(Paths.sound('confirmMenu')).onComplete = () ->
 				{
 					FlxG.switchState(new Splash());
 				};
-		
+
 				canUpdate = false;
 			}
 
@@ -138,33 +115,41 @@ class CopyState extends MusicBeatState
 
 	public function copyAsset(file:String)
 	{
-		try
+		if (!FileSystem.exists(file))
 		{
-			if (OpenFLAssets.exists(Paths.getPath(file, null)))
+			var directory = Path.directory(file);
+			if (!FileSystem.exists(directory))
+				FileSystem.createDirectory(directory);
+			try
 			{
-				if (textFilesExtensions.contains(Path.extension(file)))
-					createContentFromInternal(file);
+				if (OpenFLAssets.exists(getFile(file)))
+				{
+					if (textFilesExtensions.contains(Path.extension(file)))
+						createContentFromInternal(file);
+					else
+						File.saveBytes(file, getFileBytes(getFile(file)));
+				}
 				else
-					trace("File is already embedded: " + file);
+				{
+					failedFiles.push(getFile(file) + " (File Dosen't Exist)");
+					failedFilesStack.push('Asset ${getFile(file)} does not exist.');
+				}
 			}
-			else
+			catch (e:haxe.Exception)
 			{
-				trace("File doesn't exist internally: " + file);
+				failedFiles.push('${getFile(file)} (${e.message})');
+				failedFilesStack.push('${getFile(file)} (${e.stack})');
 			}
-		}
-		catch (e:haxe.Exception)
-		{
-			trace("Error copying asset: " + e.message);
 		}
 	}
 
 	public function createContentFromInternal(file:String)
 	{
 		var fileName = Path.withoutDirectory(file);
-		var directory = Paths.getPath(Path.directory(file), null);
+		var directory = Path.directory(file);
 		try
 		{
-			var fileData:String = OpenFLAssets.getText(Paths.getPath(file, null));
+			var fileData:String = OpenFLAssets.getText(getFile(file));
 			if (fileData == null)
 				fileData = '';
 			if (!FileSystem.exists(directory))
@@ -173,8 +158,8 @@ class CopyState extends MusicBeatState
 		}
 		catch (e:haxe.Exception)
 		{
-			failedFiles.push('${Paths.getPath(file, null)} (${e.message})');
-			failedFilesStack.push('${Paths.getPath(file, null)} (${e.stack})');
+			failedFiles.push('${getFile(file)} (${e.message})');
+			failedFilesStack.push('${getFile(file)} (${e.stack})');
 		}
 	}
 
@@ -191,17 +176,17 @@ class CopyState extends MusicBeatState
 
 	public static function getFile(file:String):String
 	{
-		if (OpenFLAssets.exists(Paths.getPath(file, null)))
-			return Paths.getPath(file, null);
+		if (OpenFLAssets.exists(file))
+			return file;
 
 		@:privateAccess
 		for (library in LimeAssets.libraries.keys())
 		{
-			if (OpenFLAssets.exists('$library:${Paths.getPath(file, null)}') && library != 'default')
-				return '$library:${Paths.getPath(file, null)}';
+			if (OpenFLAssets.exists('$library:$file') && library != 'default')
+				return '$library:$file';
 		}
 
-		return Paths.getPath(file, null);
+		return file;
 	}
 
 	public static function checkExistingFiles():Bool
@@ -209,10 +194,10 @@ class CopyState extends MusicBeatState
 		locatedFiles = OpenFLAssets.list();
 
 		// removes unwanted assets
-		var assets = locatedFiles.filter(folder -> folder.startsWith(Paths.getPath('assets/', null)));
-		var mods = locatedFiles.filter(folder -> folder.startsWith(Paths.getPath('content/', null)));
+		var assets = locatedFiles.filter(folder -> folder.startsWith('assets/'));
+		var mods = locatedFiles.filter(folder -> folder.startsWith('content/'));
 		locatedFiles = assets.concat(mods);
-		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(Paths.getPath(file, null)));
+		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(file));
 
 		var filesToRemove:Array<String> = [];
 

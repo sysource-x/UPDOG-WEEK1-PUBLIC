@@ -8,6 +8,7 @@ import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.display.StageScaleMode;
 import lime.system.System as LimeSystem; // For allow screen time out
+import mobile.states.CopyState; // For Copy files of the apk ex: assets folder and mods folder
 
 class Main extends Sprite
 {
@@ -41,8 +42,12 @@ class Main extends Sprite
 	{
 		super();
 
-		// test 
-	    // mobile.backend.CrashHandler.init();
+		#if android
+ 		SUtil.requestPermissions();
+ 		#end
+ 		Sys.setCwd(SUtil.getStorageDirectory());
+ 		#end
+	    mobile.backend.CrashHandler.init();
 
 		Splash.nextState = Init;
 		ClientPrefs.loadDefaultKeys();
@@ -52,8 +57,10 @@ class Main extends Sprite
 			FNFGame
 			#else
 			FlxGame
-			#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+			#end(startMeta.width, startMeta.height, #if (mobile && MODS_ALLOWED) CopyState.checkExistingFiles() ? startMeta.initialState : CopyState #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
 				startMeta.startFullScreen);
+			/*#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+				startMeta.startFullScreen);*/
 
 		// FlxG.game._customSoundTray wants just the class, it calls new from
 		// create() in there, which gets called when it's added to stage

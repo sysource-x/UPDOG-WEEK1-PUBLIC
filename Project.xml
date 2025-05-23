@@ -38,7 +38,7 @@
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<!-- Use project assets folder instead of the build one if on a debug build. -->
-	<define name="ASSET_REDIRECT" if="desktop"/>
+	<define name="ASSET_REDIRECT" if="debug"/> <!-- desktop -->
 
 	<!--<define name="RELEASE_BUILD"/>-->
 
@@ -54,7 +54,7 @@
 	<define name="VIDEOS_ALLOWED" if="cpp || desktop || android" /> <!-- original if was "cpp || desktop || android || mobile" -->
 	<define name="DISCORD_ALLOWED" if="desktop"/> <!-- originaly was "cpp" -->
 
-	<assets path='assets/embeds' 		rename='assets'			embed="true" />
+	<assets path='assets/embeds' 		rename='assets'			embed="false" />
 	<!-- assets path="assets/embeds/songs" rename="assets/songs" library="songs" embed="false"/ This are not necessary-->
 
 	<assets path="assets/fonts" />
@@ -213,7 +213,7 @@
 	<section if="android">
     <android target-sdk-version="34" />
     <android min-sdk-version="19" />
-    <android manifest="include/AndroidManifest.xml" />
+    <!-- <android manifest="include/AndroidManifest.xml" /> -->
     </section>
 
 	<!-- Do whatever you want I'm tired uninstall and install everytime -->
