@@ -69,9 +69,9 @@ class Paths
 	}
 	
 	public static var dumpExclusions:Array<String> = [
-		'assets/music/freakyMenu.$SOUND_EXT', //$CORE_DIRECTORY
-		'assets/shared/music/breakfast.$SOUND_EXT', //$CORE_DIRECTORY
-		'assets/shared/music/tea-time.$SOUND_EXT', //$CORE_DIRECTORY
+		'$CORE_DIRECTORY/music/freakyMenu.$SOUND_EXT', //$CORE_DIRECTORY
+		'$CORE_DIRECTORY/shared/music/breakfast.$SOUND_EXT', //$CORE_DIRECTORY
+		'$CORE_DIRECTORY/shared/music/tea-time.$SOUND_EXT', //$CORE_DIRECTORY
 	];
 	
 	public static function clearUnusedMemory()
@@ -247,7 +247,7 @@ class Paths
 			return file;
 		}
 		#end
-		return '$CORE_DIRECTORY/videos/$key.$VIDEO_EXT';
+		return '$CORE_DIRECTORY/videos/$key.$VIDEO_EXT'; // $CORE_DIRECTORY
 	}
 	
 	inline static public function modTextureAtlas(key:String)
@@ -339,7 +339,7 @@ class Paths
 			return file;
 		}
 		#end
-		return '$CORE_DIRECTORY/fonts/$key';
+		return '$CORE_DIRECTORY/fonts/$key'; // $CORE_DIRECTORY
 	}
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
@@ -532,7 +532,7 @@ class Paths
 	// idk // desktop // MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{
-		return '$CORE_DIRECTORY/' + key; // MODS replace the "CORE"
+		return '$MODS_DIRECTORY/' + key; // MODS replace the "CORE"
 	}
 	
 	inline static public function modsFont(key:String)
@@ -602,7 +602,7 @@ class Paths
 			var fileToCheck:String = mods(mod + '/' + key);
 			if (OpenFlAssets.exists(fileToCheck)) return fileToCheck;
 		}
-		return '$CORE_DIRECTORY/' + key; // MODS replace the "CORE"
+		return '$MODS_DIRECTORY/' + key; // MODS replace the "CORE"
 	}
 	
 	public static var globalMods:Array<String> = [];
