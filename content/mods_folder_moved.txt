@@ -1,0 +1,1 @@
+Just a move of the files/folders of content(Mods Folder) to assets folder

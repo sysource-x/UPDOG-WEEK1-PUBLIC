@@ -38,7 +38,7 @@
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<!-- Use project assets folder instead of the build one if on a debug build. -->
-	<define name="ASSET_REDIRECT" if="debug"/> <!-- desktop -->
+	<define name="ASSET_REDIRECT" if="desktop"/> <!-- desktop -->
 
 	<!--<define name="RELEASE_BUILD"/>-->
 
@@ -64,7 +64,7 @@
 
     <!--               Assets for assets/manifest/*.xml              -->
 	<assets path="assets" include="**/*" unless="web"/> <!-- Get all folders, files and etc. of assets folder -->
-    <assets path="assets/songs" library="songs" unless="web"/>
+    <!-- <assets path="assets/songs" library="songs" unless="web"/>
     <assets path="assets/shared/data" include="**/*" unless="web"/>
 	<assets path="assets/shared/custom_events" include="**/*" unless="web"/>
 	<assets path="assets/shared/characters" include="**/*" unless="web"/>
@@ -96,7 +96,7 @@
 	<assets path="assets/shared/images/noteskins" include="**/*" unless="web"/>
 	<assets path="assets/shared/images/pixelUI" include="**/*" unless="web"/>
 	<assets path="assets/shared/images/stage" include="**/*" unless="web"/>
-	<assets path="assets/shared/images/stage/polus" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/stage/polus" include="**/*" unless="web"/> -->
 	<!--                            End                              -->
 
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
@@ -104,6 +104,21 @@
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
 	<assets path="content" embed='false' if="MODS_ALLOWED"/>
+
+	<assets path="content/characters" rename="assets/shared/characters" include="**/*" unless="web"/>
+	<assets path="content/weeks" rename="assets/shared/weeks" include="**/*" unless="web"/>
+	<assets path="content/music" rename="assets/shared/music" include="**/*" unless="web"/>
+	<assets path="content/noteskins" rename="assets/shared/noteskins" include="**/*" unless="web"/>
+	<assets path="content/stages" rename="assets/shared/stages" include="**/*" unless="web"/>
+	<assets path="content/songs" rename="assets/songs" include="**/*" unless="web"/>
+	<assets path="content/scripts" rename="assets/shared/scripts" include="**/*" unless="web"/>
+	<assets path="content/custom_events" rename="assets/shared/custom_events" include="**/*" unless="web"/>
+	<assets path="content/shaders" rename="assets/shared/shaders" include="**/*" unless="web"/>
+	<assets path="content/sounds" rename="assets/shared/sounds" include="**/*" unless="web"/>
+	<assets path="content/images" rename="assets/shared/images" include="**/*" unless="web"/>
+	<assets path="content/data" rename="assets/shared/data" include="**/*" unless="web"/>
+	<assets path="content/videos" rename="assets/videos" include="**/*" unless="web"/>
+	<assets path="content/fonts" rename="assets/fonts" include="**/*" unless="web"/>
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">
