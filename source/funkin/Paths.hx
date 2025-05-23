@@ -64,13 +64,14 @@ class Paths
 	
 	public static function excludeAsset(key:String)
 	{
-		if (!dumpExclusions.contains(key)) dumpExclusions.push(key);
+		if (!dumpExclusions.contains(key))
+			    dumpExclusions.push(key);
 	}
 	
 	public static var dumpExclusions:Array<String> = [
-		'$CORE_DIRECTORY/music/freakyMenu.$SOUND_EXT',
-		'$CORE_DIRECTORY/shared/music/breakfast.$SOUND_EXT',
-		'$CORE_DIRECTORY/shared/music/tea-time.$SOUND_EXT',
+		'assets/music/freakyMenu.$SOUND_EXT', //$CORE_DIRECTORY
+		'assets/shared/music/breakfast.$SOUND_EXT', //$CORE_DIRECTORY
+		'assets/shared/music/tea-time.$SOUND_EXT', //$CORE_DIRECTORY
 	];
 	
 	public static function clearUnusedMemory()
@@ -110,13 +111,13 @@ class Paths
 			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) && key != null)
 			{
 				// trace('test: ' + dumpExclusions, key);
-				OpenFlAssets.cache.clear(key);
+				OpenFlAssets.cache.clear(key); // Assets
 				currentTrackedSounds.remove(key);
 			}
 		}
 		// flags everything to be cleared out next unused memory clear
 		localTrackedAssets = [];
-		OpenFlAssets.cache.clear("songs");
+		OpenFlAssets.cache.clear("songs"); // Assets
 	}
 	
 	/**
@@ -139,7 +140,7 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 	
-	public static function getPath(file:String, ?type:AssetType = AssetType.TEXT, ?library:Null<String> = null)
+	public static function getPath(file:String, ?type:AssetType = TEXT, ?library:Null<String> = null)
 	{
 		if (library != null) return getLibraryPath(file, library);
 		
@@ -178,32 +179,32 @@ class Paths
 	
 	inline public static function getSharedPath(file:String = '')
 	{
-		return '$CORE_DIRECTORY/shared/$file';
+		return 'assets/shared/$file'; // $CORE_DIRECTORY
 	}
 	
-	inline static public function file(file:String, type:AssetType = AssetType.TEXT, ?library:String)
+	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
 	{
 		return getPath(file, type, library);
 	}
 	
 	inline static public function txt(key:String, ?library:String)
 	{
-		return getPath('data/$key.txt', AssetType.TEXT, library);
+		return getPath('data/$key.txt', TEXT, library);
 	}
 	
 	inline static public function xml(key:String, ?library:String)
 	{
-		return getPath('data/$key.xml', AssetType.TEXT, library);
+		return getPath('data/$key.xml', TEXT, library);
 	}
 	
 	inline static public function json(key:String, ?library:String)
 	{
-		return getPath('songs/$key.json', AssetType.TEXT, library);
+		return getPath('songs/$key.json', TEXT, library);
 	}
 	
 	inline static public function noteskin(key:String, ?library:String)
 	{
-		return getPath('noteskins/$key.json', AssetType.TEXT, library);
+		return getPath('noteskins/$key.json', TEXT, library);
 	}
 	
 	inline static public function modsNoteskin(key:String)
@@ -213,17 +214,17 @@ class Paths
 	
 	inline static public function shaderFragment(key:String, ?library:String)
 	{
-		return getPath('shaders/$key.frag', AssetType.TEXT, library);
+		return getPath('shaders/$key.frag', TEXT, library);
 	}
 	
 	inline static public function shaderVertex(key:String, ?library:String)
 	{
-		return getPath('shaders/$key.vert', AssetType.TEXT, library);
+		return getPath('shaders/$key.vert', TEXT, library);
 	}
 	
 	inline static public function lua(key:String, ?library:String)
 	{
-		return getPath('$key.lua', AssetType.TEXT, library);
+		return getPath('$key.lua', TEXT, library);
 	}
 	
 	inline static public function getContent(asset:String):Null<String>
@@ -326,7 +327,7 @@ class Paths
 			if (FileSystem.exists(levelPath)) return File.getContent(levelPath);
 		}
 		//#end
-		return OpenFlAssets.getText(getPath(key, AssetType.TEXT)); // The internal config to get some files
+		return OpenFlAssets.getText(getPath(key, TEXT)); // The internal config to get some files
 	}
 	
 	inline static public function font(key:String)
@@ -420,7 +421,7 @@ class Paths
 		else
 		#end
 		{
-			file = getPath('images/$key.png', AssetType.IMAGE, library);
+			file = getPath('images/$key.png', IMAGE, library);
 			
 			// trace(file);
 			if (currentTrackedAssets.exists(file))
@@ -432,7 +433,7 @@ class Paths
 			{
 				bitmap = BitmapData.fromFile(file);
 			}
-			else if (OpenFlAssets.exists(file, AssetType.IMAGE))
+			else if (OpenFlAssets.exists(file,AssetType.IMAGE))
 			{
 				bitmap = OpenFlAssets.getBitmapData(file);
 			}
@@ -457,7 +458,7 @@ class Paths
 			else
 			#end
 			{
-				if (OpenFlAssets.exists(file, AssetType.IMAGE)) bitmap = OpenFlAssets.getBitmapData(file);
+				if (OpenFlAssets.exists(file, IMAGE)) bitmap = OpenFlAssets.getBitmapData(file);
 			}
 			
 			if (bitmap == null) return null;
@@ -504,17 +505,17 @@ class Paths
 		// I hate this so god damn much
 		var gottenPath:String = '$key.$SOUND_EXT';
 		if (path != null) gottenPath = '$path/$gottenPath';
-		gottenPath = strip(getPath(gottenPath, AssetType.SOUND, library));
+		gottenPath = strip(getPath(gottenPath, SOUND, library));
 		// trace(gottenPath);
 		if (!currentTrackedSounds.exists(gottenPath))
 		{
 			var retKey:String = (path != null) ? '$path/$key' : key;
-			retKey = ((path == 'songs') ? 'songs:' : '') + getPath('$retKey.$SOUND_EXT', AssetType.SOUND, library);
+			retKey = ((path == 'songs') ? 'songs:' : '') + getPath('$retKey.$SOUND_EXT', SOUND, library);
 			if (FileSystem.exists(strip(gottenPath)))
 			{
 				currentTrackedSounds.set(strip(gottenPath), Sound.fromFile(retKey)); // i wish this was on the newer ver of the engine with the new paths
 			}
-			else if (OpenFlAssets.exists(retKey, AssetType.SOUND))
+			else if (OpenFlAssets.exists(retKey, SOUND))
 			{
 				// embedded sound
 				currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(retKey));
@@ -527,7 +528,7 @@ class Paths
 	
 	inline public static function strip(path:String) return path.indexOf(':') != -1 ? path.substr(path.indexOf(':') + 1, path.length) : path;
 	
-	//#if MODS_ALLOWED
+	#if MODS_ALLOWED
 	// idk // desktop // MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{
@@ -668,5 +669,5 @@ class Paths
 		}
 		return list;
 	}
-	// #end
+	#end
 }

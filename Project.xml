@@ -49,10 +49,10 @@
 	<classpath name="source" />
 	
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
-	<define name="MODS_ALLOWED" if="desktop || android || mobile" />
-	<define name="LUA_ALLOWED" if="desktop || android || mobile" />
-	<define name="VIDEOS_ALLOWED" if="desktop || android || mobile" />
-	<define name="DISCORD_ALLOWED" if="desktop"/>
+	<define name="MODS_ALLOWED" if="desktop || android" />
+	<define name="LUA_ALLOWED" if="desktop || android" />
+	<define name="VIDEOS_ALLOWED" if="cpp || desktop || android" /> <!-- original if was "cpp || desktop || android || mobile" -->
+	<define name="DISCORD_ALLOWED" if="desktop"/> <!-- originaly was "cpp" -->
 
 	<assets path='assets/embeds' 		rename='assets'			embed="true" />
 	<!-- assets path="assets/embeds/songs" rename="assets/songs" library="songs" embed="false"/ This are not necessary-->
@@ -62,13 +62,48 @@
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 
-	<assets path="assets/songs" library="songs" unless="web"/><!--include="*/*.json,*/*.ogg"-->
+    <!--               Assets for assets/manifest/*.xml              -->
+	<assets path="assets" include="**/*" unless="web"/> <!-- Get all folders, files and etc. of assets folder -->
+    <assets path="assets/songs" library="songs" unless="web"/>
+    <assets path="assets/images" include="**/*" unless="web"/>
+    <assets path="assets/shared/data" include="**/*" unless="web"/>
+	<assets path="assets/shared/custom_events" include="**/*" unless="web"/>
+	<assets path="assets/shared/characters" include="**/*" unless="web"/>
+	<assets path="assets/shared/music" include="**/*" unless="web"/>
+	<assets path="assets/shared/noteskins" include="**/*" unless="web"/>
+	<assets path="assets/shared/scripts" include="**/*" unless="web"/>
+	<assets path="assets/shared/shaders" include="**/*" unless="web"/>
+	<assets path="assets/shared/sounds" include="**/*" unless="web"/>
+	<assets path="assets/shared/stages" include="**/*" unless="web"/>
+	<assets path="assets/shared/weeks" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/branding" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/characters" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/credits" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/editors" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/editors/friends" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/hud" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/icons" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/common" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/credits" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/freeplay" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/main" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/options" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/pause" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/secret" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/menu/story" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/mobileControls" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/noteskins" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/pixelUI" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/stage" include="**/*" unless="web"/>
+	<assets path="assets/shared/images/stage/polus" include="**/*" unless="web"/>
+	<!--                            End                              -->
 
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
 	<library name="songs"         preload="true" />
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
-	<assets path='content' embed='false' if="MODS_ALLOWED"/>
+	<assets path="content" embed='false' if="MODS_ALLOWED"/>
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">
@@ -92,7 +127,7 @@
 	<define name="hscriptPos"/>
 
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
-	<haxelib name="discord_rpc" if="DISCORD_ALLOWED"/>
+	<haxelib name="discord_rpc" if="desktop"/> <!-- DISCORD_ALLOWED -->
 	<haxelib name="hxvlc" if="VIDEOS_ALLOWED"/>
 
 	<haxelib name="hxcpp-debug-server" if="debug"/> <!-- see debug things -->
@@ -144,7 +179,7 @@
 
 	<!--Avoid memory leaks with for loops in HScript credits to Heropowerbrine-->
   	<haxedef name="loop_unroll_max_cost" value="25" />
-  	<haxedef name="DISABLED_MACRO_SUPERLATIVE" if="android || mobile" />
+  	<haxedef name="DISABLED_MACRO_SUPERLATIVE" if="mobile" /> <!-- originaly was "android || mobile" -->
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->

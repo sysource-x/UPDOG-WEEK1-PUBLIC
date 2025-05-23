@@ -1229,7 +1229,7 @@ class NoteSkinEditor extends MusicBeatState
 	function reloadDropdown(){
 		var skinsLoaded:Map<String, Bool> = new Map();
 
-		// #if MODS_ALLOWED
+		#if desktop // MODS_ALLOWED
 		skinList = [];
 		var directories:Array<String> = [
 			Paths.mods('noteskins/'),
@@ -1258,9 +1258,9 @@ class NoteSkinEditor extends MusicBeatState
 				}
 			}
 		}
-		// #else
-		// skinList = CoolUtil.coolTextFile(Paths.txt('noteskin_list'));
-		// #end
+		#else
+		skinList = CoolUtil.coolTextFile(Paths.txt('noteskin_list'));
+		#end
 
 		skinDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(skinList, true));
 		skinDropDown.selectedLabel = name;

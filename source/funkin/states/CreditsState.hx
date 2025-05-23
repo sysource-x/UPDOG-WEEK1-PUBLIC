@@ -433,7 +433,7 @@ class CreditsState extends MusicBeatState
 		descBox.updateHitbox();
 	}
 
-	#if MODS_ALLOWED
+	#if MODS_ALLOWED // idk
 	private var modsAdded:Array<String> = [];
 
 	function pushModCreditsToList(folder:String)

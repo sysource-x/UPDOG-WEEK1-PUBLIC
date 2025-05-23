@@ -62,7 +62,7 @@ class StoryMenuState extends MusicBeatState
 		WeekData.reloadWeekFiles(true);
 		if (curWeek >= WeekData.weeksList.length) curWeek = 0;
 
-	    #if DISCORD_ALLOWED
+	    #if desktop // DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Story Menu", null);
 		#end
