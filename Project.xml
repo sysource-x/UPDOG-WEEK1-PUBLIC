@@ -60,6 +60,7 @@
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
+	<assets path="assets/shared/songs" library="songs" exclude="*.mp3" unless="web"/>
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
@@ -73,6 +74,11 @@
 		<assets path="projFiles/alsoft.ini" rename="alsoft.ini" type="text" if="windows"/>
 		<assets path="projFiles/alsoft.ini" rename="alsoft.conf" type="text" unless="windows"/>
 	</section>
+
+	<!-- _____________________________  SOME ASSETS  ____________________________ -->
+
+	<assets path="assets" include="**/*" unless="web"/>
+	<!-- <assets path="content" include="**/*" if="MODS_ALLOWED"/> -->
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -135,10 +141,6 @@
 	<haxedef name="message.reporting" value="pretty" />
 	
 	<haxedef name="no-deprecation-warnings"/>
-
-	<!--using a custom keystore so people don't have to keep uninstalling when the mod updates / heropowerbrine 
-	<certificate path="-key.keystore" password="portvsimpostor" alias="vsimpostorport" alias-password="portvsimpostor" if="android" unless="debug" />
--->
 
 	<!--Avoid memory leaks with for loops in HScript credits to Heropowerbrine-->
   	<haxedef name="loop_unroll_max_cost" value="25" />

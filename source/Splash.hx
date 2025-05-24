@@ -21,17 +21,14 @@ class Splash extends FlxState
 		FlxG.autoPause = false;
 
 		FlxTimer.wait(1, () -> {
-			var folder = Assets.list().filter(folder -> folder.contains('assets/shared/images/branding')).map(folder -> {
-			    var idx = folder.lastIndexOf('/');
-			    return idx != -1 ? folder.substring(idx + 1) : folder;
-			});
-			var img = folder[FlxG.random.int(0, folder.length - 1)];
-			trace(folder);
-
-			logo = new FlxSprite().loadGraphic(Paths.image('branding/${img.replace('.png', '')}'));
-			logo.screenCenter();
-			logo.visible = false;
-			add(logo);
+			var folder = Assets.list().filter(path -> path.startsWith("assets/shared/images/branding") && path.endsWith(".png"));
+			if (folder.length > 0) {
+				var img = folder[0].split("/").pop();
+				logo = new FlxSprite().loadGraphic(Paths.image('branding/${img.replace(".png", "")}'));
+				logo.screenCenter();
+				logo.visible = false;
+				add(logo);
+			}
 
 			FlxG.mouse.visible = false;
 

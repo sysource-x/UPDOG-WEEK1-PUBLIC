@@ -8,6 +8,7 @@ import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.display.StageScaleMode;
 import lime.system.System as LimeSystem; // For allow screen time out
+import mobile.states.LoadingScreen;
 
 class Main extends Sprite
 {
@@ -18,7 +19,7 @@ class Main extends Sprite
 	public static final startMeta = {
 		width: 1280,
 		height: 720,
-		initialState: Splash,
+		initialState: LoadingScreen,
 		skipSplash: false,
 		startFullScreen: false,
 		fps: 60
