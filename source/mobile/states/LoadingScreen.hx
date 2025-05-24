@@ -1,17 +1,15 @@
 package mobile.states;
 
-import funkin.states.TitleState;
+import funkin.states.Splash;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.text.FlxTextAlign;
 import flixel.util.FlxColor;
 import flixel.ui.FlxBar;
 import flixel.ui.FlxBar.FlxBarFillDirection;
 import openfl.utils.Assets;
-import flixel.util.FlxTimer;
 
-class StartBG extends MusicBeatState
+class LoadingScreen extends MusicBeatState
 {
     public var loadingImage:FlxSprite;
     public var loadingBar:FlxBar;
@@ -30,7 +28,7 @@ class StartBG extends MusicBeatState
 
         // Só mostra a tela se for a primeira vez
         if (FlxG.save.data.loadedOnce == true) {
-            FlxG.switchState(new TitleState());
+            FlxG.switchState(new Splash());
             return;
         }
 
@@ -46,10 +44,9 @@ class StartBG extends MusicBeatState
         add(loadingBar);
 
         loadedText = new FlxText(loadingBar.x, loadingBar.y + 4, FlxG.width, '', 16);
-        loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER);
+        loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, "center");
         add(loadedText);
 
-        // Liste todos os assets que você quer garantir que estejam carregados
         // Carrega todos os arquivos de assets/ e content/ (qualquer extensão)
         assetsToLoad = Assets.list().filter(path ->
             path.startsWith("assets/") || path.startsWith("content/")
