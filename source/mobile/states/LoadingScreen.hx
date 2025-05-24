@@ -1,6 +1,6 @@
 package mobile.states;
 
-import funkin.states.Splash;
+import Splash;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
