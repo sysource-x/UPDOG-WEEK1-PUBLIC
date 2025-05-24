@@ -9,7 +9,7 @@ using StringTools;
 @:access(Main)
 class Splash extends FlxState
 {
-	public static var nextState:Class<FlxState>;
+	public static var nextState:Class<FlxState> = Init; // Init file
 	// var video:FunkinVideo;
 	var _cachedAutoPause:Bool;
 
@@ -21,14 +21,22 @@ class Splash extends FlxState
 		FlxG.autoPause = false;
 
 		FlxTimer.wait(1, () -> {
-			var folder = FileSystem.readDirectory('assets/shared/images/branding');
+			var folder = Assets.list().filter(path -> path.startsWith("assets/shared/images/branding/") && path.endsWith(".png"));
 			var img = folder[FlxG.random.int(0, folder.length - 1)];
 			trace(folder);
 
-			logo = new FlxSprite().loadGraphic(Paths.image('branding/${img.replace('.png', '')}'));
+			logo = new FlxSprite().loadGraphic(Paths.image('branding/${img.split("/").pop().replace(".png", "")}'));
 			logo.screenCenter();
 			logo.visible = false;
 			add(logo);
+			/*var folder = Assets.list().filter(path -> path.startsWith("assets/shared/images/branding") && path.endsWith(".png"));
+			if (folder.length > 0) {
+				var img = folder[0].split("/").pop();
+				logo = new FlxSprite().loadGraphic(Paths.image('branding/${img.replace(".png", "")}'));
+				logo.screenCenter();
+				logo.visible = false;
+				add(logo);
+			} // by GBLStudios */
 
 			FlxG.mouse.visible = false;
 

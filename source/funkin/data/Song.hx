@@ -102,7 +102,7 @@ class Song
 		
 		var formattedFolder:String = Paths.formatToSongPath(folder);
 		var formattedSong:String = Paths.formatToSongPath(jsonInput);
-		#if desktop
+		#if MODS_ALLOWED
 		var moddyFile:String = Paths.modsJson(formattedFolder + '/' + formattedSong);
 		if (FileSystem.exists(moddyFile))
 		{
@@ -114,9 +114,9 @@ class Song
 		{
 			if (mod)
 			{
-				#if desktop // nothing
+				//#if desktop // nothing
 				rawJson = File.getContent(moddyFile).trim();
-				#end
+				//#end
 			}
 			else
 			{
@@ -126,7 +126,7 @@ class Song
 				}
 				catch (e)
 				{
-					#if desktop // sys
+					#if sys // sys
 					rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
 					#else
 					rawJson = openfl.Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();

@@ -8,7 +8,7 @@ import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.display.StageScaleMode;
 import lime.system.System as LimeSystem; // For allow screen time out
-import mobile.states.CopyState; // For Copy files of the apk ex: assets folder and mods folder
+import mobile.states.LoadingScreen;
 
 class Main extends Sprite
 {
@@ -19,7 +19,7 @@ class Main extends Sprite
 	public static final startMeta = {
 		width: 1280,
 		height: 720,
-		initialState: Splash,
+		initialState: LoadingScreen,
 		skipSplash: false,
 		startFullScreen: false,
 		fps: 60
@@ -42,14 +42,10 @@ class Main extends Sprite
 	{
 		super();
 
-		#if android
- 		SUtil.requestPermissions();
- 		#end
- 		Sys.setCwd(SUtil.getStorageDirectory());
- 		#end
-	    mobile.backend.CrashHandler.init();
+	    // mobile.backend.CrashHandler.init();
 
-		Splash.nextState = Init;
+		LoadingScreen.nextState = Splash; // Splash, Init
+		// FlxG.switchState(new LoadingScreen()); // not really needed, but just in case
 		ClientPrefs.loadDefaultKeys();
 
 		final game = new
@@ -57,10 +53,8 @@ class Main extends Sprite
 			FNFGame
 			#else
 			FlxGame
-			#end(startMeta.width, startMeta.height, #if (mobile && MODS_ALLOWED) CopyState.checkExistingFiles() ? startMeta.initialState : CopyState #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+			#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
 				startMeta.startFullScreen);
-			/*#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
-				startMeta.startFullScreen);*/
 
 		// FlxG.game._customSoundTray wants just the class, it calls new from
 		// create() in there, which gets called when it's added to stage

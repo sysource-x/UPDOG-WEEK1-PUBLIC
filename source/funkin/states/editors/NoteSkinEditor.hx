@@ -1229,7 +1229,7 @@ class NoteSkinEditor extends MusicBeatState
 	function reloadDropdown(){
 		var skinsLoaded:Map<String, Bool> = new Map();
 
-		#if desktop // MODS_ALLOWED
+		#if MODS_ALLOWED // MODS_ALLOWED
 		skinList = [];
 		var directories:Array<String> = [
 			Paths.mods('noteskins/'),

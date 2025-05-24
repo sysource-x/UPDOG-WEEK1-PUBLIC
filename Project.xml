@@ -54,7 +54,7 @@
 	<define name="VIDEOS_ALLOWED" if="cpp || desktop || android" /> <!-- original if was "cpp || desktop || android || mobile" -->
 	<define name="DISCORD_ALLOWED" if="desktop"/> <!-- originaly was "cpp" -->
 
-	<assets path='assets/embeds' 		rename='assets'			embed="false" />
+	<assets path='assets/embeds' 		rename='assets'			embed="true" />
 	<!-- assets path="assets/embeds/songs" rename="assets/songs" library="songs" embed="false"/ This are not necessary-->
 
 	<assets path="assets/fonts" />
@@ -103,14 +103,14 @@
 	<library name="songs"         preload="true" />
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
-	<assets path="content" embed='false' if="MODS_ALLOWED"/>
+	<assets path="content" embed="false" if="MODS_ALLOWED"/>
 
 	<assets path="content/characters" rename="assets/shared/characters" include="**/*" unless="web"/>
 	<assets path="content/weeks" rename="assets/shared/weeks" include="**/*" unless="web"/>
 	<assets path="content/music" rename="assets/shared/music" include="**/*" unless="web"/>
 	<assets path="content/noteskins" rename="assets/shared/noteskins" include="**/*" unless="web"/>
 	<assets path="content/stages" rename="assets/shared/stages" include="**/*" unless="web"/>
-	<assets path="content/songs" rename="assets/songs" include="**/*" unless="web"/>
+	<assets path="content/songs" rename="assets/shared/songs" include="**/*" unless="web"/>
 	<assets path="content/scripts" rename="assets/shared/scripts" include="**/*" unless="web"/>
 	<assets path="content/custom_events" rename="assets/shared/custom_events" include="**/*" unless="web"/>
 	<assets path="content/shaders" rename="assets/shared/shaders" include="**/*" unless="web"/>

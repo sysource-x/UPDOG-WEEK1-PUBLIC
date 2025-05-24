@@ -39,10 +39,10 @@ import mobile.flixel.FlxHitbox;
 import mobile.flixel.FlxVirtualPad;
 import mobile.flixel.input.FlxMobileInputID;
 import mobile.backend.SUtil;
+import mobile.states.LoadingScreen;
 import mobile.backend.Asset2File;
 
 /*
-*/
 //Android
 #if android
 import android.content.Context as AndroidContext;
@@ -55,7 +55,6 @@ import android.os.Build.VERSION as AndroidVersion;
 import android.os.Build.VERSION_CODES as AndroidVersionCode;
 import android.os.BatteryManager as AndroidBatteryManager;
 #end
-/*
 */
 
 using StringTools;

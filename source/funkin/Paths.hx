@@ -240,7 +240,7 @@ class Paths
 	
 	static public function video(key:String)
 	{
-		#if desktop
+		#if MODS_ALLOWED
 		var file:String = modsVideo(key);
 		if (OpenFlAssets.exists(file))
 		{
@@ -332,7 +332,7 @@ class Paths
 	
 	inline static public function font(key:String)
 	{
-		#if desktop
+		#if MODS_ALLOWED
 		var file:String = modsFont(key);
 		if (FileSystem.exists(file))
 		{
@@ -344,7 +344,7 @@ class Paths
 	
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
-		#if desktop
+		#if MODS_ALLOWED
 		if (FileSystem.exists(mods(currentModDirectory + '/' + key)) || FileSystem.exists(mods(key)))
 		{
 			return true;
@@ -360,7 +360,7 @@ class Paths
 	
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		#if desktop
+		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var xmlExists:Bool = false;
 		var xml = modsXml(key);
@@ -383,7 +383,7 @@ class Paths
 	
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		#if desktop
+		#if MODS_ALLOWED
 		var imageLoaded:FlxGraphic = returnGraphic(key);
 		var txtExists:Bool = false;
 		if (FileSystem.exists(modsTxt(key)))
@@ -410,7 +410,7 @@ class Paths
 		var bitmap:BitmapData = null;
 		var file:String = null;
 		
-		#if desktop
+		#if MODS_ALLOWED
 		file = modsImages(key);
 		if (currentTrackedAssets.exists(file))
 		{
@@ -453,7 +453,7 @@ class Paths
 	{
 		if (bitmap == null)
 		{
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(file)) bitmap = BitmapData.fromFile(file);
 			else
 			#end
@@ -527,12 +527,12 @@ class Paths
 	}
 	
 	inline public static function strip(path:String) return path.indexOf(':') != -1 ? path.substr(path.indexOf(':') + 1, path.length) : path;
-	
+
 	#if MODS_ALLOWED
 	// idk // desktop // MODS_ALLOWED
 	inline static public function mods(key:String = '')
 	{
-		return #if mobile Sys.getCwd() + #end '$MODS_DIRECTORY/' + key; // MODS replace the "CORE"
+		return '$MODS_DIRECTORY/' + key; // MODS replace the "CORE"
 	}
 	
 	inline static public function modsFont(key:String)
@@ -602,7 +602,7 @@ class Paths
 			var fileToCheck:String = mods(mod + '/' + key);
 			if (OpenFlAssets.exists(fileToCheck)) return fileToCheck;
 		}
-		return #if mobile Sys.getCwd() + #end '$MODS_DIRECTORY/' + key; // MODS replace the "CORE"
+		return '$MODS_DIRECTORY/' + key; // MODS replace the "CORE"
 	}
 	
 	public static var globalMods:Array<String> = [];

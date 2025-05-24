@@ -225,7 +225,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
@@ -283,7 +283,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
@@ -345,7 +345,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
@@ -386,7 +386,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
@@ -482,7 +482,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
@@ -522,7 +522,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);
@@ -573,7 +573,7 @@ class FunkinLua extends FunkinScript
 			var cervix = luaFile + ".lua";
 			if (luaFile.endsWith(".lua")) cervix = luaFile;
 			var doPush = false;
-			#if desktop
+			#if MODS_ALLOWED
 			if (FileSystem.exists(Paths.modFolders(cervix)))
 			{
 				cervix = Paths.modFolders(cervix);

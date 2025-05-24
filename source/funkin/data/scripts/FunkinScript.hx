@@ -8,12 +8,13 @@ using StringTools;
 /**
 	This is a base class meant to be overridden so you can easily implement custom script types
 **/
-class FunkinScript
-{
-	public var scriptName:String = '';
-	public var scriptType:ScriptType = '';
+class FunkinScript {
+    public var scriptName:String = '';
+    public var scriptType:ScriptType = '';
 
-	/**
+    public function new() {}
+
+    /**
 		Called when the script should be stopped
 	**/
 	public function stop()

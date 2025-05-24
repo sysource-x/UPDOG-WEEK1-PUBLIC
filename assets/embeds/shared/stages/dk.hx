@@ -1,4 +1,3 @@
-
 import openfl.filters.ShaderFilter;
 import funkin.states.substates.GameOverSubstate;
 import funkin.objects.video.FunkinVideoSprite;
@@ -7,6 +6,7 @@ import funkin.modchart.modifiers.ScaleModifier;
 import funkin.modchart.modifiers.TransformModifier;
 import funkin.modchart.Modifier.ModifierType;
 import funkin.modchart.Modifier;
+import mobile.scripting.NativeAPI;
 
 var ext:String = 'stage/secret/'; // Edit secret to your stage name.
 var video:FunkinVideoSprite;
@@ -14,15 +14,28 @@ var blackSprite:FlxSprite;
 var ohioSprite:FlxSprite;
 
 function onLoad() {
+    var videoPath = 'assets/videos/banana.mp4';
+    if (Assets.exists(videoPath)) {
+        video = new FunkinVideoSprite(200, 0).preload(videoPath, [FunkinVideoSprite.MUTED]);
+        add(video);
 
-    var bytes = Assets.getBytes('assets/videos/banana.mp4');
-    
-    video = new FunkinVideoSprite(200,0).preload(bytes, [FunkinVideoSprite.MUTED]);
-  	add(video);
-    
+        video.onReady.addOnce(() -> {
+            video.setGraphicSize(0, 722);
+            video.updateHitbox();
+            video.screenCenter(FlxAxes.X);
+        });
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Video not found in " + videoPath);
+    }
+
     var bg:FlxSprite = new FlxSprite(0, 0);
-    bg.loadGraphic(Paths.image(ext + "sky"));
-    bg.scrollFactor.set(1,1);
+    var bgPath = Paths.image(ext + "sky");
+    if (Assets.exists(bgPath)) {
+        bg.loadGraphic(bgPath);
+        bg.scrollFactor.set(1,1);
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Background image not found in " + bgPath);
+    }
 
     ohioSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xffffffff);
     ohioSprite.alpha = 0;
@@ -30,24 +43,49 @@ function onLoad() {
 	add(ohioSprite);
     
     var bushes:FlxSprite = new FlxSprite(300, 225);
-    bushes.loadGraphic(Paths.image(ext + "skyass"));
-    bushes.scrollFactor.set(0.75,0.75);
-    bushes.scale.set(0.5,0.5);
+    var bushesPath = Paths.image(ext + "skyass");
+    if (Assets.exists(bushesPath)) {
+        bushes.loadGraphic(bushesPath);
+        bushes.scrollFactor.set(0.75,0.75);
+        bushes.scale.set(0.5,0.5);
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Bushes image not found in " + bushesPath);
+    }
 
     var stars:FlxSprite = new FlxSprite(0, -75);
-    stars.loadGraphic(Paths.image(ext + "tree3"));
-    stars.scrollFactor.set(0.8,0.8);
+    var starsPath = Paths.image(ext + "tree3");
+    if (Assets.exists(starsPath)) {
+        stars.loadGraphic(starsPath);
+        stars.scrollFactor.set(0.8,0.8);
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Stars image not found in " + starsPath);
+    }
 
     var mountains:FlxSprite = new FlxSprite(0, -75);
-    mountains.loadGraphic(Paths.image(ext + "tree2"));
-    mountains.scrollFactor.set(0.85,0.85);
+    var mountainsPath = Paths.image(ext + "tree2");
+    if (Assets.exists(mountainsPath)) {
+        mountains.loadGraphic(mountainsPath);
+        mountains.scrollFactor.set(0.85,0.85);
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Mountains image not found in " + mountainsPath);
+    }
 
     var mountains2:FlxSprite = new FlxSprite(0, -75);
-    mountains2.loadGraphic(Paths.image(ext + "tree"));
-    mountains2.scrollFactor.set(0.9,0.9);
+    var mountains2Path = Paths.image(ext + "tree");
+    if (Assets.exists(mountains2Path)) {
+        mountains2.loadGraphic(mountains2Path);
+        mountains2.scrollFactor.set(0.9,0.9);
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Mountains2 image not found in " + mountains2Path);
+    }
 
     var floor:FlxSprite = new FlxSprite(0, 0);
-    floor.loadGraphic(Paths.image(ext + "background"));
+    var floorPath = Paths.image(ext + "background");
+    if (Assets.exists(floorPath)) {
+        floor.loadGraphic(floorPath);
+    } else {
+        NativeAPI.showMessageBox("Assets Error", "onLoad: Floor image not found in " + floorPath);
+    }
 
     GameOverSubstate.characterName = 'diddy-dead';
 	GameOverSubstate.deathSoundName = 'diddyscream';
