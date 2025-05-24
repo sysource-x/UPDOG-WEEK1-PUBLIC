@@ -130,7 +130,7 @@ class LoadingScreen extends MusicBeatState
 
         // Só libera se carregou tudo E passou o tempo mínimo
         if (ready && elapsedTime >= minTime) {
-            if (!tapped && (FlxG.mouse.justPressed || FlxG.touches.justStarted())) {
+            if (!tapped && (FlxG.mouse.justPressed || FlxG.touches.justStarted().length > 0)) {
                 tapped = true;
                 FlxG.sound.play(Paths.sound('confirmMenu')); // se quiser, pode tirar
                 FlxG.save.data.loadedOnce = true;
