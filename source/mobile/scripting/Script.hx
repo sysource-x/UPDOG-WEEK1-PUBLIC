@@ -3,7 +3,6 @@ package mobile.scripting;
 import lime.app.Application;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import haxe.io.Path;
-import hscript.IHScriptCustomConstructor;
 import flixel.util.FlxStringUtil;
 import flixel.FlxBasic;
 

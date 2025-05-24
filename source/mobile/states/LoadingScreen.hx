@@ -2,6 +2,7 @@ package mobile.states;
 
 import Splash;
 import flixel.FlxG;
+import flixel.FlxState;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
