@@ -18,7 +18,7 @@ class StartBG extends MusicBeatState
     public var loadedText:FlxText;
     public var ready:Bool = false;
     public var tapped:Bool = false;
-    public var minTime:Float = 3; // segundos mínimos de loading
+    public var minTime:Float = 3; // segundos mínimos de loading, mas depende do fps
     var elapsedTime:Float = 0;
     var assetsToLoad:Array<String>;
     var loadedAssets:Int = 0;

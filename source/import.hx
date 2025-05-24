@@ -38,8 +38,8 @@ import funkin.backend.MusicBeatState;
 import mobile.flixel.FlxHitbox;
 import mobile.flixel.FlxVirtualPad;
 import mobile.flixel.input.FlxMobileInputID;
-import mobile.backend.SUtil;
 import mobile.backend.Asset2File;
+import mobile.states.LoadingScreen;
 
 /*
 //Android
