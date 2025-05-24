@@ -1,6 +1,9 @@
 package funkin.data.scripts;
 
 import mobile.scripting.HScript;
+import flixel.FlxState;
+import funkin.data.scripts.FunkinScript;
+import funkin.data.scripts.ScriptType;
 
 /**
  * Implementação de FunkinScript usando HScript.
@@ -17,7 +20,7 @@ class FunkinHScript extends FunkinScript {
         super();
         scriptType = ScriptType.HSCRIPT;
         scriptName = path;
-        hscript = new HScript();
+        hscript = new HScript(path);
         hscript.onCreate(path);
     }
 

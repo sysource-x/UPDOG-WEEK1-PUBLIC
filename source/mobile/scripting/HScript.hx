@@ -6,6 +6,8 @@ import hscript.Parser;
 import hscript.Interp;
 import hscript.Expr;
 import openfl.utils.Assets;
+import mobile.scripting.Logs;
+import flixel.FlxState;
 
 /**
  * @author: CodenameEngine & GBLStudios

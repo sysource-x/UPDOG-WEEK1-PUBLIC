@@ -22,7 +22,7 @@
 
 package mobile.backend;
 
-/*#if android
+#if android
 import android.content.Context;
 import android.widget.Toast;
 import android.os.Environment;
@@ -48,17 +48,20 @@ enum StorageType
 	EXTERNAL;
 	EXTERNAL_DATA;
 	MEDIA;
-}*/
+}
 
 class SUtil
-{/*
+{
+	// SUtil.getStorageDirectory()
 	public static function getStorageDirectory(type:StorageType = MEDIA):String
 	{
 		var daPath:String = '';
 
 		#if android
 		// Internal storage for Android
-		daPath = Context.getFilesDir() + '/';
+		//daPath = Context.getFilesDir() + '/';
+		daPath = lime.system.System.documentsDirectory;
+		#end
 		#elseif ios
 		// Internal storage for iOS
 		daPath = LimeSystem.applicationStorageDirectory;
@@ -240,11 +243,11 @@ class SUtil
 			#end
 		}
 	}
-	#end
+	#end/*
 }*/
 
 	/*----THE ORIGINAL CODE----*/
-	#if sys
+	/*#if sys
 	public static function getStorageDirectory():String
 		return #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end;
 
@@ -298,4 +301,4 @@ class SUtil
 	}
 	#end
 	#end
-}
+}*/

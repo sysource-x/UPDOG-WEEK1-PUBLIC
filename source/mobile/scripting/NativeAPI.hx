@@ -3,6 +3,7 @@ package mobile.scripting;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.util.typeLimit.OneOfThree;
 import flixel.util.FlxColor;
+import flixel.FlxState;
 
 /**
  * Funções nativas multiplataforma (mobile e desktop).

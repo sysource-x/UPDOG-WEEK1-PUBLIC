@@ -308,7 +308,7 @@ class Paths
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
 		//#if sys
-		#if desktop//MODS_ALLOWED
+		#if MODS_ALLOWED // can be desktop
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
 		#end
 		
@@ -670,4 +670,31 @@ class Paths
 		return list;
 	}
 	#end
+
+	// Used in Script.hx
+	@:noCompletion public static function getFilenameFromLibFile(path:String) {
+		var file = new haxe.io.Path(path);
+		if(file.file.startsWith("LIB_")) {
+			return file.dir + "." + file.ext;
+		}
+		return path;
+	}
+
+	@:noCompletion public static function getLibFromLibFile(path:String) {
+		var file = new haxe.io.Path(path);
+		if(file.file.startsWith("LIB_")) {
+			return file.file.substr(4);
+		}
+		return "";
+	}
+}
+
+class ScriptPathInfo {
+	public var file:String;
+	public var library:AssetLibrary;
+
+	public function new(file:String, library:AssetLibrary) {
+		this.file = file;
+		this.library = library;
+	}
 }

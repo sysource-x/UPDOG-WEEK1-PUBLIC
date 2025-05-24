@@ -5,6 +5,9 @@ import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import haxe.io.Path;
 import flixel.util.FlxStringUtil;
 import flixel.FlxBasic;
+import mobile.scripting.Logs;
+import flixel.FlxState;
+import openfl.utils.Assets;
 
 @:allow(mobile.scripting.ScriptPack)
 /**
@@ -49,9 +52,9 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"FlxTypeText"	   => flixel.addons.text.FlxTypeText,
 			"FlxText"		   => flixel.text.FlxText,
 			"FlxTimer"		  => flixel.util.FlxTimer,
-			"FlxPoint"		  => CoolUtil.getMacroAbstractClass("flixel.math.FlxPoint"),
-			"FlxAxes"		   => CoolUtil.getMacroAbstractClass("flixel.util.FlxAxes"),
-			"FlxColor"		  => CoolUtil.getMacroAbstractClass("flixel.util.FlxColor"),
+			//"FlxPoint"		  => CoolUtil.getMacroAbstractClass("flixel.math.FlxPoint"),
+			//"FlxAxes"		   => CoolUtil.getMacroAbstractClass("flixel.util.FlxAxes"),
+			//"FlxColor"		  => CoolUtil.getMacroAbstractClass("flixel.util.FlxColor"),
 
 			// Engine related stuff
 			"engine"			=> {

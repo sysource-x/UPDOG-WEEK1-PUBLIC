@@ -60,10 +60,11 @@
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
+	<assets path="assets/shared/songs" library="songs" unless="web"/>
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 
     <!--               Assets for assets/manifest/*.xml              -->
-	<assets path="assets" include="**/*" unless="web"/> <!-- Get all folders, files and etc. of assets folder -->
+	<assets path="assets" include="**/*" unless="web"/><!-- Get all folders, files and etc. of assets folder -->
     <!-- <assets path="assets/songs" library="songs" unless="web"/>
     <assets path="assets/shared/data" include="**/*" unless="web"/>
 	<assets path="assets/shared/custom_events" include="**/*" unless="web"/>
@@ -105,7 +106,7 @@
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
 	<assets path="content" embed="false" if="MODS_ALLOWED"/>
 
-	<assets path="content/characters" rename="assets/shared/characters" include="**/*" unless="web"/>
+	<!--<assets path="content/characters" rename="assets/shared/characters" include="**/*" unless="web"/>
 	<assets path="content/weeks" rename="assets/shared/weeks" include="**/*" unless="web"/>
 	<assets path="content/music" rename="assets/shared/music" include="**/*" unless="web"/>
 	<assets path="content/noteskins" rename="assets/shared/noteskins" include="**/*" unless="web"/>
@@ -118,7 +119,7 @@
 	<assets path="content/images" rename="assets/shared/images" include="**/*" unless="web"/>
 	<assets path="content/data" rename="assets/shared/data" include="**/*" unless="web"/>
 	<assets path="content/videos" rename="assets/videos" include="**/*" unless="web"/>
-	<assets path="content/fonts" rename="assets/fonts" include="**/*" unless="web"/>
+	<assets path="content/fonts" rename="assets/fonts" include="**/*" unless="web"/>-->
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">

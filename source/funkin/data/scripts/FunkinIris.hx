@@ -306,6 +306,8 @@ class FunkinIris extends FunkinScript
 
 	public function new(script:String, ?name:String = "Script", ?additionalVars:Map<String, Any>)
 	{
+		super();
+
 		scriptType = ScriptType.HSCRIPT;
 		scriptName = name;
 
