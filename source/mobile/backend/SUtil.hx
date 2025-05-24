@@ -61,7 +61,6 @@ class SUtil
 		// Internal storage for Android
 		//daPath = Context.getFilesDir() + '/';
 		daPath = lime.system.System.documentsDirectory;
-		#end
 		#elseif ios
 		// Internal storage for iOS
 		daPath = LimeSystem.applicationStorageDirectory;
