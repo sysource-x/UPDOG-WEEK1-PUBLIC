@@ -55,6 +55,8 @@ class FunkinLua extends FunkinScript
 
 	public function new(script:String, ?name:String)
 	{
+		super();
+
 		#if LUA_ALLOWED
 		lua = LuaL.newstate();
 		LuaL.openlibs(lua);
