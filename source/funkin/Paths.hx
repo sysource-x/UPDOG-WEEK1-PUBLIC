@@ -11,6 +11,7 @@ import lime.utils.Assets;
 
 import openfl.utils.AssetType; // Usaremos apenas este
 import openfl.utils.Assets as OpenFlAssets;
+import openfl.utils.AssetLibrary;
 
 #if sys
 import sys.io.File;
