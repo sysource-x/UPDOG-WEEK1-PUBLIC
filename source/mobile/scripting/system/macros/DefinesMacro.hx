@@ -12,15 +12,8 @@ class DefinesMacro {
     public static var defines(get, null):Map<String, Dynamic>;
 
     #if macro
-    private static inline function get_defines()
-        return __getDefines();
-
-    private static macro function __getDefines() {
-        #if display
-        return macro $v{[]};
-        #else
-        return macro $v{Context.getDefines()};
-        #end
+    public static function get_defines():Map<String, Dynamic> {
+        return new Map();
     }
     #end
 }

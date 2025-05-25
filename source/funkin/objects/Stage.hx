@@ -22,6 +22,7 @@ import funkin.data.*;
 import funkin.data.Song.SwagSong;
 import funkin.state.*;
 import funkin.data.StageData.StageFile;
+import funkin.data.scripts.ScriptType;
 
 using StringTools;
 
@@ -55,15 +56,19 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 		switch (s.scriptType)
 		{
-			case HSCRIPT:
+			case ScriptType.HSCRIPT:
 				s.set("add", add);
 				s.set("stage", this);
 				s.call("onLoad");
 
 			#if LUA_ALLOWED
-			case LUA:
+			case ScriptType.LUA:
 				s.call("onCreate", []);
 			#end
+			case ScriptType.IRIS:
+				// If wants to use the IRIS script, it should be set up here
+			default:
+				// If wants to use the default script, it should be set up here
 		}
 	}
 

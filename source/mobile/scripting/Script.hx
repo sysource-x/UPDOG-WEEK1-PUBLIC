@@ -14,6 +14,9 @@ import openfl.utils.Assets;
  * Class used for scripting.
  */
 class Script extends FlxBasic implements IFlxDestroyable {
+    public static inline var ERROR = 2;
+    public static inline var TRACE = 0;
+
 	/**
 	 * Use "static var thing = true;" in hscript to use those!!
 	 * are reset every mod switch so once you're done with them make sure to make them null!!
@@ -68,7 +71,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"PlayState"		 => funkin.states.PlayState,
 			"GameOverSubstate"  => funkin.states.substates.GameOverSubstate,
 			"HealthIcon"		=> funkin.objects.HealthIcon,
-			"HudCamera"		 => funkin.objects.HudCamera,
+			//"HudCamera"		 => funkin.objects.HudCamera,
 			"Note"			  => funkin.objects.Note,
 			"Strum"			 => funkin.objects.Strum,
 			"StrumLine"		 => funkin.objects.StrumLine,
