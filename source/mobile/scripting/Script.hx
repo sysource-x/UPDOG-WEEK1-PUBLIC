@@ -58,8 +58,8 @@ class Script extends FlxBasic implements IFlxDestroyable {
 
 			// Engine related stuff
 			"engine"			=> {
-				commit: funkin.backend.system.macros.GitCommitMacro.commitNumber,
-				hash: funkin.backend.system.macros.GitCommitMacro.commitHash,
+				commit: mobile.scripting.system.macros.GitCommitMacro.commitNumber,
+				hash: mobile.scripting.system.macros.GitCommitMacro.commitHash,
 				build: 2675, // 2675 being the last build num before it was removed
 				name: "SS+ Engine"
 			},

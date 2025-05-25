@@ -38,9 +38,11 @@ import funkin.backend.MusicBeatState;
 import mobile.flixel.FlxHitbox;
 import mobile.flixel.FlxVirtualPad;
 import mobile.flixel.input.FlxMobileInputID;
-import mobile.backend.SUtil;
 import mobile.states.LoadingScreen;
 import mobile.backend.Asset2File;
+import mobile.scripting.*;
+import mobile.scripting.system.macros.DefinesMacro;
+import mobile.scripting.system.macros.GitCommitMacro;
 
 /*
 //Android
