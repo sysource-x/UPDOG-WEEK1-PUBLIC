@@ -242,11 +242,12 @@ class SUtil
 			#end
 		}
 	}
-	#end/*
-}*/
+	#end
+/*
+}
 
-	/*----THE ORIGINAL CODE----*/
-	/*#if sys
+	----THE ORIGINAL CODE----
+	#if sys
 	public static function getStorageDirectory():String
 		return #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end;
 
@@ -299,5 +300,5 @@ class SUtil
 		}
 	}
 	#end
-	#end
-}*/
+	#end*/
+}
