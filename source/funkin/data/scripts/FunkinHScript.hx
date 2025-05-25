@@ -3,7 +3,6 @@ package funkin.data.scripts;
 import mobile.scripting.HScript;
 import flixel.FlxState;
 import funkin.data.scripts.FunkinScript;
-import funkin.data.scripts.ScriptType;
 
 /**
  * Implementação de FunkinScript usando HScript.
@@ -98,6 +97,6 @@ var script = new FunkinHScript("assets/shared/scripts/meuscript.hx");
 script.call("onCreate");
 script.set("score", 1000);
 var valor = script.get("score");
-script.scriptTrace("Script carregado com sucesso!");
+script.scriptTrace("Script loaded!");
 script.reload();
 */
