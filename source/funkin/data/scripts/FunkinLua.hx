@@ -85,7 +85,7 @@ class FunkinLua extends FunkinScript
 			trace(e);
 			return;
 		}
-		scriptType = ScriptType.LUA;
+		scriptType = LUA;
 		scriptName = name;
 		trace('lua file loaded succesfully:' + script);
 

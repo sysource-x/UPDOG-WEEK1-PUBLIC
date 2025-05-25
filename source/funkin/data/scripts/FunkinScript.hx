@@ -2,7 +2,6 @@ package funkin.data.scripts;
 
 import funkin.utils.DifficultyUtil;
 import funkin.states.*;
-import funkin.data.scripts.ScriptType; // Importa o enum correto
 
 using StringTools;
 
@@ -11,7 +10,7 @@ using StringTools;
 **/
 class FunkinScript {
     public var scriptName:String = '';
-    public var scriptType:ScriptType = ScriptType.HSCRIPT; // Use um valor padrão válido
+    public var scriptType:ScriptType = HSCRIPT; // Use um valor padrão válido
 
     public function new() {}
 
@@ -136,4 +135,8 @@ interface IFunkinScript
     public function stop():Void;
 }
 
-// Remova qualquer definição de ScriptType daqui!
+enum abstract ScriptType(String) to String from String
+{
+	public var LUA:String = 'lua';
+	public var HSCRIPT:String = 'hscript';
+}

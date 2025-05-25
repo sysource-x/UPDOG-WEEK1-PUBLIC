@@ -25,7 +25,7 @@ import flixel.util.helpers.FlxBounds;
 import flixel.util.FlxSignal;
 
 import funkin.objects.Note.EventNote;
-import funkin.data.scripts.ScriptType;
+import funkin.data.scripts.FunkinScript.ScriptType;
 import funkin.huds.BaseHUD;
 import funkin.data.scripts.*;
 import funkin.data.scripts.FunkinLua;
@@ -555,10 +555,10 @@ class PlayState extends MusicBeatState
 		{
 			switch (stage.curStageScript.scriptType)
 			{
-				case ScriptType.HSCRIPT:
+				case HSCRIPT:
 					hscriptArray.push(cast stage.curStageScript);
 				#if LUA_ALLOWED
-				case ScriptType.LUA:
+				case LUA:
 					luaArray.push(cast stage.curStageScript);
 				#end
 			}
@@ -1058,10 +1058,10 @@ class PlayState extends MusicBeatState
 		{
 			switch (char.curCharacterScript.scriptType)
 			{
-				case ScriptType.HSCRIPT:
+				case HSCRIPT:
 					hscriptArray.push(cast char.curCharacterScript);
 				#if LUA_ALLOWED
-				case ScriptType.LUA:
+				case LUA:
 					luaArray.push(cast char.curCharacterScript);
 				#end
 			}
@@ -2480,7 +2480,7 @@ class PlayState extends MusicBeatState
 					if (dunceNote.noteScript != null)
 					{
 						var script:Dynamic = dunceNote.noteScript;
-						if (script.scriptType == ScriptType.LUA)
+						if (script.scriptType == LUA)
 						{
 							callScript(script, 'postSpawnNote', [
 								notes.members.indexOf(dunceNote),
@@ -3916,7 +3916,7 @@ class PlayState extends MusicBeatState
 		if (daNote.noteScript != null)
 		{
 			var script:Dynamic = daNote.noteScript;
-			if (script.scriptType == ScriptType.LUA)
+			if (script.scriptType == LUA)
 			{
 				callScript(script, 'noteMiss', [
 					notes.members.indexOf(daNote),
@@ -4099,7 +4099,7 @@ class PlayState extends MusicBeatState
 		if (note.noteScript != null)
 		{
 			var script:Dynamic = note.noteScript;
-			if (script.scriptType == ScriptType.LUA)
+			if (script.scriptType == LUA)
 			{
 				callScript(script, 'opponentNoteHit', luaArgs);
 			}
@@ -4292,7 +4292,7 @@ class PlayState extends MusicBeatState
 			if (note.noteScript != null)
 			{
 				var script:Dynamic = note.noteScript;
-				if (script.scriptType == ScriptType.LUA)
+				if (script.scriptType == LUA)
 				{
 					callScript(script, 'goodNoteHit', luaArgs);
 				}
@@ -4486,7 +4486,7 @@ class PlayState extends MusicBeatState
 			if (note.noteScript != null)
 			{
 				var script:Dynamic = note.noteScript;
-				if (script.scriptType == ScriptType.LUA)
+				if (script.scriptType == LUA)
 				{
 					callScript(script, 'extraNoteHit', luaArgs);
 				}
@@ -4797,7 +4797,7 @@ class PlayState extends MusicBeatState
 		var script = eventScripts.get(scriptName);
 		if (luaArgs == null) luaArgs = args;
 		
-		if (script.scriptType == ScriptType.LUA) return callScript(script, func, luaArgs);
+		if (script.scriptType == LUA) return callScript(script, func, luaArgs);
 		
 		return callScript(script, func, args);
 	}

@@ -40,9 +40,8 @@ import mobile.flixel.FlxVirtualPad;
 import mobile.flixel.input.FlxMobileInputID;
 import mobile.states.LoadingScreen;
 import mobile.backend.Asset2File;
-import mobile.scripting.*;
-import mobile.scripting.system.macros.DefinesMacro;
-import mobile.scripting.system.macros.GitCommitMacro;
+import mobile.scripting.NativeAPI;
+//import mobile.scripting.system.macros.GitCommitMacro; can be added again if needed
 
 /*
 //Android

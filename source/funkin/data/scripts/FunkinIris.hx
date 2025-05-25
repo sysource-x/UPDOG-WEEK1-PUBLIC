@@ -308,7 +308,7 @@ class FunkinIris extends FunkinScript
 	{
 		super();
 
-		scriptType = ScriptType.HSCRIPT;
+		scriptType = HSCRIPT;
 		scriptName = name;
 
 		_script = new Iris(script, {name: name, autoRun: false, autoPreset: false});

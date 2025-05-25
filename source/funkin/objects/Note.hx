@@ -1,7 +1,6 @@
 package funkin.objects;
 
 import flixel.math.FlxRect;
-import funkin.data.scripts.ScriptType;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.FlxSprite;
@@ -15,6 +14,7 @@ import funkin.states.*;
 import openfl.utils.AssetType;
 import openfl.utils.Assets;
 import funkin.data.scripts.*;
+import funkin.data.scripts.FunkinScript.ScriptType;
 import funkin.objects.shader.*;
 import funkin.objects.Character;
 import math.Vector3;
@@ -290,7 +290,7 @@ class Note extends FlxSprite
 					if (!inEditor) noteScript = PlayState.instance.notetypeScripts.get(value);
 					else noteScript = ChartingState.instance.notetypeScripts.get(value);
 
-					if (noteScript != null && noteScript.scriptType == ScriptType.HSCRIPT)
+					if (noteScript != null && noteScript.scriptType == HSCRIPT)
 					{
 						var noteScript:FunkinIris = cast noteScript;
 						noteScript.executeFunc("setupNote", [this], this);
@@ -453,7 +453,7 @@ class Note extends FlxSprite
 		if (texture == null) texture = '';
 		if (suffix == null) suffix = '';
 
-		if (noteScript != null && noteScript.scriptType == ScriptType.HSCRIPT)
+		if (noteScript != null && noteScript.scriptType == HSCRIPT)
 		{
 			var noteScript:FunkinIris = cast noteScript;
 			if (noteScript.executeFunc("onReloadNote", [this, prefix, texture, suffix], this) == Globals.Function_Stop) return;
@@ -545,7 +545,7 @@ class Note extends FlxSprite
 			antialiasing = ClientPrefs.globalAntialiasing;
 
 
-		if (noteScript != null && noteScript.scriptType == ScriptType.HSCRIPT)
+		if (noteScript != null && noteScript.scriptType == HSCRIPT)
 		{
 			var noteScript:FunkinIris = cast noteScript;
 			noteScript.executeFunc("postReloadNote", [this, prefix, texture, suffix], this);
@@ -554,7 +554,7 @@ class Note extends FlxSprite
 
 	public function loadNoteAnims()
 	{
-		if (noteScript != null && noteScript.scriptType == ScriptType.HSCRIPT)
+		if (noteScript != null && noteScript.scriptType == HSCRIPT)
 		{
 			var noteScript:FunkinIris = cast noteScript;
 			if (noteScript.exists("loadNoteAnims") && Reflect.isFunction(noteScript.get("loadNoteAnims")))
@@ -568,7 +568,7 @@ class Note extends FlxSprite
 
 	public function loadPixelNoteAnims()
 	{
-		if (noteScript != null && noteScript.scriptType == ScriptType.HSCRIPT)
+		if (noteScript != null && noteScript.scriptType == HSCRIPT)
 		{
 			var noteScript:FunkinIris = cast noteScript;
 			if (noteScript.exists("loadPixelNoteAnims") && Reflect.isFunction(noteScript.get("loadNoteAnims")))
@@ -617,7 +617,7 @@ class Note extends FlxSprite
 
 		if (!inEditor)
 		{
-			if (noteScript != null && noteScript.scriptType == ScriptType.HSCRIPT)
+			if (noteScript != null && noteScript.scriptType == HSCRIPT)
 			{
 				var noteScript:FunkinIris = cast noteScript;
 				noteScript.executeFunc("update", [this, elapsed], this);
