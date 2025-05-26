@@ -28,7 +28,7 @@ class Splash extends FlxState
 			logo = new FlxSprite().loadGraphic(Paths.image('branding/${img.split("/").pop().replace(".png", "")}'));
 			logo.screenCenter();
 			logo.visible = false;
-			add(logo);
+			add(logo); // by sys
 			/*var folder = Assets.list().filter(path -> path.startsWith("assets/shared/images/branding") && path.endsWith(".png"));
 			if (folder.length > 0) {
 				var img = folder[0].split("/").pop();

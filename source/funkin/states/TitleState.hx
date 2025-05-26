@@ -21,6 +21,7 @@ import funkin.states.*;
 import funkin.objects.*;
 import funkin.data.options.*;
 import funkin.objects.shader.*;
+import mobile.scripting.NativeAPI;
 
 class TitleState extends MusicBeatState
 {
@@ -180,9 +181,11 @@ class TitleState extends MusicBeatState
 			}
 		}
 	}
-	
+
 	public function startIntro()
 	{
+		try {
+
 		if (!initialized)
 		{
 			if (FlxG.sound.music == null)
@@ -191,42 +194,41 @@ class TitleState extends MusicBeatState
 				FlxG.sound.music.fadeIn(4, 0, 0.7);
 			}
 		}
-		
+
 		#if desktop // DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menu", null);
 		#end
-		
+
 		var versionString = 'VS IMPOSTOR WEEK 1';
 		canSelect = true;
-		
+
 		opts = new FlxTypedGroup<FlxSprite>(); // GROUP ON GOD!
-		ott = new FlxTypedGroup<FlxText>(); // GROUP ON GOD!
-		
+		ott = new FlxTypedGroup<FlxText>();    // GROUP ON GOD!
+
 		starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
 		starFG.updateHitbox();
 		starFG.antialiasing = ClientPrefs.globalAntialiasing;
 		starFG.scrollFactor.set();
 		add(starFG);
-		
+
 		starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
 		starBG.antialiasing = ClientPrefs.globalAntialiasing;
 		starBG.scrollFactor.set();
 		add(starBG);
-		
+
 		// Background
 		bg = new FlxSprite(-121, 226.8 + 700).loadGraphic(Paths.image('menu/common/bg'));
-		
+
 		snowEmitter = new SnowEmitter(200, -100, FlxG.width + 200);
 		snowEmitter.scale.set(0.5);
 		snowEmitter.start(false, 0.05);
 		snowEmitter.scrollFactor.x.set(0.8, 0.8);
 		snowEmitter.scrollFactor.y.set(0.8, 0.8);
-		
+
 		final snowAlpha = alreadyBeenInMenu ? 1 : 0;
-		
 		snowEmitter.alpha.set(snowAlpha);
-		
+
 		tv = new FlxSprite(1100, 450);
 		tv.frames = Paths.getSparrowAtlas("menu/main/tv");
 		tv.animation.addByPrefix('idle', 'TVIDLE', 24, false);
@@ -235,86 +237,89 @@ class TitleState extends MusicBeatState
 		tv.scale.set(1, 1);
 		tv.scrollFactor.set(1, 1);
 		tv.antialiasing = ClientPrefs.globalAntialiasing;
-		
-		// Logo, probably make it a real sprite for later
+
+		// Logo
 		lg = new FlxSprite(27, 82).loadGraphic(Paths.image('menu/main/Logo'));
 		lg.screenCenter();
 		lg.scrollFactor.set();
-		
-		// Black bars, scaled them up ingame because It's black bars I dont think they need to be 1280x720
+
+		// Black bars
 		var bb:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('menu/common/blackbars'));
 		bb.scale.set(2, 2);
 		bb.updateHitbox();
 		bb.scrollFactor.set();
-		
-		// Control panel thing
+
+		// Control panel
 		ct = new FlxSprite(42.15, 668.3 + 100).loadGraphic(Paths.image('menu/common/controls'));
 		ct.scrollFactor.set();
-		
+
 		lt = new FlxText(0, 715, 1280, 'Press Enter to Start');
 		lt.setFormat(Paths.font("bahn.ttf"), 25, 0xFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		lt.y -= lt.height;
 		lt.borderSize = 2.5;
 		lt.antialiasing = ClientPrefs.globalAntialiasing;
 		lt.scrollFactor.set();
-		
-		// This does not optimize anything.
-		
+
+		// Add main elements
 		for (i in [bg, bb, lg, ct])
 		{
 			add(i);
 			i.antialiasing = ClientPrefs.globalAntialiasing;
 		}
+
 		add(lt);
 		bg.antialiasing = false;
-		
+
 		insert(members.indexOf(bb), snowEmitter);
-		
+
 		zared = new FlxSprite().loadGraphic(Paths.image('menu/secret/zared'));
 		zared.antialiasing = ClientPrefs.globalAntialiasing;
 		zared.scrollFactor.set();
-		
-		// Color swap/grayscale, remove in V2.
+
+		// Color swap/grayscale
 		colorSwap = new ColorSwap();
 		colorSwap.saturation = -1;
-		
+
 		var versionText:FlxText = new FlxText(0, (alreadyBeenInMenu ? 0 : -70), 1280, versionString);
 		versionText.setFormat(Paths.font("bahn.ttf"), 25, FlxColor.WHITE, FlxTextAlign.CENTER);
 		add(versionText);
 		versionText.antialiasing = ClientPrefs.globalAntialiasing;
 		versionText.scrollFactor.set();
-		
-		if (PLAYED_V3 || PLAYED_V4) // add trophy
+
+		// Trophy
+		if (PLAYED_V3 || PLAYED_V4)
 		{
 			var anim = PLAYED_V3 ? PLAYED_V4 ? 'v3-4' : 'v3' : 'v4';
-			
+
 			trophy = new FlxSprite().loadFromSheet('menu/main/trophy', anim, 0);
 			trophy.scrollFactor.set();
 			trophy.antialiasing = ClientPrefs.globalAntialiasing;
-			
+
 			trophy.scale.scale(0.4);
 			trophy.updateHitbox();
-			
+
 			trophy.x = (27 + (lg.width - trophy.width) / 2);
 			trophy.y = (82 - trophy.height) + 30 + (alreadyBeenInMenu ? 0 : -200);
 			insert(members.indexOf(lg), trophy);
 		}
-		
+
 		add(opts);
 		add(ott);
-		
+
 		for (i in 0...5)
 		{
 			var but:FlxSprite = new FlxSprite(buttons[i][0] - (alreadyBeenInMenu ? 0 : 500), buttons[i][1]).loadFromSheet('menu/main/menubuttons', 'button' + buttons[i][2], 0);
 			but.antialiasing = ClientPrefs.globalAntialiasing;
 			but.ID = i;
-			//  It's not letting me do it the normal and not stupid way
+
 			var txt:FlxText = new FlxText(buttons[i][0] + (i > 2 ? 0 : 9.4) - (alreadyBeenInMenu ? 0 : 500), buttons[i][1] + 11.35, (i > 2 ? 113 : -1), buttons[i][3]);
 			txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
 			if (i > 2)
-			{ // UGH
+			{
 				txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				txt.y += but.height;
+
 				if (v2Check)
 				{
 					but.shader = colorSwap.shader;
@@ -322,21 +327,22 @@ class TitleState extends MusicBeatState
 					but.color = 0x393939;
 				}
 			}
+
 			txt.borderSize = 2.5;
 			txt.ID = i;
 			txt.antialiasing = ClientPrefs.globalAntialiasing;
 			opts.add(but);
 			ott.add(txt);
-			
+
 			but.scrollFactor.set();
 			txt.scrollFactor.set();
 		}
-		// trace(opts);
+
 		changeSel(0, 0);
+
 		if (!alreadyBeenInMenu)
 		{
 			trace('snow here');
-			// WHEN TRANSITIONING FROM TITLESTATE
 			FlxTween.tween(versionText, {y: 0}, 1, {ease: FlxEase.quadOut});
 		}
 		else
@@ -344,11 +350,15 @@ class TitleState extends MusicBeatState
 			moveShitUp(0.01);
 			trace('fuck');
 		}
-		
+
 		persistentUpdate = true;
 		skipIntro();
-		
+
 		callOnScript('onCreatePost', []);
+
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Menu Error", "An error occurred while loading the main menu:\n" + Std.string(e));
+		}
 	}
 	
 	public static var transitioning:Bool = false;

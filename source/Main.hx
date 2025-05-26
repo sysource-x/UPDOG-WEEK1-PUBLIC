@@ -19,7 +19,7 @@ class Main extends Sprite
 	public static final startMeta = {
 		width: 1280,
 		height: 720,
-		initialState: LoadingScreen,
+		initialState: LoadingScreen, // Splash, Init, TitleState
 		skipSplash: false,
 		startFullScreen: false,
 		fps: 60
@@ -52,8 +52,8 @@ class Main extends Sprite
 			#if CRASH_HANDLER
 			FNFGame
 			#else
-			FlxGame
-			#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+			FlxGame                               //#if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+			#end(startMeta.width, startMeta.height, startMeta.initialState, startMeta.fps, startMeta.fps, startMeta.skipSplash,
 				startMeta.startFullScreen);
 
 		// FlxG.game._customSoundTray wants just the class, it calls new from
