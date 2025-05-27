@@ -9,6 +9,7 @@ import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.data.*;
 import funkin.data.scripts.*;
+import mobile.scripting.NativeAPI;
 
 class MusicBeatState extends FlxUIState
 {
@@ -116,21 +117,25 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
-		super.create();
+		try {
+			super.create();
 
-		if (!FlxTransitionableState.skipNextTransOut)
-		{
-			var transClass = _defaultTransState;
-			if (transitionOutState != null) transClass = transitionOutState;
+			if (!FlxTransitionableState.skipNextTransOut)
+			{
+				var transClass = _defaultTransState;
+				if (transitionOutState != null) transClass = transitionOutState;
 
-			var sub:BaseTransitionState = Type.createInstance(transClass, [OUT_OF]);
+				var sub:BaseTransitionState = Type.createInstance(transClass, [OUT_OF]);
 
-			openSubState(sub);
-			sub.setCallback(sub.close);
+				openSubState(sub);
+				sub.setCallback(sub.close);
+			}
+
+			FlxTransitionableState.skipNextTransOut = false;
+
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("MusicBeatState Error", "An error occurred during state creation:\n" + Std.string(e));
 		}
-
-		FlxTransitionableState.skipNextTransOut = false;
-
 	}
 
 	public function refreshZ(?group:FlxTypedGroup<FlxBasic>)
@@ -141,28 +146,32 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
-		// everyStep();
-		var oldStep:Int = curStep;
+		try {
+			// everyStep();
+			var oldStep:Int = curStep;
 
-		updateCurStep();
-		updateBeat();
+			updateCurStep();
+			updateBeat();
 
-		if (oldStep != curStep)
-		{
-			if (curStep > 0) stepHit();
-
-			if (PlayState.SONG != null)
+			if (oldStep != curStep)
 			{
-				if (oldStep < curStep) updateSection();
-				else rollbackSection();
+				if (curStep > 0) stepHit();
+
+				if (PlayState.SONG != null)
+				{
+					if (oldStep < curStep) updateSection();
+					else rollbackSection();
+				}
 			}
+
+			callOnScript('onUpdate', [elapsed]);
+
+			if (FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
+
+			super.update(elapsed);
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("MusicBeatState Error", "An error occurred during state update:\n" + Std.string(e));
 		}
-
-		callOnScript('onUpdate', [elapsed]);
-
-		if (FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
-
-		super.update(elapsed);
 	}
 
 	private function updateSection():Void
@@ -243,25 +252,29 @@ class MusicBeatState extends FlxUIState
 	@:access(funkin.states.FreeplayState)
 	override function startOutro(onOutroComplete:() -> Void)
 	{
-		FlxG.sound?.music?.fadeTween?.cancel();
-		//FreeplayState.vocals?.fadeTween?.cancel();
+		try {
+			FlxG.sound?.music?.fadeTween?.cancel();
+			//FreeplayState.vocals?.fadeTween?.cancel();
 
-		if (FlxG.sound != null && FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
+			if (FlxG.sound != null && FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
 
-		if (!FlxTransitionableState.skipNextTransIn)
-		{
-			var transClass = _defaultTransState;
-			if (transitionInState != null) transClass = transitionInState;
+			if (!FlxTransitionableState.skipNextTransIn)
+			{
+				var transClass = _defaultTransState;
+				if (transitionInState != null) transClass = transitionInState;
 
-			var transitionState:BaseTransitionState = Type.createInstance(transClass, [IN_TO]);
-			openSubState(transitionState);
+				var transitionState:BaseTransitionState = Type.createInstance(transClass, [IN_TO]);
+				openSubState(transitionState);
 
-			transitionState.setCallback(onOutroComplete);
-			return;
+				transitionState.setCallback(onOutroComplete);
+				return;
+			}
+
+			// FlxTransitionableState.skipNextTransIn = false; reverting this change bc i think it might fuck up what i was doing - orbyy
+
+			super.startOutro(onOutroComplete);
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("MusicBeatState Error", "An error occurred during state outro:\n" + Std.string(e));
 		}
-
-		// FlxTransitionableState.skipNextTransIn = false; reverting this change bc i think it might fuck up what i was doing - orbyy
-
-		super.startOutro(onOutroComplete);
 	}
 }

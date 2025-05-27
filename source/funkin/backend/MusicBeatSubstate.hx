@@ -5,6 +5,7 @@ import funkin.data.*;
 import funkin.data.scripts.*;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
+import mobile.scripting.NativeAPI;
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -102,25 +103,23 @@ class MusicBeatSubstate extends FlxSubState
 		return returnVal;
 	}
 
-	override function destroy()
-	{
-		callOnScript('onDestroy', []);
-		super.destroy();
-	}
-
 	override function update(elapsed:Float)
 	{
-		// everyStep();
-		var oldStep:Int = curStep;
+		try {
+			// everyStep();
+			var oldStep:Int = curStep;
 
-		updateCurStep();
-		updateBeat();
+			updateCurStep();
+			updateBeat();
 
-		if (oldStep != curStep && curStep > 0) stepHit();
+			if (oldStep != curStep && curStep > 0) stepHit();
 
-		callOnScript('onUpdate', [elapsed]);
+			callOnScript('onUpdate', [elapsed]);
 
-		super.update(elapsed);
+			super.update(elapsed);
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("MusicBeatSubstate Error", "An error occurred during substate update:\n" + Std.string(e));
+		}
 	}
 
 	private function updateBeat():Void
@@ -147,5 +146,15 @@ class MusicBeatSubstate extends FlxSubState
 	public function beatHit():Void
 	{
 		callOnScript('onBeatHit', [curBeat]);
+	}
+
+	override function destroy()
+	{
+		try {
+			callOnScript('onDestroy', []);
+			super.destroy();
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("MusicBeatSubstate Error", "An error occurred during substate destroy:\n" + Std.string(e));
+		}
 	}
 }

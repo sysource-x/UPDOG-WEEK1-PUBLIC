@@ -15,6 +15,7 @@ import funkin.objects.*;
 import funkin.states.*;
 import funkin.data.*;
 import funkin.backend.MusicBeatSubstate;
+import mobile.scripting.NativeAPI;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -52,58 +53,60 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function create()
 	{
-		instance = this;
-		PlayState.instance.callOnScripts('onGameOverStart', []);
-		
-		if (!boyfriend.curCharacter.contains('diddy')) //sorry.
-		{
-			defeat = new BGSprite("defeat effect", boyfriend.getMidpoint().x, boyfriend.getMidpoint().y);
-			defeat.x -= defeat.width * .5;
-			defeat.scale.set(.044, 1);
-			defeat.alpha = 0;
-	
-			gameOver = new BGSprite("game over", boyfriend.getMidpoint().x);
-			gameOver.x -= gameOver.width * .5;
-			gameOver.alpha = 0;
+		try {
+			instance = this;
+			PlayState.instance.callOnScripts('onGameOverStart', []);
 			
-			insert(members.indexOf(boyfriend), defeat);
-			add(gameOver);
+			if (!boyfriend.curCharacter.contains('diddy')) //sorry.
+			{
+				defeat = new BGSprite("defeat effect", boyfriend.getMidpoint().x, boyfriend.getMidpoint().y);
+				defeat.x -= defeat.width * .5;
+				defeat.scale.set(.044, 1);
+				defeat.alpha = 0;
+	
+				gameOver = new BGSprite("game over", boyfriend.getMidpoint().x);
+				gameOver.x -= gameOver.width * .5;
+				gameOver.alpha = 0;
+				
+				insert(members.indexOf(boyfriend), defeat);
+				add(gameOver);
+			}
+
+			colorSwap = new ColorSwap();
+			colorSwap.saturation = colorSwap.brightness = 0;
+
+			if (!boyfriend.curCharacter.contains('diddy'))
+				boyfriend.shader = colorSwap.shader;
+
+			ct = new FlxSprite(42.15, 668.3 + 100).loadGraphic(Paths.image('menu/common/controls_death'));
+			ct.antialiasing = ClientPrefs.globalAntialiasing;
+			add(ct);
+
+			#if mobile
+			addVirtualPad(NONE,A_B);
+			addVirtualPadCamera();
+			#end
+
+			super.create();
+			if (defeat != null)
+			{
+				FlxTween.tween(defeat, { alpha: 1 }, 1.5, { ease: FlxEase.sineInOut });
+				FlxTween.tween(defeat.scale, { x: 4.74 }, 3, { ease: FlxEase.quadOut });
+			}
+
+			if (gameOver != null)
+			{
+				FlxTimer.wait(0, () -> {
+					gameOver.y = defeat.y - 200;
+					FlxTween.tween(gameOver, { y: defeat.y - 50, alpha: 1 }, 2, { ease: FlxEase.quadOut, startDelay: 1 });
+				});
+			}
+
+
+			FlxTween.tween(colorSwap, { saturation: -1, brightness: -.5 }, 3, { ease: FlxEase.linear });
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("GameOverSubstate Error", "An error occurred during game over:\n" + Std.string(e));
 		}
-
-
-		colorSwap = new ColorSwap();
-		colorSwap.saturation = colorSwap.brightness = 0;
-
-		if (!boyfriend.curCharacter.contains('diddy'))
-		boyfriend.shader = colorSwap.shader;
-
-		ct = new FlxSprite(42.15, 668.3 + 100).loadGraphic(Paths.image('menu/common/controls_death'));
-		ct.antialiasing = ClientPrefs.globalAntialiasing;
-		// ct.scrollFactor.set();
-		add(ct);
-
-		#if mobile
-		addVirtualPad(NONE,A_B);
-		addVirtualPadCamera();
-		#end
-
-		super.create();
-		if (defeat != null)
-		{
-			FlxTween.tween(defeat, { alpha: 1 }, 1.5, { ease: FlxEase.sineInOut });
-			FlxTween.tween(defeat.scale, { x: 4.74 }, 3, { ease: FlxEase.quadOut });
-		}
-
-		if (gameOver != null)
-		{
-			FlxTimer.wait(0, () -> {
-				gameOver.y = defeat.y - 200;
-				FlxTween.tween(gameOver, { y: defeat.y - 50, alpha: 1 }, 2, { ease: FlxEase.quadOut, startDelay: 1 });
-			});
-		}
-
-
-		FlxTween.tween(colorSwap, { saturation: -1, brightness: -.5 }, 3, { ease: FlxEase.linear });
 	}
 
 	public function new(x:Float, y:Float, camX:Float, camY:Float)
@@ -142,74 +145,77 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
-		PlayState.instance.callOnScripts('onUpdate', [elapsed]);
-		PlayState.instance.callOnHScripts('update', [elapsed]);
-		super.update(elapsed);
-		
+		try {
+			PlayState.instance.callOnScripts('onUpdate', [elapsed]);
+			PlayState.instance.callOnHScripts('update', [elapsed]);
+			super.update(elapsed);
+			
 
-		if (boyfriend != null && defeat != null) defeat.centerOnObject(boyfriend,Y);
+			if (boyfriend != null && defeat != null) defeat.centerOnObject(boyfriend,Y);
 
-		PlayState.instance.callOnScripts('onUpdatePost', [elapsed]);
-		if (updateCamera)
-		{
-			var lerpVal:Float = FlxMath.bound(elapsed * 0.6, 0, 1);
-			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
-		}
-
-		if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
-		{
-			endBullshit();
-		}
-
-		if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
-		{
-			FlxG.sound.music.stop();
-			PlayState.deathCounter = 0;
-			PlayState.seenCutscene = false;
-
-			FlxG.switchState(() -> PlayState.isStoryMode ? new StoryMenuState() : new FreeplayState());
-
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
-		}
-		if (boyfriend.animation.curAnim.name == 'firstDeath' && boyfriend.animation.curAnim.finished && startedDeath)
-		{
-			boyfriend.playAnim('deathLoop');
-		}
-
-		if (boyfriend.animation.curAnim.name == 'firstDeath')
-		{
-			if (boyfriend.animation.curAnim.curFrame >= 12 && !isFollowingAlready)
+			PlayState.instance.callOnScripts('onUpdatePost', [elapsed]);
+			if (updateCamera)
 			{
-				FlxG.camera.follow(camFollowPos, LOCKON, 1);
-				updateCamera = true;
-				isFollowingAlready = true;
+				var lerpVal:Float = FlxMath.bound(elapsed * 0.6, 0, 1);
+				camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 			}
 
-			if (boyfriend.animation.curAnim.finished && !playingDeathSound)
+			if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
 			{
-				coolStartDeath();
-				startedDeath = true;
+				endBullshit();
 			}
+
+			if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
+			{
+				FlxG.sound.music.stop();
+				PlayState.deathCounter = 0;
+				PlayState.seenCutscene = false;
+
+				FlxG.switchState(() -> PlayState.isStoryMode ? new StoryMenuState() : new FreeplayState());
+
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
+			}
+			if (boyfriend.animation.curAnim.name == 'firstDeath' && boyfriend.animation.curAnim.finished && startedDeath)
+			{
+				boyfriend.playAnim('deathLoop');
+			}
+
+			if (boyfriend.animation.curAnim.name == 'firstDeath')
+			{
+				if (boyfriend.animation.curAnim.curFrame >= 12 && !isFollowingAlready)
+				{
+					FlxG.camera.follow(camFollowPos, LOCKON, 1);
+					updateCamera = true;
+					isFollowingAlready = true;
+				}
+
+				if (boyfriend.animation.curAnim.finished && !playingDeathSound)
+				{
+					coolStartDeath();
+					startedDeath = true;
+				}
+			}
+
+			if (FlxG.sound.music.playing)
+			{
+				Conductor.songPosition = FlxG.sound.music.time;
+			}
+			PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
+
+
+			if (ct != null)
+			{
+				var newScale = (FlxG.camera.viewWidth / FlxG.width);
+				ct.scale.set(newScale,newScale);
+				ct.updateHitbox();
+
+				ct.x = FlxG.camera.viewX + (42.15 * newScale);
+				ct.y = FlxG.camera.viewBottom - ct.height - (10 * newScale);
+			}
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("GameOverSubstate Error", "An error occurred during game over update:\n" + Std.string(e));
 		}
-
-		if (FlxG.sound.music.playing)
-		{
-			Conductor.songPosition = FlxG.sound.music.time;
-		}
-		PlayState.instance.callOnLuas('onUpdatePost', [elapsed]);
-
-
-		if (ct != null)
-		{
-			var newScale = (FlxG.camera.viewWidth / FlxG.width);
-			ct.scale.set(newScale,newScale);
-			ct.updateHitbox();
-
-			ct.x = FlxG.camera.viewX + (42.15 * newScale);
-			ct.y = FlxG.camera.viewBottom - ct.height - (10 * newScale);
-		}
-
 	}
 
 	override function beatHit()

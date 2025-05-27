@@ -21,6 +21,7 @@ import funkin.states.*;
 import funkin.objects.*;
 import funkin.data.options.*;
 import funkin.objects.shader.*;
+import mobile.scripting.NativeAPI;
 
 class TitleState extends MusicBeatState
 {
@@ -137,369 +138,399 @@ class TitleState extends MusicBeatState
 	
 	override public function create():Void
 	{
-		Paths.clearStoredMemory();
-		Paths.clearUnusedMemory();
-		
-		#if LUA_ALLOWED
-		Paths.pushGlobalMods();
-		#end
-		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
-		WeekData.loadTheFirstEnabledMod();
-		
-		checkPreviousVers();
-		
-		super.create();
-		
-		if (!initialized)
-		{
-			if (FlxG.save.data != null && FlxG.save.data.fullscreen)
-			{
-				FlxG.fullscreen = FlxG.save.data.fullscreen;
-			}
-			persistentUpdate = true;
-			persistentDraw = true;
-		}
-		initialized = true;
-		
-		if (FlxG.save.data.startedUp == null) // && !FlashingState.leftState)
-		{
+		try {
+			Paths.clearStoredMemory();
+			Paths.clearUnusedMemory();
 			
-			trace('No save data detected, moving to FlashingState');
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
-			FlxG.switchState(new FlashingState());
-		}
-		else
-		{
-			if (initialized) startIntro();
+			#if LUA_ALLOWED
+			Paths.pushGlobalMods();
+			#end
+			// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
+			WeekData.loadTheFirstEnabledMod();
+			
+			checkPreviousVers();
+			
+			super.create();
+			
+			if (!initialized)
+			{
+				if (FlxG.save.data != null && FlxG.save.data.fullscreen)
+				{
+					FlxG.fullscreen = FlxG.save.data.fullscreen;
+				}
+				persistentUpdate = true;
+				persistentDraw = true;
+			}
+			initialized = true;
+			
+			if (FlxG.save.data.startedUp == null) // && !FlashingState.leftState)
+			{
+				
+				trace('No save data detected, moving to FlashingState');
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
+				FlxG.switchState(new FlashingState());
+			}
 			else
 			{
-				new FlxTimer().start(1, function(tmr:FlxTimer) {
-					startIntro();
-				});
+				if (initialized) startIntro();
+				else
+				{
+					new FlxTimer().start(1, function(tmr:FlxTimer) {
+						startIntro();
+					});
+				}
 			}
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("TitleState Error", "An error occurred during menu startup:\n" + Std.string(e));
 		}
 	}
 	
 	public function startIntro()
 	{
-		if (!initialized)
-		{
-			if (FlxG.sound.music == null)
+		try {
+			if (!initialized)
 			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-				FlxG.sound.music.fadeIn(4, 0, 0.7);
-			}
-		}
-		
-		#if desktop // DISCORD_ALLOWED
-		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menu", null);
-		#end
-		
-		var versionString = 'VS IMPOSTOR WEEK 1';
-		canSelect = true;
-		
-		opts = new FlxTypedGroup<FlxSprite>(); // GROUP ON GOD!
-		ott = new FlxTypedGroup<FlxText>(); // GROUP ON GOD!
-		
-		starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
-		starFG.updateHitbox();
-		starFG.antialiasing = ClientPrefs.globalAntialiasing;
-		starFG.scrollFactor.set();
-		add(starFG);
-		
-		starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
-		starBG.antialiasing = ClientPrefs.globalAntialiasing;
-		starBG.scrollFactor.set();
-		add(starBG);
-		
-		// Background
-		bg = new FlxSprite(-121, 226.8 + 700).loadGraphic(Paths.image('menu/common/bg'));
-		
-		snowEmitter = new SnowEmitter(200, -100, FlxG.width + 200);
-		snowEmitter.scale.set(0.5);
-		snowEmitter.start(false, 0.05);
-		snowEmitter.scrollFactor.x.set(0.8, 0.8);
-		snowEmitter.scrollFactor.y.set(0.8, 0.8);
-		
-		final snowAlpha = alreadyBeenInMenu ? 1 : 0;
-		
-		snowEmitter.alpha.set(snowAlpha);
-		
-		tv = new FlxSprite(1100, 450);
-		tv.frames = Paths.getSparrowAtlas("menu/main/tv");
-		tv.animation.addByPrefix('idle', 'TVIDLE', 24, false);
-		tv.animation.addByPrefix('on', 'TVON', 24, false);
-		tv.alpha = 0;
-		tv.scale.set(1, 1);
-		tv.scrollFactor.set(1, 1);
-		tv.antialiasing = ClientPrefs.globalAntialiasing;
-		
-		// Logo, probably make it a real sprite for later
-		lg = new FlxSprite(27, 82).loadGraphic(Paths.image('menu/main/Logo'));
-		lg.screenCenter();
-		lg.scrollFactor.set();
-		
-		// Black bars, scaled them up ingame because It's black bars I dont think they need to be 1280x720
-		var bb:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('menu/common/blackbars'));
-		bb.scale.set(2, 2);
-		bb.updateHitbox();
-		bb.scrollFactor.set();
-		
-		// Control panel thing
-		ct = new FlxSprite(42.15, 668.3 + 100).loadGraphic(Paths.image('menu/common/controls'));
-		ct.scrollFactor.set();
-		
-		lt = new FlxText(0, 715, 1280, 'Press Enter to Start');
-		lt.setFormat(Paths.font("bahn.ttf"), 25, 0xFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		lt.y -= lt.height;
-		lt.borderSize = 2.5;
-		lt.antialiasing = ClientPrefs.globalAntialiasing;
-		lt.scrollFactor.set();
-		
-		// This does not optimize anything.
-		
-		for (i in [bg, bb, lg, ct])
-		{
-			add(i);
-			i.antialiasing = ClientPrefs.globalAntialiasing;
-		}
-		add(lt);
-		bg.antialiasing = false;
-		
-		insert(members.indexOf(bb), snowEmitter);
-		
-		zared = new FlxSprite().loadGraphic(Paths.image('menu/secret/zared'));
-		zared.antialiasing = ClientPrefs.globalAntialiasing;
-		zared.scrollFactor.set();
-		
-		// Color swap/grayscale, remove in V2.
-		colorSwap = new ColorSwap();
-		colorSwap.saturation = -1;
-		
-		var versionText:FlxText = new FlxText(0, (alreadyBeenInMenu ? 0 : -70), 1280, versionString);
-		versionText.setFormat(Paths.font("bahn.ttf"), 25, FlxColor.WHITE, FlxTextAlign.CENTER);
-		add(versionText);
-		versionText.antialiasing = ClientPrefs.globalAntialiasing;
-		versionText.scrollFactor.set();
-		
-		if (PLAYED_V3 || PLAYED_V4) // add trophy
-		{
-			var anim = PLAYED_V3 ? PLAYED_V4 ? 'v3-4' : 'v3' : 'v4';
-			
-			trophy = new FlxSprite().loadFromSheet('menu/main/trophy', anim, 0);
-			trophy.scrollFactor.set();
-			trophy.antialiasing = ClientPrefs.globalAntialiasing;
-			
-			trophy.scale.scale(0.4);
-			trophy.updateHitbox();
-			
-			trophy.x = (27 + (lg.width - trophy.width) / 2);
-			trophy.y = (82 - trophy.height) + 30 + (alreadyBeenInMenu ? 0 : -200);
-			insert(members.indexOf(lg), trophy);
-		}
-		
-		add(opts);
-		add(ott);
-		
-		for (i in 0...5)
-		{
-			var but:FlxSprite = new FlxSprite(buttons[i][0] - (alreadyBeenInMenu ? 0 : 500), buttons[i][1]).loadFromSheet('menu/main/menubuttons', 'button' + buttons[i][2], 0);
-			but.antialiasing = ClientPrefs.globalAntialiasing;
-			but.ID = i;
-			//  It's not letting me do it the normal and not stupid way
-			var txt:FlxText = new FlxText(buttons[i][0] + (i > 2 ? 0 : 9.4) - (alreadyBeenInMenu ? 0 : 500), buttons[i][1] + 11.35, (i > 2 ? 113 : -1), buttons[i][3]);
-			txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			if (i > 2)
-			{ // UGH
-				txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-				txt.y += but.height;
-				if (v2Check)
+				if (FlxG.sound.music == null)
 				{
-					but.shader = colorSwap.shader;
-					txt.color = 0x393939;
-					but.color = 0x393939;
+					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+					FlxG.sound.music.fadeIn(4, 0, 0.7);
 				}
 			}
-			txt.borderSize = 2.5;
-			txt.ID = i;
-			txt.antialiasing = ClientPrefs.globalAntialiasing;
-			opts.add(but);
-			ott.add(txt);
 			
-			but.scrollFactor.set();
-			txt.scrollFactor.set();
+			#if desktop // DISCORD_ALLOWED
+			// Updating Discord Rich Presence
+			DiscordClient.changePresence("In the Menu", null);
+			#end
+			
+			var versionString = 'VS IMPOSTOR WEEK 1';
+			canSelect = true;
+			
+			opts = new FlxTypedGroup<FlxSprite>(); // GROUP ON GOD!
+			ott = new FlxTypedGroup<FlxText>(); // GROUP ON GOD!
+			
+			starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+			starFG.updateHitbox();
+			starFG.antialiasing = ClientPrefs.globalAntialiasing;
+			starFG.scrollFactor.set();
+			add(starFG);
+			
+			starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+			starBG.antialiasing = ClientPrefs.globalAntialiasing;
+			starBG.scrollFactor.set();
+			add(starBG);
+			
+			// Background
+			bg = new FlxSprite(-121, 226.8 + 700).loadGraphic(Paths.image('menu/common/bg'));
+			
+			snowEmitter = new SnowEmitter(200, -100, FlxG.width + 200);
+			snowEmitter.scale.set(0.5);
+			snowEmitter.start(false, 0.05);
+			snowEmitter.scrollFactor.x.set(0.8, 0.8);
+			snowEmitter.scrollFactor.y.set(0.8, 0.8);
+			
+			final snowAlpha = alreadyBeenInMenu ? 1 : 0;
+			
+			snowEmitter.alpha.set(snowAlpha);
+			
+			tv = new FlxSprite(1100, 450);
+			tv.frames = Paths.getSparrowAtlas("menu/main/tv");
+			tv.animation.addByPrefix('idle', 'TVIDLE', 24, false);
+			tv.animation.addByPrefix('on', 'TVON', 24, false);
+			tv.alpha = 0;
+			tv.scale.set(1, 1);
+			tv.scrollFactor.set(1, 1);
+			tv.antialiasing = ClientPrefs.globalAntialiasing;
+			
+			// Logo, probably make it a real sprite for later
+			lg = new FlxSprite(27, 82).loadGraphic(Paths.image('menu/main/Logo'));
+			lg.screenCenter();
+			lg.scrollFactor.set();
+			
+			// Black bars, scaled them up ingame because It's black bars I dont think they need to be 1280x720
+			var bb:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('menu/common/blackbars'));
+			bb.scale.set(2, 2);
+			bb.updateHitbox();
+			bb.scrollFactor.set();
+			
+			// Control panel thing
+			ct = new FlxSprite(42.15, 668.3 + 100).loadGraphic(Paths.image('menu/common/controls'));
+			ct.scrollFactor.set();
+			
+			lt = new FlxText(0, 715, 1280, 'Press Enter to Start');
+			lt.setFormat(Paths.font("bahn.ttf"), 25, 0xFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			lt.y -= lt.height;
+			lt.borderSize = 2.5;
+			lt.antialiasing = ClientPrefs.globalAntialiasing;
+			lt.scrollFactor.set();
+			
+			// This does not optimize anything.
+			
+			for (i in [bg, bb, lg, ct])
+			{
+				add(i);
+				i.antialiasing = ClientPrefs.globalAntialiasing;
+			}
+			add(lt);
+			bg.antialiasing = false;
+			
+			insert(members.indexOf(bb), snowEmitter);
+			
+			zared = new FlxSprite().loadGraphic(Paths.image('menu/secret/zared'));
+			zared.antialiasing = ClientPrefs.globalAntialiasing;
+			zared.scrollFactor.set();
+			
+			// Color swap/grayscale, remove in V2.
+			colorSwap = new ColorSwap();
+			colorSwap.saturation = -1;
+			
+			var versionText:FlxText = new FlxText(0, (alreadyBeenInMenu ? 0 : -70), 1280, versionString);
+			versionText.setFormat(Paths.font("bahn.ttf"), 25, FlxColor.WHITE, FlxTextAlign.CENTER);
+			add(versionText);
+			versionText.antialiasing = ClientPrefs.globalAntialiasing;
+			versionText.scrollFactor.set();
+			
+			if (PLAYED_V3 || PLAYED_V4) // add trophy
+			{
+				var anim = PLAYED_V3 ? PLAYED_V4 ? 'v3-4' : 'v3' : 'v4';
+				
+				trophy = new FlxSprite().loadFromSheet('menu/main/trophy', anim, 0);
+				trophy.scrollFactor.set();
+				trophy.antialiasing = ClientPrefs.globalAntialiasing;
+				
+				trophy.scale.scale(0.4);
+				trophy.updateHitbox();
+				
+				trophy.x = (27 + (lg.width - trophy.width) / 2);
+				trophy.y = (82 - trophy.height) + 30 + (alreadyBeenInMenu ? 0 : -200);
+				insert(members.indexOf(lg), trophy);
+			}
+			
+			add(opts);
+			add(ott);
+			
+			for (i in 0...5)
+			{
+				var but:FlxSprite = new FlxSprite(buttons[i][0] - (alreadyBeenInMenu ? 0 : 500), buttons[i][1]).loadFromSheet('menu/main/menubuttons', 'button' + buttons[i][2], 0);
+				but.antialiasing = ClientPrefs.globalAntialiasing;
+				but.ID = i;
+				//  It's not letting me do it the normal and not stupid way
+				var txt:FlxText = new FlxText(buttons[i][0] + (i > 2 ? 0 : 9.4) - (alreadyBeenInMenu ? 0 : 500), buttons[i][1] + 11.35, (i > 2 ? 113 : -1), buttons[i][3]);
+				txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				if (i > 2)
+				{ // UGH
+					txt.setFormat(Paths.font("notosans.ttf"), 35, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+					txt.y += but.height;
+					if (v2Check)
+					{
+						but.shader = colorSwap.shader;
+						txt.color = 0x393939;
+						but.color = 0x393939;
+					}
+				}
+				txt.borderSize = 2.5;
+				txt.ID = i;
+				txt.antialiasing = ClientPrefs.globalAntialiasing;
+				opts.add(but);
+				ott.add(txt);
+				
+				but.scrollFactor.set();
+				txt.scrollFactor.set();
+			}
+			// trace(opts);
+			changeSel(0, 0);
+			if (!alreadyBeenInMenu)
+			{
+				trace('snow here');
+				// WHEN TRANSITIONING FROM TITLESTATE
+				FlxTween.tween(versionText, {y: 0}, 1, {ease: FlxEase.quadOut});
+			}
+			else
+			{
+				moveShitUp(0.01);
+				trace('fuck');
+			}
+			
+			persistentUpdate = true;
+			skipIntro();
+			
+			callOnScript('onCreatePost', []);
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("TitleState Error", "An error occurred during intro:\n" + Std.string(e));
 		}
-		// trace(opts);
-		changeSel(0, 0);
-		if (!alreadyBeenInMenu)
-		{
-			trace('snow here');
-			// WHEN TRANSITIONING FROM TITLESTATE
-			FlxTween.tween(versionText, {y: 0}, 1, {ease: FlxEase.quadOut});
-		}
-		else
-		{
-			moveShitUp(0.01);
-			trace('fuck');
-		}
-		
-		persistentUpdate = true;
-		skipIntro();
-		
-		callOnScript('onCreatePost', []);
 	}
 	
 	public static var transitioning:Bool = false;
 	
 	override function update(elapsed:Float)
 	{
-		if (FlxG.save.data.startedUp == null) {super.update(elapsed); return;}
-		if (starFG != null)
-		{
-			starFG.x -= 0.12 * 60 * elapsed;
-		}
-		if (starBG != null)
-		{
-			starBG.x -= 0.04 * 60 * elapsed;
-		}
-		
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
-		
-		if (isHardcodedState())
-		{
-			#if mobile
-			for (touch in FlxG.touches.list)
+		try {
+			if (FlxG.save.data.startedUp == null) {super.update(elapsed); return;}
+			if (starFG != null)
 			{
-				if (touch.justPressed)
-				{
-					pressedEnter = true;
-				}
+				starFG.x -= 0.12 * 60 * elapsed;
 			}
-			#end
-			
-			var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-			
-			if (gamepad != null)
+			if (starBG != null)
 			{
-				if (gamepad.justPressed.START) pressedEnter = true;
-				
-				#if switch
-				if (gamepad.justPressed.B) pressedEnter = true;
-				#end
+				starBG.x -= 0.04 * 60 * elapsed;
 			}
 			
-			// EASTER EGG
+			var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
 			
-			// IF CAN PRESS ON THING
-			if (transitioning)
+			if (isHardcodedState())
 			{
 				#if mobile
-				if (_virtualpad == null) {
-					addVirtualPad(FULL, A_B);
+				for (touch in FlxG.touches.list)
+				{
+					if (touch.justPressed)
+					{
+						pressedEnter = true;
+					}
 				}
 				#end
-				if (FlxG.mouse.justPressed && members.indexOf(tv) != -1 && tv.overlapsPoint(FlxG.mouse.getWorldPosition()))
+				
+				var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+				
+				if (gamepad != null)
 				{
-					tv.animation.play('on');
-					tv.x += -115;
-					tv.y += -80;
+					if (gamepad.justPressed.START) pressedEnter = true;
 					
-					FlxG.sound.play(Paths.sound('secret'));
-					new FlxTimer().start(1.4, function(tmr:FlxTimer) {
-						PlayState.storyDifficulty = 1;
-						PlayState.isStoryMode = false;
-						PlayState.SONG = Song.loadFromJson('bananas', 'bananas');
-						FlxG.switchState(new PlayState());
-						FlxG.mouse.visible = false;
-					});
+					#if switch
+					if (gamepad.justPressed.B) pressedEnter = true;
+					#end
 				}
 				
-				final finalKey:FlxKey = FlxG.keys.firstJustPressed();
+				// EASTER EGG
 				
-				if (finalKey != -1)
+				// IF CAN PRESS ON THING
+				if (transitioning)
 				{
-					keyTimer = 1;
-					lastKeysPressed.push(finalKey);
-					
-					inline function checkForMatch(arra:Array<Int>):Bool
+					#if mobile
+					if (_virtualpad == null) {
+						addVirtualPad(FULL, A_B);
+					}
+					#end
+					if (FlxG.mouse.justPressed && members.indexOf(tv) != -1 && tv.overlapsPoint(FlxG.mouse.getWorldPosition()))
 					{
-						var matched:Bool = true;
+						tv.animation.play('on');
+						tv.x += -115;
+						tv.y += -80;
 						
-						if (arra.length == 0) return false;
+						FlxG.sound.play(Paths.sound('secret'));
+						new FlxTimer().start(1.4, function(tmr:FlxTimer) {
+							PlayState.storyDifficulty = 1;
+							PlayState.isStoryMode = false;
+							PlayState.SONG = Song.loadFromJson('bananas', 'bananas');
+							FlxG.switchState(new PlayState());
+							FlxG.mouse.visible = false;
+						});
+					}
+					
+					final finalKey:FlxKey = FlxG.keys.firstJustPressed();
+					
+					if (finalKey != -1)
+					{
+						keyTimer = 1;
+						lastKeysPressed.push(finalKey);
 						
-						for (k => i in arra)
+						inline function checkForMatch(arra:Array<Int>):Bool
 						{
-							if (lastKeysPressed[k] != i)
+							var matched:Bool = true;
+							
+							if (arra.length == 0) return false;
+							
+							for (k => i in arra)
 							{
-								matched = false;
+								if (lastKeysPressed[k] != i)
+								{
+									matched = false;
+								}
+							}
+							
+							return matched;
+						}
+						
+						if (checkForMatch(secretKey)) // dk
+						{
+							doSecretAction();
+							
+							secretKey = []; // prevents from doing multiple times
+						}
+						
+						if (checkForMatch([FlxKey.Z, FlxKey.A, FlxKey.R, FlxKey.E, FlxKey.D]) && members.indexOf(zared) == -1)
+						{
+							add(zared);
+							zared.screenCenter(); // Center the zared sprite on the screen
+							new FlxTimer().start(1, (_) -> openfl.system.System.exit(0));
+							FlxG.sound.play(Paths.sound('loud'));
+						}
+					}
+					
+					if (keyTimer > 0)
+					{
+						keyTimer -= elapsed;
+					}
+					
+					if (keyTimer <= 0)
+					{
+						lastKeysPressed.resize(0);
+					}
+					
+					if (canSelect)
+					{
+						if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
+						{
+							changeSel(1, 1);
+						}
+						if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
+						{
+							changeSel(-1, 1);
+						}
+						if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end)
+						{
+							if (curSel == 3)
+							{
+								curSel = 4;
+								changeSel(0, 1);
 							}
 						}
-						
-						return matched;
-					}
-					
-					if (checkForMatch(secretKey)) // dk
-					{
-						doSecretAction();
-						
-						secretKey = []; // prevents from doing multiple times
-					}
-					
-					if (checkForMatch([FlxKey.Z, FlxKey.A, FlxKey.R, FlxKey.E, FlxKey.D]) && members.indexOf(zared) == -1)
-					{
-						add(zared);
-						zared.screenCenter(); // Center the zared sprite on the screen
-						new FlxTimer().start(1, (_) -> openfl.system.System.exit(0));
-						FlxG.sound.play(Paths.sound('loud'));
-					}
-				}
-				
-				if (keyTimer > 0)
-				{
-					keyTimer -= elapsed;
-				}
-				
-				if (keyTimer <= 0)
-				{
-					lastKeysPressed.resize(0);
-				}
-				
-				if (canSelect)
-				{
-					if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
-					{
-						changeSel(1, 1);
-					}
-					if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
-					{
-						changeSel(-1, 1);
-					}
-					if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end)
-					{
-						if (curSel == 3)
+						if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end)
 						{
-							curSel = 4;
-							changeSel(0, 1);
+							if (curSel == 4)
+							{
+								curSel = 3;
+								changeSel(0, 1);
+							}
+						}
+						if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
+						{
+							selectedOption();
+						}
+						if (_virtualpad.buttonB.justPressed && !secretTriggered)
+						{
+							doSecretAction();
+							secretTriggered = true;
 						}
 					}
-					if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end)
+				}
+				if (initialized && !transitioning && skippedIntro)
+				{
+					if (pressedEnter && callOnScript('onEnter', []) != Globals.Function_Stop)
 					{
-						if (curSel == 4)
-						{
-							curSel = 3;
-							changeSel(0, 1);
-						}
-					}
-					if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
-					{
-						selectedOption();
-					}
-					if (_virtualpad.buttonB.justPressed && !secretTriggered)
-					{
-						doSecretAction();
-						secretTriggered = true;
+						FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+						moveShitUp();
+						transitioning = true;
+						
+						opts.forEach(function(spr:FlxSprite) {
+							FlxTween.tween(spr, {x: buttons[spr.ID][0]}, 1, {ease: FlxEase.quadOut, startDelay: spr.ID / 6});
+						});
+						ott.forEach(function(spr:FlxText) {
+							FlxTween.tween(spr, {x: buttons[spr.ID][0] + (spr.ID > 2 ? 0 : 9.4)}, 1, {ease: FlxEase.quadOut, startDelay: spr.ID / 6});
+						});
+						// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
+						#if mobile
+						addVirtualPad(FULL,A_B);
+						#end
 					}
 				}
 			}

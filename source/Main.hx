@@ -45,15 +45,15 @@ class Main extends Sprite
 		// test 
 	    // mobile.backend.CrashHandler.init();
 
-		Splash.nextState = Init;
+		LoadingScreen.nextState = Splash;
 		ClientPrefs.loadDefaultKeys();
 
 		final game = new
 			#if CRASH_HANDLER
 			FNFGame
 			#else
-			FlxGame
-			#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+			FlxGame                                 // #if !debug Splash #else  #endd
+			#end(startMeta.width, startMeta.height, startMeta.initialState, startMeta.fps, startMeta.fps, startMeta.skipSplash,
 				startMeta.startFullScreen);
 
 		// FlxG.game._customSoundTray wants just the class, it calls new from

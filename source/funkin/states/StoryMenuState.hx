@@ -16,6 +16,7 @@ import funkin.data.*;
 import funkin.states.*;
 import funkin.states.substates.ResetScoreSubStateImpostor;
 import funkin.objects.RankIcon;
+import mobile.scripting.NativeAPI;
 
 class StoryMenuState extends MusicBeatState
 {
@@ -55,134 +56,138 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
-		Paths.clearStoredMemory();
-		Paths.clearUnusedMemory();
+		try {
+			Paths.clearStoredMemory();
+			Paths.clearUnusedMemory();
 
-		PlayState.isStoryMode = true;
-		WeekData.reloadWeekFiles(true);
-		if (curWeek >= WeekData.weeksList.length) curWeek = 0;
+			PlayState.isStoryMode = true;
+			WeekData.reloadWeekFiles(true);
+			if (curWeek >= WeekData.weeksList.length) curWeek = 0;
 
-	    #if DISCORD_ALLOWED
-		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Story Menu", null);
-		#end
+		    #if DISCORD_ALLOWED
+			// Updating Discord Rich Presence
+			DiscordClient.changePresence("Story Menu", null);
+			#end
 
-		DifficultyUtil.reset();
+			DifficultyUtil.reset();
 
-		var notblack:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x06080C);
-		var grad:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'gradient'));
+			var notblack:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0x06080C);
+			var grad:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'gradient'));
 
-		starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
-		starFG.updateHitbox();
-		starFG.antialiasing = ClientPrefs.globalAntialiasing;
-		starFG.scrollFactor.set();
+			starFG = new FlxBackdrop(Paths.image('menu/common/starFG'));
+			starFG.updateHitbox();
+			starFG.antialiasing = ClientPrefs.globalAntialiasing;
+			starFG.scrollFactor.set();
 
-		starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
-		starBG.updateHitbox();
-		starBG.antialiasing = ClientPrefs.globalAntialiasing;
-		starBG.scrollFactor.set();
+			starBG = new FlxBackdrop(Paths.image('menu/common/starBG'));
+			starBG.updateHitbox();
+			starBG.antialiasing = ClientPrefs.globalAntialiasing;
+			starBG.scrollFactor.set();
 
-		var dark:FlxSprite = new FlxSprite(450, 0).loadGraphic(Paths.image(ext + 'dark'));
-		dark.scale.set(1, 1);
-		dark.updateHitbox();
-		dark.antialiasing = ClientPrefs.globalAntialiasing;
+			var dark:FlxSprite = new FlxSprite(450, 0).loadGraphic(Paths.image(ext + 'dark'));
+			dark.scale.set(1, 1);
+			dark.updateHitbox();
+			dark.antialiasing = ClientPrefs.globalAntialiasing;
 
-		map = new FlxSprite(645, 295 - 115).loadGraphic(Paths.image(ext + 'maps'));
-		/*map = new FlxSprite(645,295-115).loadGraphic(Paths.image(ext + 'maps'), true, 500, 500);
-			for(i in 0...weekSpots.length) {
-				map.animation.add(weekSpots[i], [i], 0, false);
+			map = new FlxSprite(645, 295 - 115).loadGraphic(Paths.image(ext + 'maps'));
+			/*map = new FlxSprite(645,295-115).loadGraphic(Paths.image(ext + 'maps'), true, 500, 500);
+				for(i in 0...weekSpots.length) {
+					map.animation.add(weekSpots[i], [i], 0, false);
+				}
+				map.animation.play(weekSpots[0]); */
+
+			var bb:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('menu/common/blackbars'));
+			bb.scale.set(2, 2);
+			bb.updateHitbox();
+
+			var overlay:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'menu'));
+			overlay.antialiasing = ClientPrefs.globalAntialiasing;
+
+			var pc:FlxSprite = new FlxSprite(811, 62).loadGraphic(Paths.image(ext + 'storychars/' + curPlaying));
+
+			var ct:FlxSprite = new FlxSprite(42.15, 668.3).loadGraphic(Paths.image('menu/common/controls_ex'));
+			for (i in [notblack, grad, starBG, starFG, dark, map, bb, overlay, ct, pc])
+			{
+				i.antialiasing = ClientPrefs.globalAntialiasing;
+				add(i);
+				i.antialiasing = ClientPrefs.globalAntialiasing;
 			}
-			map.animation.play(weekSpots[0]); */
+			pointerLeft = new FlxSprite(625, 400).loadGraphic(Paths.image(ext + 'pointers'), true, 70, 70);
+			pointerRight = new FlxSprite(1100, 400).loadGraphic(Paths.image(ext + 'pointers'), true, 70, 70);
+			for (pointer in [pointerLeft, pointerRight])
+			{
+				pointer.animation.add('left', [0], 0, false);
+				pointer.animation.add('mid', [1], 0, false);
+				pointer.animation.add('right', [2], 0, false);
+				pointer.antialiasing = ClientPrefs.globalAntialiasing;
+				add(pointer);
+			}
 
-		var bb:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('menu/common/blackbars'));
-		bb.scale.set(2, 2);
-		bb.updateHitbox();
+			// KEEP AS VARS
+			var storyText:FlxText = new FlxText(40, 20, -1, 'Story');
+			storyText.setFormat(Paths.font("bahn.ttf"), 60, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			var diffText2:FlxText = new FlxText(70, 450, -1, 'Difficulty:');
+			diffText2.setFormat(Paths.font("bahn.ttf"), 50, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			// THE WEEK NAME
+			weekText = new FlxText(70, 170, -1, 't');
+			weekText.setFormat(Paths.font("bahn.ttf"), 60, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			// THE WEEK NAME TEXT
+			weekNameText = new FlxText(70, 250, -1, '"Polus Problem"');
+			weekNameText.setFormat(Paths.font("bahn.ttf"), 50, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			// SONGS LIST
+			songsText = new FlxText(300, 315, -1, '');
+			songsText.setFormat(Paths.font("bahn.ttf"), 25, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			// DIF
+			diffText = new FlxText(370, 15, -1, 'Difficulty');
+			diffText.setFormat(Paths.font("bahn.ttf"), 35, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			// SCORE LIST
+			scoreText = new FlxText(23, 515, 543, 'FIX YO CODE FATASS!');
+			scoreText.setFormat(Paths.font("bahn.ttf"), 50, 0xFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			for (i in [storyText, diffText2, weekText, weekNameText, songsText, scoreText, diffText])
+			{
+				i.borderSize = 2.5;
+				add(i);
+				i.antialiasing = ClientPrefs.globalAntialiasing;
+			}
 
-		var overlay:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image(ext + 'menu'));
-		overlay.antialiasing = ClientPrefs.globalAntialiasing;
+			// The week render
+			var render:FlxSprite = new FlxSprite(30, 308).loadGraphic(Paths.image(ext + 'storyRender'));
+			render.blend = ADD;
+			render.antialiasing = ClientPrefs.globalAntialiasing;
+			add(render);
 
-		var pc:FlxSprite = new FlxSprite(811, 62).loadGraphic(Paths.image(ext + 'storychars/' + curPlaying));
+			for (i in 0...5)
+			{
+				var bean:FlxSprite = new FlxSprite(284 + (50 * i), 463).loadGraphic(Paths.image(ext + 'beanDiff'), true, 46, 50);
+				bean.animation.add('brah', [0, 1], 0, false);
+				bean.animation.play('brah');
+				bean.ID = i;
+				beans.push(bean);
+				bean.antialiasing = ClientPrefs.globalAntialiasing;
+				add(bean);
+			}
 
-		var ct:FlxSprite = new FlxSprite(42.15, 668.3).loadGraphic(Paths.image('menu/common/controls_ex'));
-		for (i in [notblack, grad, starBG, starFG, dark, map, bb, overlay, ct, pc])
-		{
-			i.antialiasing = ClientPrefs.globalAntialiasing;
-			add(i);
-			i.antialiasing = ClientPrefs.globalAntialiasing;
+			checkmark = new FlxSprite(370, 185).loadGraphic(Paths.image(ext + 'checkmark'));
+			checkmark.alpha = 0.01;
+			checkmark.antialiasing = ClientPrefs.globalAntialiasing;
+			add(checkmark);
+
+			weekRank = new RankIcon(460, 505);
+			//weekRank.setRank(100); // temp
+			add(weekRank);
+
+			for (i in 0...WeekData.weeksList.length)
+			{
+				var weekFile:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+				loadedWeeks.push(weekFile);
+				WeekData.setDirectoryFromWeek(weekFile);
+			}
+
+			reloadSongList();
+			super.create();
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("StoryMenuState Error", "An error occurred while opening the Story Menu:\n" + Std.string(e));
 		}
-		pointerLeft = new FlxSprite(625, 400).loadGraphic(Paths.image(ext + 'pointers'), true, 70, 70);
-		pointerRight = new FlxSprite(1100, 400).loadGraphic(Paths.image(ext + 'pointers'), true, 70, 70);
-		for (pointer in [pointerLeft, pointerRight])
-		{
-			pointer.animation.add('left', [0], 0, false);
-			pointer.animation.add('mid', [1], 0, false);
-			pointer.animation.add('right', [2], 0, false);
-			pointer.antialiasing = ClientPrefs.globalAntialiasing;
-			add(pointer);
-		}
-
-		// KEEP AS VARS
-		var storyText:FlxText = new FlxText(40, 20, -1, 'Story');
-		storyText.setFormat(Paths.font("bahn.ttf"), 60, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		var diffText2:FlxText = new FlxText(70, 450, -1, 'Difficulty:');
-		diffText2.setFormat(Paths.font("bahn.ttf"), 50, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// THE WEEK NAME
-		weekText = new FlxText(70, 170, -1, 't');
-		weekText.setFormat(Paths.font("bahn.ttf"), 60, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// THE WEEK NAME TEXT
-		weekNameText = new FlxText(70, 250, -1, '"Polus Problem"');
-		weekNameText.setFormat(Paths.font("bahn.ttf"), 50, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// SONGS LIST
-		songsText = new FlxText(300, 315, -1, '');
-		songsText.setFormat(Paths.font("bahn.ttf"), 25, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// DIF
-		diffText = new FlxText(370, 15, -1, 'Difficulty');
-		diffText.setFormat(Paths.font("bahn.ttf"), 35, 0xFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// SCORE LIST
-		scoreText = new FlxText(23, 515, 543, 'FIX YO CODE FATASS!');
-		scoreText.setFormat(Paths.font("bahn.ttf"), 50, 0xFFFFFF, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		for (i in [storyText, diffText2, weekText, weekNameText, songsText, scoreText, diffText])
-		{
-			i.borderSize = 2.5;
-			add(i);
-			i.antialiasing = ClientPrefs.globalAntialiasing;
-		}
-
-		// The week render
-		var render:FlxSprite = new FlxSprite(30, 308).loadGraphic(Paths.image(ext + 'storyRender'));
-		render.blend = ADD;
-		render.antialiasing = ClientPrefs.globalAntialiasing;
-		add(render);
-
-		for (i in 0...5)
-		{
-			var bean:FlxSprite = new FlxSprite(284 + (50 * i), 463).loadGraphic(Paths.image(ext + 'beanDiff'), true, 46, 50);
-			bean.animation.add('brah', [0, 1], 0, false);
-			bean.animation.play('brah');
-			bean.ID = i;
-			beans.push(bean);
-			bean.antialiasing = ClientPrefs.globalAntialiasing;
-			add(bean);
-		}
-
-		checkmark = new FlxSprite(370, 185).loadGraphic(Paths.image(ext + 'checkmark'));
-		checkmark.alpha = 0.01;
-		checkmark.antialiasing = ClientPrefs.globalAntialiasing;
-		add(checkmark);
-
-		weekRank = new RankIcon(460, 505);
-		//weekRank.setRank(100); // temp
-		add(weekRank);
-
-		for (i in 0...WeekData.weeksList.length)
-		{
-			var weekFile:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-			loadedWeeks.push(weekFile);
-			WeekData.setDirectoryFromWeek(weekFile);
-		}
-
-		reloadSongList();
-		super.create();
 	}
 
 	function nahFuckOff()
@@ -256,27 +261,31 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		starFG.x -= 0.03;
-		starBG.x -= 0.01;
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, FlxMath.bound(elapsed * 30, 0, 1)));
-		if (Math.abs(intendedScore - lerpScore) < 10) lerpScore = intendedScore;
-		scoreText.text = "Score: " + FlxStringUtil.formatMoney(lerpScore, false, true);
-		if (!selectedWeek)
-		{
-			if (controls.UI_LEFT_P) changeWeek(-1);
-			if (controls.UI_RIGHT_P) changeWeek(1);
-			if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q) changeDiff();
-			if (controls.ACCEPT) selectWeek();
-			if (controls.BACK) 
+		try {
+			starFG.x -= 0.03;
+			starBG.x -= 0.01;
+			lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, FlxMath.bound(elapsed * 30, 0, 1)));
+			if (Math.abs(intendedScore - lerpScore) < 10) lerpScore = intendedScore;
+			scoreText.text = "Score: " + FlxStringUtil.formatMoney(lerpScore, false, true);
+			if (!selectedWeek)
 			{
-				FlxG.switchState(new TitleState());
-				FlxG.sound.play(Paths.sound('cancelMenu'));
+				if (controls.UI_LEFT_P) changeWeek(-1);
+				if (controls.UI_RIGHT_P) changeWeek(1);
+				if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q) changeDiff();
+				if (controls.ACCEPT) selectWeek();
+				if (controls.BACK) 
+				{
+					FlxG.switchState(new TitleState());
+					FlxG.sound.play(Paths.sound('cancelMenu'));
+				}
+				if (FlxG.keys.justPressed.R) 
+				{
+					persistentUpdate = false;
+					openSubState(new ResetScoreSubStateImpostor('', curDiff, curWeek));
+				}
 			}
-			if (FlxG.keys.justPressed.R) 
-			{
-				persistentUpdate = false;
-				openSubState(new ResetScoreSubStateImpostor('', curDiff, curWeek));
-			}
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("StoryMenuState Error", "An error occurred during Story Menu update:\n" + Std.string(e));
 		}
 	}
 

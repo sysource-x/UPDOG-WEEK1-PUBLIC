@@ -2,6 +2,7 @@ package mobile.states;
 
 import Splash;
 import flixel.FlxG;
+import flixel.FlxState;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -11,6 +12,8 @@ import openfl.utils.Assets;
 
 class LoadingScreen extends MusicBeatState
 {
+    public static var nextState:Class<FlxState>;
+
     public var loadingImage:FlxSprite;
     public var loadingBar:FlxBar;
     public var loadedText:FlxText;
@@ -135,7 +138,8 @@ class LoadingScreen extends MusicBeatState
                 FlxG.sound.play(Paths.sound('confirmMenu')); // se quiser, pode tirar
                 FlxG.save.data.loadedOnce = true;
                 FlxG.save.flush();
-                FlxG.switchState(new Splash());
+                //FlxG.switchState(new Splash());
+                FlxG.switchState(() -> Type.createInstance(nextState, []));
             }
         }
     }

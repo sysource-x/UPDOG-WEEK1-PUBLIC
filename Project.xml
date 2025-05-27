@@ -78,6 +78,7 @@
 	<!-- _____________________________  SOME ASSETS  ____________________________ -->
 
 	<assets path="assets" include="**/*" unless="web"/>
+	<assets path="content" include="**/*" if="MODS_ALLOWED" unless="web"/>
 	<!-- <assets path="content" include="**/*" if="MODS_ALLOWED"/> -->
 
 	<!-- _______________________________ Libraries ______________________________ -->

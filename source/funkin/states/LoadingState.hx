@@ -16,6 +16,7 @@ import haxe.io.Path;
 import funkin.states.substates.*;
 import funkin.states.*;
 import funkin.data.*;
+import mobile.scripting.NativeAPI;
 
 class LoadingState extends MusicBeatState
 {
@@ -44,39 +45,43 @@ class LoadingState extends MusicBeatState
 
 	override function create()
 	{
-		var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d);
-		add(bg);
-		funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png', IMAGE));
-		funkay.setGraphicSize(0, FlxG.height);
-		funkay.updateHitbox();
-		funkay.antialiasing = ClientPrefs.globalAntialiasing;
-		add(funkay);
-		funkay.scrollFactor.set();
-		funkay.screenCenter();
+		try {
+			var bg:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d);
+			add(bg);
+			funkay = new FlxSprite(0, 0).loadGraphic(Paths.getPath('images/funkay.png', IMAGE));
+			funkay.setGraphicSize(0, FlxG.height);
+			funkay.updateHitbox();
+			funkay.antialiasing = ClientPrefs.globalAntialiasing;
+			add(funkay);
+			funkay.scrollFactor.set();
+			funkay.screenCenter();
 
-		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xffff16d2);
-		loadBar.screenCenter(X);
-		loadBar.antialiasing = ClientPrefs.globalAntialiasing;
-		add(loadBar);
+			loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xffff16d2);
+			loadBar.screenCenter(X);
+			loadBar.antialiasing = ClientPrefs.globalAntialiasing;
+			add(loadBar);
 
-		initSongsManifest().onComplete(function(lib) {
-			callbacks = new MultiCallback(onLoad);
-			var introComplete = callbacks.add("introComplete");
-			/*if (PlayState.SONG != null) {
-				checkLoadSong(getSongPath());
-				if (PlayState.SONG.needsVoices)
-					checkLoadSong(getVocalPath());
-			}*/
-			checkLibrary("shared");
-			if (directory != null && directory.length > 0 && directory != 'shared')
-			{
-				checkLibrary(directory);
-			}
+			initSongsManifest().onComplete(function(lib) {
+				callbacks = new MultiCallback(onLoad);
+				var introComplete = callbacks.add("introComplete");
+				/*if (PlayState.SONG != null) {
+					checkLoadSong(getSongPath());
+					if (PlayState.SONG.needsVoices)
+						checkLoadSong(getVocalPath());
+				}*/
+				checkLibrary("shared");
+				if (directory != null && directory.length > 0 && directory != 'shared')
+				{
+					checkLibrary(directory);
+				}
 
-			var fadeTime = 0.5;
-			FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-			new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-		});
+				var fadeTime = 0.5;
+				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
+				new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+			});
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("LoadingState Error", "An error occurred during loading:\n" + Std.string(e));
+		}
 	}
 
 	function checkLoadSong(path:String)
@@ -113,19 +118,23 @@ class LoadingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		super.update(elapsed);
-		funkay.setGraphicSize(Std.int(0.88 * FlxG.width + 0.9 * (funkay.width - 0.88 * FlxG.width)));
-		funkay.updateHitbox();
-		if (controls.ACCEPT)
-		{
-			funkay.setGraphicSize(Std.int(funkay.width + 60));
+		try {
+			super.update(elapsed);
+			funkay.setGraphicSize(Std.int(0.88 * FlxG.width + 0.9 * (funkay.width - 0.88 * FlxG.width)));
 			funkay.updateHitbox();
-		}
+			if (controls.ACCEPT)
+			{
+				funkay.setGraphicSize(Std.int(funkay.width + 60));
+				funkay.updateHitbox();
+			}
 
-		if (callbacks != null)
-		{
-			targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
-			loadBar.scale.x += 0.5 * (targetShit - loadBar.scale.x);
+			if (callbacks != null)
+			{
+				targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
+				loadBar.scale.x += 0.5 * (targetShit - loadBar.scale.x);
+			}
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("LoadingState Error", "An error occurred during loading update:\n" + Std.string(e));
 		}
 	}
 
