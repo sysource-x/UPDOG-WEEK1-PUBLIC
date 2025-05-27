@@ -244,7 +244,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 										}
 
 									case 'string':
-										var num:Int = curOption.curOption; // lol
+										var num:Int = curOption.curOption;
 										if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) --num;
 										else num++;
 
@@ -258,7 +258,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 										}
 
 										curOption.curOption = num;
-										curOption.setValue(curOption.options[num]); // lol
+										curOption.setValue(curOption.options[num]);
 
 										if (curOption.name == "Scroll Type")
 										{
@@ -279,7 +279,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 												updateTextFrom(oOption);
 											}
 										}
-										// trace(curOption.options[num]);
 							}
 							updateTextFrom(curOption);
 							curOption.change();
@@ -345,6 +344,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				reloadCheckboxes();
 			}
+		}
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("GameplayChangersSubstate Error", "An error occurred during gameplay options update:\n" + Std.string(e));
 		}
