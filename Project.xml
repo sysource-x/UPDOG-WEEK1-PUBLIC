@@ -105,8 +105,8 @@
 
 	<!-- <assets path='content' rename='assets/shared' embed='false' if="MODS_ALLOWED"/> -->
 	<assets path="content" embed="false" if="MODS_ALLOWED"/>
-<!-- Renames start -->
-	<assets path="content/characters" rename="assets/shared/characters" include="**/*" unless="web"/>
+ 
+	<!--<assets path="content/characters" rename="assets/shared/characters" include="**/*" unless="web"/>
 	<assets path="content/weeks" rename="assets/shared/weeks" include="**/*" unless="web"/>
 	<assets path="content/music" rename="assets/shared/music" include="**/*" unless="web"/>
 	<assets path="content/noteskins" rename="assets/shared/noteskins" include="**/*" unless="web"/>
@@ -119,8 +119,8 @@
 	<assets path="content/images" rename="assets/shared/images" include="**/*" unless="web"/>
 	<assets path="content/data" rename="assets/shared/data" include="**/*" unless="web"/>
 	<assets path="content/videos" rename="assets/videos" include="**/*" unless="web"/>
-	<assets path="content/fonts" rename="assets/fonts" include="**/*" unless="web"/>
-<!-- Renames end -->
+	<assets path="content/fonts" rename="assets/fonts" include="**/*" unless="web"/>-->
+<!-- Renames end Renames start -->
 
 	<!-- OpenAL config --> 	<!-- appreciate you cyn0x8 and smokey for finding this -->
 	<section if="desktop">

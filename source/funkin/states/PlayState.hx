@@ -437,7 +437,6 @@ class PlayState extends MusicBeatState
 	
 	override public function create()
 	{
-		try {
 		Paths.clearStoredMemory();
 		
 		skipCountdown = false;
@@ -1074,2778 +1073,4611 @@ class PlayState extends MusicBeatState
 	function initFunkinIris(filePath:String, ?name:String)
 	{
 		try {
-        var script:FunkinIris = FunkinIris.fromFile(filePath);
-        if (script.parsingException != null)
-        {
-            script.stop();
-            NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
-            return null;
-        }
-        trace('script $filePath initiated.');
-        script.call('onCreate');
-        hscriptArray.push(script);
-        funkyScripts.push(script);
-        return script;
-    } catch (e:Dynamic) {
-        NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
-        return null;
-    }
-	}
-	
-	// ...existing code...
-	
-	public function callScript(script:Dynamic, event:String, args:Array<Dynamic>):Dynamic
-	{
-		try {
-			if (script is FunkinScript)
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
 			{
-				return callOnScripts(event, args, true, [], [script], false);
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
 			}
-			else if (script is Array)
-			{
-				return callOnScripts(event, args, true, [], script, false);
-			}
-			else if (script is String)
-			{
-				var scripts:Array<FunkinScript> = [];
-				for (scr in funkyScripts)
-				{
-					if (scr.scriptName == script) scripts.push(scr);
-				}
-				return callOnScripts(event, args, true, [], scripts, false);
-			}
-			return Globals.Function_Continue;
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
 		} catch (e:Dynamic) {
-			NativeAPI.showMessageBox("Script Runtime Error", "Error in script event '" + event + "':\n" + Std.string(e));
-			return Globals.Function_Continue;
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
 		}
 	}
 	
-	// ...existing code...
+	function setStageData(stageData:StageFile)
+	{
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
+		
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
 
-	override public function onFocus():Void
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
+		{
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
+		}
+	}
+	
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
+	
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
 	{
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
+		
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
+		{
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
 		#if desktop
-		if (health > 0 && !paused)
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
 		{
-			if (Conductor.songPosition > 0.0)
-			{
-				DiscordClient.changePresence(detailsText, getPresence(), null, true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
-			}
-			else
-			{
-				DiscordClient.changePresence(detailsText, getPresence());
-			}
-		}
-		#end
-		
-		super.onFocus();
-	}
-	
-	override public function onFocusLost():Void
-	{
-		#if desktop
-		if (health > 0 && !paused)
-		{
-			DiscordClient.changePresence(detailsPausedText, getPresence());
-		}
-		#end
-		
-		super.onFocusLost();
-	}
-	
-	function resyncVocals():Void
-	{
-		if (finishTimer != null) return;
-		
-		vocals.pause();
-		
-		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time;
-		
-		vocals.time = Conductor.songPosition;
-		vocals.play();
-	}
-	
-	public var paused:Bool = false;
-	public var canReset:Bool = true;
-	
-	var startedCountdown:Bool = false;
-	var canPause:Bool = true;
-	
-	override public function update(elapsed:Float)
-	{
-		if (!inCutscene)
-		{
-			var lerpVal:Float = FlxMath.bound(elapsed * 2.4 * cameraSpeed, 0, 1);
-			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
-			if (!startingSong
-				&& !endingSong
-				&& boyfriend.animation.curAnim != null
-				&& boyfriend.animation.curAnim.name.startsWith('idle'))
-			{
-				boyfriendIdleTime += elapsed;
-				if (boyfriendIdleTime >= 0.15)
-				{ // Kind of a mercy thing for making the achievement easier to get as it's apparently frustrating to some playerss
-					boyfriendIdled = true;
-				}
-			}
-			else
-			{
-				boyfriendIdleTime = 0;
-			}
-		}
-		
-		if (generatedMusic && !endingSong && !isCameraOnForcedPos) moveCameraSection();
-		
-		for (key in notetypeScripts.keys())
-			notetypeScripts.get(key).call('update', [elapsed]);
-		for (key in eventScripts.keys())
-			eventScripts.get(key).call('update', [elapsed]);
-			
-		callOnHScripts('update', [elapsed]);
-		callOnScripts('onUpdate', [elapsed]);
-		
-		super.update(elapsed);
-		
-		currentSV = getSV(Conductor.songPosition);
-		Conductor.visualPosition = getVisualPosition();
-		checkEventNote();
-		
-		setOnHScripts('curDecStep', curDecStep);
-		setOnHScripts('curDecBeat', curDecBeat);
-		setOnHScripts('curStep', curStep);
-		setOnHScripts('curBeat', curBeat);
-		
-		if (controls.PAUSE #if android || FlxG.android.justReleased.BACK #end && startedCountdown && canPause)
-		{
-			final ret:Dynamic = callOnScripts('onPause', []);
-			if (ret != Globals.Function_Stop)
-			{
-				persistentUpdate = false;
-				persistentDraw = true;
-				paused = true;
-				
-				if (FlxG.sound.music != null)
-				{
-					FlxG.sound.music.pause();
-					vocals.pause();
-				}
-				openSubState(new funkin.states.substates.ImpostorPause());
-				#if desktop // DISCORD_ALLOWED
-				DiscordClient.changePresence(detailsPausedText, getPresence());
-				#end
-			}
-		}
-		
-		#if !RELEASE_BUILD
-		if (FlxG.keys.anyJustPressed(debugKeysChart) && !endingSong && !inCutscene)
-		{
-			openChartEditor();
-		}
-		
-		if (FlxG.keys.justPressed.NINE)
-		{
-			openNoteskinEditor();
-		}
-		
-		if (FlxG.keys.anyJustPressed(debugKeysCharacter) && !endingSong && !inCutscene)
-		{
-			persistentUpdate = false;
-			paused = true;
-			cancelMusicFadeTween();
-			FlxG.switchState(new CharacterEditorState(SONG.player2));
-		}
-		#end
-		
-		if (health > healthBounds.max) health = healthBounds.max;
-		
-		if (startingSong)
-		{
-			if (startedCountdown)
-			{
-				Conductor.songPosition += FlxG.elapsed * 1000;
-				if (Conductor.songPosition >= 0) startSong();
-			}
+			// detailsText = "";
 		}
 		else
 		{
-			Conductor.songPosition += FlxG.elapsed * 1000;
-			
-			if (!paused)
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
 			{
-				songTime += FlxG.game.ticks - previousFrameTime;
-				previousFrameTime = FlxG.game.ticks;
-				
-				// Interpolation type beat
-				if (Conductor.lastSongPos != Conductor.songPosition)
-				{
-					songTime = (songTime + Conductor.songPosition) / 2;
-					Conductor.lastSongPos = Conductor.songPosition;
-					// Conductor.songPosition += FlxG.elapsed * 1000;
-					// trace('MISSED FRAME');
-				}
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
 			}
-			
-			// Conductor.lastSongPos = FlxG.sound.music.time;
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
 		}
 		
-		if (camZooming)
+		if (isPixelStage)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom + defaultCamZoomAdd, FlxG.camera.zoom, Math.exp(-elapsed * 6.25 * camZoomingDecay));
-			camHUD.zoom = FlxMath.lerp(defaultHudZoom, camHUD.zoom, Math.exp(-elapsed * 6.25 * camZoomingDecay));
+			introSoundsSuffix = '-pixel';
 		}
 		
-		// RESET = Quick Game Over Screen
-		if (!ClientPrefs.noReset && controls.RESET && canReset && !inCutscene && startedCountdown && !endingSong)
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
 		{
-			health = 0;
-			trace("RESET = True");
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
 		}
 		
-		doDeathCheck();
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
 		
-		modManager.updateTimeline(curDecStep);
-		modManager.update(elapsed);
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
 		
-		if (unspawnNotes[0] != null)
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
 		{
-			var time:Float = spawnTime; // shit be werid on 4:3
-			if (songSpeed < 1) time /= songSpeed;
-			
-			while (unspawnNotes.length > 0 && unspawnNotes[0].strumTime - Conductor.songPosition < time)
+			if (FileSystem.exists(folder))
 			{
-				var dunceNote:Note = unspawnNotes[0];
-				var doSpawn:Bool = true;
-				if (dunceNote.noteScript != null && dunceNote.noteScript.scriptType == LUA)
+				for (file in FileSystem.readDirectory(folder))
 				{
-					doSpawn = callScript(dunceNote.noteScript, "spawnNote", [dunceNote]) != Globals.Function_Stop;
-				}
-				if (doSpawn) doSpawn = callOnHScripts('onSpawnNote', [dunceNote]) != Globals.Function_Stop;
-				if (doSpawn)
-				{
-					var desiredPlayfield = playFields.members[dunceNote.lane];
-					if (desiredPlayfield != null) playFields.members[dunceNote.lane].addNote(dunceNote);
-					else
+					if (!filesPushed.contains(file))
 					{
-						if (dunceNote.desiredPlayfield != null) dunceNote.desiredPlayfield.addNote(dunceNote);
-						else if (dunceNote.parent != null && dunceNote.parent.playField != null) dunceNote.parent.playField.addNote(dunceNote);
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
 						else
 						{
-							for (field in playFields.members)
+							for (ext in FunkinIris.exts)
 							{
-								if (field.isPlayer == dunceNote.mustPress)
+								if (file.endsWith('.$ext'))
 								{
-									field.addNote(dunceNote);
+									var script = initFunkinIris(folder + file);
+									if (script != null)
+									{
+										filesPushed.push(file);
+									}
 									break;
 								}
 							}
 						}
 					}
-					if (dunceNote.playField == null)
-					{
-						var deadNotes:Array<Note> = [dunceNote];
-						for (note in dunceNote.tail)
-							deadNotes.push(note);
-							
-						for (note in deadNotes)
-						{
-							note.active = false;
-							note.visible = false;
-							note.ignoreNote = true;
-							
-							if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-							note.kill();
-							unspawnNotes.remove(note);
-							note.destroy();
-						}
-						break;
-					}
-					notes.insert(0, dunceNote);
-					dunceNote.spawned = true;
-					var index:Int = unspawnNotes.indexOf(dunceNote);
-					unspawnNotes.splice(index, 1);
-					callOnLuas('onSpawnNote', [
-						notes.members.indexOf(dunceNote),
-						dunceNote.noteData,
-						dunceNote.noteType,
-						dunceNote.isSustainNote,
-						dunceNote.ID
-					]);
-					callOnHScripts('onSpawnNotePost', [dunceNote]);
-					if (dunceNote.noteScript != null)
-					{
-						var script:Dynamic = dunceNote.noteScript;
-						if (script.scriptType == LUA)
-						{
-							callScript(script, 'postSpawnNote', [
-								notes.members.indexOf(dunceNote),
-								Math.abs(dunceNote.noteData),
-								dunceNote.noteType,
-								dunceNote.isSustainNote,
-								dunceNote.ID
-							]);
-						}
-						else
-						{
-							callScript(script, "postSpawnNote", [dunceNote]);
-						}
-					}
-				}
-				else
-				{
-					var deadNotes:Array<Note> = [dunceNote];
-					for (note in dunceNote.tail)
-						deadNotes.push(note);
-						
-					for (note in deadNotes)
-					{
-						note.active = false;
-						note.visible = false;
-						note.ignoreNote = true;
-						
-						if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-						note.kill();
-						unspawnNotes.remove(note);
-						note.destroy();
-					}
 				}
 			}
 		}
 		
-		if (startedCountdown)
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
 		{
-			opponentStrums.forEachAlive(function(strum:StrumNote) {
-				var pos = modManager.getPos(0, 0, 0, curDecBeat, strum.noteData, 1, strum, [], strum.vec3Cache);
-				modManager.updateObject(curDecBeat, strum, pos, 1);
-				strum.x = pos.x + script_STRUMOffsets[strum.noteData].x;
-				strum.y = pos.y + script_STRUMOffsets[strum.noteData].y;
-			});
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
 			
-			playerStrums.forEachAlive(function(strum:StrumNote) {
-				var pos = modManager.getPos(0, 0, 0, curDecBeat, strum.noteData, 0, strum, [], strum.vec3Cache);
-				modManager.updateObject(curDecBeat, strum, pos, 0);
-				strum.x = pos.x + script_STRUMOffsets[strum.noteData].x;
-				strum.y = pos.y + script_STRUMOffsets[strum.noteData].y;
-			});
-			
-			if (extraFields.length > 0)
-			{
-				for (extra in 2...SONG.lanes)
-				{
-					extraFields[extra - 2].forEachAlive(function(strum:StrumNote) {
-						var pos = modManager.getPos(0, 0, 0, curDecBeat, strum.noteData, extra, strum, [], strum.vec3Cache);
-						modManager.updateObject(curDecBeat, strum, pos, extra);
-						strum.x = pos.x + script_STRUMOffsets[strum.noteData].x;
-						strum.y = pos.y + script_STRUMOffsets[strum.noteData].y;
-					});
-				}
-			}
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
 		}
 		
-		if (generatedMusic)
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
 		{
-			if (!inCutscene)
-			{
-				if (!cpuControlled)
-				{
-					keyShit();
-				}
-				else if (boyfriend.holdTimer > Conductor.stepCrotchet * 0.0011 * boyfriend.singDuration
-					&& boyfriend.animation.curAnim.name.startsWith('sing')
-					&& !boyfriend.animation.curAnim.name.endsWith('miss'))
-				{
-					boyfriend.dance();
-					// boyfriend.animation.curAnim.finish();
-				}
-			}
-			
-			var notesToRemove:Array<Note> = []; // This is kind of stupid
-			
-			notes.forEachAlive(function(daNote:Note) {
-				if (daNote.lane > (SONG.lanes - 1)) return;
-				
-				var field = daNote.playField;
-				
-				var strumX:Float = field.members[daNote.noteData].x;
-				var strumY:Float = field.members[daNote.noteData].y;
-				var strumAngle:Float = field.members[daNote.noteData].angle;
-				var strumDirection:Float = field.members[daNote.noteData].direction;
-				var strumAlpha:Float = field.members[daNote.noteData].alpha;
-				var strumScroll:Bool = field.members[daNote.noteData].downScroll;
-				
-				strumX += daNote.offsetX * (daNote.scale.x / daNote.baseScaleX);
-				strumY += daNote.offsetY;
-				strumAngle += daNote.offsetAngle;
-				strumAlpha *= daNote.multAlpha;
-				var visPos = -((Conductor.visualPosition - daNote.visualTime) * songSpeed);
-				var pos = modManager.getPos(daNote.strumTime, visPos, daNote.strumTime - Conductor.songPosition, curDecBeat, daNote.noteData, daNote.lane, daNote, [], daNote.vec3Cache);
-				
-				// trace(modManager.getVisPos(Conductor.songPosition, daNote.strumTime, songSpeed));
-				
-				modManager.updateObject(curDecBeat, daNote, pos, daNote.lane);
-				pos.x += daNote.offsetX;
-				pos.y += daNote.offsetY;
-				daNote.x = pos.x;
-				daNote.y = pos.y;
-				
-				if (daNote.isSustainNote)
-				{
-					var futureSongPos = Conductor.visualPosition + (Conductor.stepCrotchet * 0.001);
-					var diff = daNote.visualTime - futureSongPos;
-					var vDiff = -((futureSongPos - daNote.visualTime) * songSpeed);
-					
-					var nextPos = modManager.getPos(daNote.strumTime, vDiff, diff, Conductor.getStep(futureSongPos) / 4, daNote.noteData, daNote.lane, daNote, [], daNote.vec3Cache);
-					nextPos.x += daNote.offsetX;
-					nextPos.y += daNote.offsetY;
-					var diffX = (nextPos.x - pos.x);
-					var diffY = (nextPos.y - pos.y);
-					var rad = Math.atan2(diffY, diffX);
-					var deg = rad * (180 / Math.PI);
-					if (deg != 0) daNote.mAngle = (deg + 90);
-					else daNote.mAngle = 0;
-					
-					if (!daNote.animation.curAnim.name.endsWith('end'))
-					{
-						daNote.x += script_SUSTAINOffsets[daNote.noteData].x;
-						daNote.y += script_SUSTAINOffsets[daNote.noteData].y;
-					}
-					else
-					{
-						daNote.x += script_SUSTAINENDOffsets[daNote.noteData].x;
-						daNote.y += script_SUSTAINENDOffsets[daNote.noteData].y;
-					}
-				}
-				
-				daNote.x += script_NOTEOffsets[daNote.noteData].x;
-				daNote.y += script_NOTEOffsets[daNote.noteData].y;
-				
-				if (field.noteHitCallback != null)
-				{
-					if (field.inControl && field.autoPlayed)
-					{
-						if (!daNote.wasGoodHit && !daNote.ignoreNote)
-						{
-							if (daNote.isSustainNote)
-							{
-								if (daNote.canBeHit) field.noteHitCallback(daNote, field);
-							}
-							else
-							{
-								if (daNote.strumTime <= Conductor.songPosition) field.noteHitCallback(daNote, field);
-							}
-						}
-					}
-				}
-				
-				// Kill extremely late notes and cause misses
-				if (Conductor.songPosition > noteKillOffset + daNote.strumTime)
-				{
-					daNote.garbage = true;
-					if (daNote.playField != null && daNote.playField.playerControls && !daNote.playField.autoPlayed && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit))
-					{
-						if (field.noteMissCallback != null && field.playerControls && !field.autoPlayed) field.noteMissCallback(daNote, field);
-					}
-				}
-				if (daNote.garbage)
-				{
-					// trace("GONE");
-					daNote.active = false;
-					daNote.visible = false;
-					
-					if (modchartObjects.exists('note${daNote.ID}')) modchartObjects.remove('note${daNote.ID}');
-					daNote.kill();
-					notesToRemove.push(daNote);
-					daNote.destroy();
-				}
-			});
-			
-			while (notesToRemove.length > 0)
-				notes.remove(notesToRemove.shift(), true);
-		}
-		
-		#if !RELEASE_BUILD
-		if (!endingSong && !startingSong)
-		{
-			if (FlxG.keys.justPressed.ONE)
-			{
-				KillNotes();
-				FlxG.sound.music.onComplete();
-			}
-			if (FlxG.keys.justPressed.TWO)
-			{ // Go 10 seconds into the future :O
-				setSongTime(Conductor.songPosition + 10000);
-				clearNotesBefore(Conductor.songPosition);
-			}
-			if (FlxG.keys.justPressed.SIX)
-			{
-				cpuControlled = !cpuControlled;
-				botplayTxt.visible = !botplayTxt.visible;
-			}
-		}
-		#end
-		
-		setOnLuas('cameraX', camFollowPos.x);
-		setOnLuas('cameraY', camFollowPos.y);
-		setOnScripts('botPlay', cpuControlled);
-		callOnScripts('onUpdatePost', [elapsed]);
-	}
-	
-	function openChartEditor()
-	{
-		persistentUpdate = false;
-		paused = true;
-		cancelMusicFadeTween();
-		
-		FlxG.switchState(new ChartingState());
-		chartingMode = true;
-		
-		#if desktop
-		DiscordClient.changePresence("Chart Editor", null, null, true);
-		#end
-	}
-	
-	function openNoteskinEditor()
-	{
-		persistentUpdate = false;
-		paused = true;
-		cancelMusicFadeTween();
-		
-		FlxG.switchState(new NoteSkinEditor(((ClientPrefs.noteSkin.contains('Quant')
-			&& noteSkin.data.hasQuants) ? 'QUANT${SONG.arrowSkin}' : SONG.arrowSkin), noteSkin));
-		chartingMode = true;
-		
-		#if desktop
-		DiscordClient.changePresence("Noteskin Editor", null, null, true);
-		#end
-	}
-	
-	public function updateScoreBar(miss:Bool = false)
-	{
-		final scoreRetVal:Dynamic = callOnScripts('onUpdateScore', [miss]);
-		if (scoreRetVal != Globals.Function_Stop) callHUDFunc(p -> p.onUpdateScore(
-			{
-				score: songScore,
-				accuracy: funkin.utils.MathUtil.floorDecimal(ratingPercent * 100, 2),
-				misses: songMisses
-			}, miss));
-	}
-	
-	public var isDead:Bool = false; // Don't mess with this on Lua!!!
-	
-	function doDeathCheck(?skipHealthCheck:Bool = false)
-	{
-		if (((skipHealthCheck && instakillOnMiss) || health <= 0) && !practiceMode && !isDead)
-		{
-			final ret:Dynamic = callOnScripts('onGameOver', []);
-			// trace(ret);
-			if (ret != Globals.Function_Stop)
-			{
-				boyfriend.stunned = true;
-				deathCounter++;
-				
-				paused = true;
-				
-				vocals.stop();
-				if (FlxG.sound != null && FlxG.sound.music != null) {
-                FlxG.sound.music.stop();
-                }
-				
-				persistentUpdate = false;
-				persistentDraw = false;
-				for (tween in modchartTweens)
-				{
-					tween.active = true;
-				}
-				for (timer in modchartTimers)
-				{
-					timer.active = true;
-				}
-				
-				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x
-					- boyfriend.positionArray[0], boyfriend.getScreenPosition().y
-					- boyfriend.positionArray[1], camFollowPos.x,
-					camFollowPos.y));
-					
-				#if desktop
-				// Game Over doesn't get his own variable because it's only used here
-				DiscordClient.changePresence("Game Over - " + detailsText, getPresence());
-				#end
-				isDead = true;
-				totalBeat = 0;
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public function checkEventNote()
-	{
-		while (eventNotes.length > 0)
-		{
-			var leStrumTime:Float = eventNotes[0].strumTime;
-			if (Conductor.songPosition < leStrumTime)
-			{
-				break;
-			}
-			
-			var value1:String = '';
-			if (eventNotes[0].value1 != null) value1 = eventNotes[0].value1;
-			
-			var value2:String = '';
-			if (eventNotes[0].value2 != null) value2 = eventNotes[0].value2;
-			
-			triggerEventNote(eventNotes[0].event, value1, value2);
-			eventNotes.shift();
-		}
-	}
-	
-	public function getControl(key:String)
-	{
-		var pressed:Bool = Reflect.getProperty(controls, key);
-		// trace('Control result: ' + pressed);
-		return pressed;
-	}
-	
-	function changeCharacter(name:String, charType:Int)
-	{
-		// trace('Changing character to ' + name);
-		switch (charType)
-		{
-			case 0:
-				if (boyfriend.curCharacter != name)
-				{
-					var oldChar = boyfriend;
-					if (!boyfriendMap.exists(name))
-					{
-						addCharacterToList(name, charType);
-					}
-					
-					var lastAlpha:Float = boyfriend.alpha;
-					boyfriend.alpha = 0.00001;
-					boyfriend = boyfriendMap.get(name);
-					boyfriend.alpha = lastAlpha;
-					for (field in playFields.members)
-					{
-						if (field.owner == oldChar) field.owner = boyfriend;
-					}
-				}
-				setOnLuas('boyfriendName', boyfriend.curCharacter);
-				setOnScripts('boyfriend', boyfriend);
-				setOnScripts('boyfriendGroup', boyfriendGroup);
-				
-			case 1:
-				if (dad.curCharacter != name)
-				{
-					var oldChar = dad;
-					if (!dadMap.exists(name))
-					{
-						addCharacterToList(name, charType);
-					}
-					
-					var wasGf:Bool = dad.curCharacter.startsWith('gf');
-					var lastAlpha:Float = dad.alpha;
-					dad.alpha = 0.00001;
-					dad = dadMap.get(name);
-					if (!dad.curCharacter.startsWith('gf'))
-					{
-						if (wasGf && gf != null)
-						{
-							gf.visible = true;
-						}
-					}
-					else if (gf != null)
-					{
-						gf.visible = false;
-					}
-					dad.alpha = lastAlpha;
-					for (field in playFields.members)
-					{
-						if (field.owner == oldChar) field.owner = dad;
-					}
-				}
-				setOnLuas('dadName', dad.curCharacter);
-				setOnScripts('dad', dad);
-				setOnScripts('dadGroup', dadGroup);
-				
-			case 2:
-				if (gf != null)
-				{
-					if (gf.curCharacter != name)
-					{
-						var oldChar = gf;
-						if (!gfMap.exists(name))
-						{
-							addCharacterToList(name, charType);
-						}
-						
-						var lastAlpha:Float = gf.alpha;
-						gf.alpha = 0.00001;
-						gf = gfMap.get(name);
-						gf.alpha = lastAlpha;
-						for (field in playFields.members)
-						{
-							if (field.owner == oldChar) field.owner = gf;
-						}
-					}
-					setOnLuas('gfName', gf.curCharacter);
-					setOnScripts('gf', gf);
-					setOnScripts('gfGroup', gfGroup);
-				}
-		}
-		callHUDFunc(p -> p.onCharacterChange());
-	}
-	
-	public function triggerEventNote(eventName:String, value1:String, value2:String)
-	{
-		switch (eventName)
-		{
-			case 'Game Flash':
-				var dur:Float = Std.parseFloat(value2);
-				if (Math.isNaN(dur)) dur = 0.5;
-				FlxG.camera.flash(FlxColor.fromString(value1), dur);
-			case 'Hey!':
-				var value:Int = 2;
-				switch (value1.toLowerCase().trim())
-				{
-					case 'bf' | 'boyfriend' | '0':
-						value = 0;
-					case 'gf' | 'girlfriend' | '1':
-						value = 1;
-				}
-				
-				var time:Float = Std.parseFloat(value2);
-				if (Math.isNaN(time) || time <= 0) time = 0.6;
-				
-				if (value != 0)
-				{
-					if (dad.curCharacter.startsWith('gf'))
-					{ // Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
-						dad.playAnim('cheer', true);
-						dad.specialAnim = true;
-						dad.heyTimer = time;
-					}
-					else if (gf != null)
-					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = time;
-					}
-				}
-				if (value != 1)
-				{
-					boyfriend.playAnim('hey', true);
-					boyfriend.specialAnim = true;
-					boyfriend.heyTimer = time;
-				}
-				
-			case 'Set GF Speed':
-				var value:Int = Std.parseInt(value1);
-				if (Math.isNaN(value) || value < 1) value = 1;
-				gfSpeed = value;
-			case 'Add Camera Zoom':
-				if (ClientPrefs.camZooms && FlxG.camera.zoom < 1.35)
-				{
-					var camZoom:Float = Std.parseFloat(value1);
-					var hudZoom:Float = Std.parseFloat(value2);
-					if (Math.isNaN(camZoom)) camZoom = 0.015;
-					if (Math.isNaN(hudZoom)) hudZoom = 0.03;
-					
-					FlxG.camera.zoom += camZoom;
-					camHUD.zoom += hudZoom;
-				}
-				
-			case 'Camera Zoom':
-				FlxTween.cancelTweensOf(FlxG.camera, ['zoom']);
-				
-				var val1:Float = Std.parseFloat(value1);
-				if (Math.isNaN(val1)) val1 = 1;
-				
-				var targetZoom = defaultCamZoom * val1;
-				if (value2 != '')
-				{
-					var split = value2.split(',');
-					var duration:Float = 0;
-					var leEase:String = 'linear';
-					if (split[0] != null) duration = Std.parseFloat(split[0].trim());
-					if (split[1] != null) leEase = split[1].trim();
-					if (Math.isNaN(duration)) duration = 0;
-					
-					if (duration > 0)
-					{
-						FlxTween.tween(FlxG.camera, {zoom: targetZoom}, duration, {ease: FlxEase.circOut});
-					}
-					else
-					{
-						FlxG.camera.zoom = targetZoom;
-					}
-				}
-				defaultCamZoom = targetZoom;
-				setOnHScripts('defaultCamZoom', defaultCamZoom);
-				
-			case 'HUD Fade':
-				FlxTween.cancelTweensOf(camHUD, ['alpha']);
-				
-				var leAlpha:Float = Std.parseFloat(value1);
-				if (Math.isNaN(leAlpha)) leAlpha = 1;
-				
-				var duration:Float = Std.parseFloat(value2);
-				if (Math.isNaN(duration)) duration = 1;
-				
-				if (duration > 0)
-				{
-					FlxTween.tween(camHUD, {alpha: leAlpha}, duration);
-				}
-				else
-				{
-					camHUD.alpha = leAlpha;
-				}
-			case 'Play Animation':
-				// trace('Anim to play: ' + value1);
-				var char:Character = dad;
-				switch (value2.toLowerCase().trim())
-				{
-					case 'bf' | 'boyfriend':
-						char = boyfriend;
-					case 'gf' | 'girlfriend':
-						char = gf;
-					default:
-						var val2:Int = Std.parseInt(value2);
-						if (Math.isNaN(val2)) val2 = 0;
-						
-						switch (val2)
-						{
-							case 1: char = boyfriend;
-							case 2: char = gf;
-						}
-				}
-				
-				if (char != null)
-				{
-					char.playAnim(value1, true);
-					char.specialAnim = true;
-				}
-				
-			case 'Camera Follow Pos':
-				var val1:Float = Std.parseFloat(value1);
-				var val2:Float = Std.parseFloat(value2);
-				if (Math.isNaN(val1)) val1 = 0;
-				if (Math.isNaN(val2)) val2 = 0;
-				
-				isCameraOnForcedPos = false;
-				if (!Math.isNaN(Std.parseFloat(value1)) || !Math.isNaN(Std.parseFloat(value2)))
-				{
-					camFollow.x = val1;
-					camFollow.y = val2;
-					isCameraOnForcedPos = true;
-				}
-				
-			case 'Alt Idle Animation':
-				var char:Character = dad;
-				switch (value1.toLowerCase())
-				{
-					case 'gf' | 'girlfriend':
-						char = gf;
-					case 'boyfriend' | 'bf':
-						char = boyfriend;
-					default:
-						var val:Int = Std.parseInt(value1);
-						if (Math.isNaN(val)) val = 0;
-						
-						switch (val)
-						{
-							case 1: char = boyfriend;
-							case 2: char = gf;
-						}
-				}
-				
-				if (char != null)
-				{
-					char.idleSuffix = value2;
-					char.recalculateDanceIdle();
-				}
-				
-			case 'Screen Shake':
-				var valuesArray:Array<String> = [value1, value2];
-				var targetsArray:Array<FlxCamera> = [camGame, camHUD];
-				for (i in 0...targetsArray.length)
-				{
-					var split:Array<String> = valuesArray[i].split(',');
-					var duration:Float = 0;
-					var intensity:Float = 0;
-					if (split[0] != null) duration = Std.parseFloat(split[0].trim());
-					if (split[1] != null) intensity = Std.parseFloat(split[1].trim());
-					if (Math.isNaN(duration)) duration = 0;
-					if (Math.isNaN(intensity)) intensity = 0;
-					
-					if (duration > 0 && intensity != 0)
-					{
-						targetsArray[i].shake(intensity, duration);
-					}
-				}
-				
-			case 'Change Character':
-				var charType:Int = 0;
-				switch (value1)
-				{
-					case 'gf' | 'girlfriend':
-						charType = 2;
-					case 'dad' | 'opponent':
-						charType = 1;
-					default:
-						charType = Std.parseInt(value1);
-						if (Math.isNaN(charType)) charType = 0;
-				}
-				
-				var curChar:Character = boyfriend;
-				switch (charType)
-				{
-					case 2:
-						curChar = gf;
-					case 1:
-						curChar = dad;
-					case 0:
-						curChar = boyfriend;
-				}
-				
-				var newCharacter:String = value2;
-				var anim:String = '';
-				var frame:Int = 0;
-				if (newCharacter.startsWith(curChar.curCharacter) || curChar.curCharacter.startsWith(newCharacter))
-				{
-					if (curChar.animation != null && curChar.animation.curAnim != null)
-					{
-						anim = curChar.animation.curAnim.name;
-						frame = curChar.animation.curAnim.curFrame;
-					}
-				}
-				
-				changeCharacter(value2, charType);
-				if (anim != '')
-				{
-					var char:Character = boyfriend;
-					switch (charType)
-					{
-						case 2:
-							char = gf;
-						case 1:
-							char = dad;
-						case 0:
-							char = boyfriend;
-					}
-					
-					if (char.animation.getByName(anim) != null)
-					{
-						char.playAnim(anim, true);
-						char.animation.curAnim.curFrame = frame;
-					}
-				}
-			case 'Change Scroll Speed':
-				if (songSpeedType == "constant") return;
-				var val1:Float = Std.parseFloat(value1);
-				var val2:Float = Std.parseFloat(value2);
-				if (Math.isNaN(val1)) val1 = 1;
-				if (Math.isNaN(val2)) val2 = 0;
-				
-				var newValue:Float = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * val1;
-				
-				if (val2 <= 0)
-				{
-					songSpeed = newValue;
-				}
-				else
-				{
-					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2,
-						{
-							ease: FlxEase.linear,
-							onComplete: function(twn:FlxTween) {
-								songSpeedTween = null;
-							}
-						});
-				}
-				
-			case 'Camera Zoom Chain':
-				var split1:Array<String> = value1.split(',');
-				var gameZoom:Float = Std.parseFloat(split1[0].trim());
-				var hudZoom:Float = Std.parseFloat(split1[1].trim());
-				
-				if (!Math.isNaN(gameZoom)) gameZ = 0.015;
-				if (!Math.isNaN(hudZoom)) hudZ = 0.03;
-				
-				if (split1.length == 4)
-				{
-					var shGame:Float = Std.parseFloat(split1[2].trim());
-					var shHUD:Float = Std.parseFloat(split1[3].trim());
-					
-					if (!Math.isNaN(shGame)) gameShake = shGame;
-					if (!Math.isNaN(shHUD)) hudShake = shHUD;
-					shakeTime = true;
-				}
-				else
-				{
-					shakeTime = false;
-				}
-				
-				var split2:Array<String> = value2.split(',');
-				var toBeat:Int = Std.parseInt(split2[0].trim());
-				var tiBeat:Float = Std.parseFloat(split2[1].trim());
-				
-				if (Math.isNaN(toBeat)) toBeat = 4;
-				if (Math.isNaN(tiBeat)) tiBeat = 1;
-				
-				totalBeat = toBeat;
-				timeBeat = tiBeat;
-				
-			case 'Screen Shake Chain':
-				var split1:Array<String> = value1.split(',');
-				var gmShake:Float = Std.parseFloat(split1[0].trim());
-				var hdShake:Float = Std.parseFloat(split1[1].trim());
-				
-				if (!Math.isNaN(gmShake)) gameShake = gmShake;
-				if (!Math.isNaN(hdShake)) hudShake = hdShake;
-				
-				var toBeat:Int = Std.parseInt(value2);
-				if (!Math.isNaN(toBeat)) totalShake = 4;
-				
-				totalShake = toBeat;
-				
-			case 'Set Cam Zoom':
-				defaultCamZoom = Std.parseFloat(value1);
-				
-			case 'Set Cam Pos':
-				var split:Array<String> = value1.split(',');
-				var xPos:Float = Std.parseFloat(split[0].trim());
-				var yPos:Float = Std.parseFloat(split[1].trim());
-				if (Math.isNaN(xPos)) xPos = 0;
-				if (Math.isNaN(yPos)) yPos = 0;
-				switch (value2)
-				{
-					case 'bf' | 'boyfriend':
-						boyfriendCameraOffset[0] = xPos;
-						boyfriendCameraOffset[1] = yPos;
-					case 'gf' | 'girlfriend':
-						girlfriendCameraOffset[0] = xPos;
-						girlfriendCameraOffset[1] = yPos;
-					case 'dad' | 'opponent':
-						opponentCameraOffset[0] = xPos;
-						opponentCameraOffset[1] = yPos;
-				}
-				
-			case 'Set Property':
-				var killMe:Array<String> = value1.split('.');
-				if (killMe.length > 1)
-				{
-					Reflect.setProperty(FunkinLua.getPropertyLoopThingWhatever(killMe, true, true), killMe[killMe.length - 1], value2);
-				}
-				else
-				{
-					Reflect.setProperty(this, value1, value2);
-				}
-			case 'Reactor Flash': // value 1 determines duration
-				if (ClientPrefs.flashing)
-				{
-					flashSprite.alpha = 0.3;
-					var flashDuration:Float = Std.parseFloat(value1);
-					if (Math.isNaN(flashDuration)) flashDuration = 0.5;
-					FlxTween.tween(flashSprite, {alpha: 0}, flashDuration);
-				}
-		}
-		
-		callOnScripts('onEvent', [eventName, value1, value2]);
-		
-		callEventScript(eventName, 'onTrigger', [value1, value2]);
-	}
-	
-	function moveCameraSection():Void
-	{
-		if (SONG.notes[curSection] == null) return;
-		
-		if (gf != null && SONG.notes[curSection].gfSection)
-		{
-			camFollow.set(gf.getMidpoint().x, gf.getMidpoint().y);
-			camFollow.x += gf.cameraPosition[0] + girlfriendCameraOffset[0];
-			camFollow.y += gf.cameraPosition[1] + girlfriendCameraOffset[1];
-			
-			var displacement = gf.returnDisplacePoint();
-			
-			camFollow.x += displacement.x;
-			camFollow.y += displacement.y;
-			
-			displacement.put();
-			
-			callOnScripts('onMoveCamera', ['gf']);
-			setOnScripts('whosTurn', 'gf');
-			return;
-		}
-		
-		var isDad = !SONG.notes[curSection].mustHitSection;
-		moveCamera(isDad);
-		callOnScripts('onMoveCamera', [isDad ? 'dad' : 'boyfriend']);
-	}
-	
-	public function getCharacterCameraPos(char:Character)
-	{
-		var desiredPos = char.getMidpoint();
-		if (char.isPlayer)
-		{
-			desiredPos.x -= 100 + (char.cameraPosition[0] - boyfriendCameraOffset[0]);
-			desiredPos.y += -100 + char.cameraPosition[1] + boyfriendCameraOffset[1];
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
 		}
 		else
 		{
-			desiredPos.x += 150 + char.cameraPosition[0] + opponentCameraOffset[0];
-			desiredPos.y += -100 + char.cameraPosition[1] + opponentCameraOffset[1];
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
 		}
 		
-		return desiredPos;
-	}
-	
-	public function moveCamera(isDad:Bool)
-	{
-		var desiredPos:FlxPoint = null;
-		var curCharacter:Character = null;
-		
-		if (opponentStrums != null && playerStrums != null) curCharacter = isDad ? opponentStrums.owner : playerStrums.owner;
-		else curCharacter = isDad ? dad : boyfriend;
-		
-		if (camCurTarget != null) curCharacter = camCurTarget;
-		
-		desiredPos = getCharacterCameraPos(curCharacter);
-		
-		var displacement = curCharacter.returnDisplacePoint();
-		
-		camFollow.x = desiredPos.x + displacement.x;
-		camFollow.y = desiredPos.y + displacement.y;
-		
-		displacement.put();
-		desiredPos.put();
-		
-		setOnScripts('whosTurn', isDad ? 'dad' : 'boyfriend');
-	}
-	
-	function snapCamFollowToPos(x:Float, y:Float)
-	{
-		camFollow.set(x, y);
-		camFollowPos.setPosition(x, y);
-	}
-	
-	public function finishSong(?ignoreNoteOffset:Bool = false):Void
-	{
-		var finishCallback:Void->Void = endSong; // In case you want to change it in a specific song.
-		
-		updateTime = false;
-		FlxG.sound.music.volume = 0;
-		vocals.volume = 0;
-		vocals.pause();
-		
-		if (songEndCallback == null)
-		{
-			FlxG.log.error('songEndCallback is null! using default callback.');
-			songEndCallback = endSong;
-		}
-		
-		if (ClientPrefs.noteOffset <= 0 || ignoreNoteOffset)
-		{
-			songEndCallback();
-		}
-		else
-		{
-			finishTimer = new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer) {
-				songEndCallback();
-			});
-		}
-	}
-	
-	public var transitioning = false;
-	
-	public function endSong():Void
-	{
-		// Should kill you if you tried to cheat
-		if (!startingSong)
-		{
-			notes.forEach(function(daNote:Note) {
-				if (daNote.strumTime < songLength - Conductor.safeZoneOffset)
-				{
-					health -= 0.05 * healthLoss;
-				}
-			});
-			for (daNote in unspawnNotes)
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
 			{
-				if (daNote.strumTime < songLength - Conductor.safeZoneOffset)
-				{
-					health -= 0.05 * healthLoss;
-				}
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
 			}
-			
-			if (doDeathCheck())
-			{
-				return;
-			}
-		}
+		 */
 		
-		canPause = false;
-		endingSong = true;
-		camZooming = false;
-		inCutscene = false;
-		updateTime = false;
-
-		#if mobile
-   		_hitbox.visible = false;
-   		#end
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
 		
-		deathCounter = 0;
-		seenCutscene = false;
+		Conductor.songPosition = -5000;
 		
-		#if ACHIEVEMENTS_ALLOWED
-		if (achievementObj != null)
-		{
-			return;
-		}
-		else
-		{
-			var achieve:String = checkForAchievement([
-				'week1_nomiss',
-				'week2_nomiss',
-				'week3_nomiss',
-				'week4_nomiss',
-				'week5_nomiss',
-				'week6_nomiss',
-				'ur_bad',
-				'ur_good',
-				'hype',
-				'two_keys',
-				'toastie',
-				'debugger'
-			]);
-			
-			if (achieve != null)
-			{
-				startAchievement(achieve);
-				return;
-			}
-		}
-		#end
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
 		
-		#if LUA_ALLOWED
-		final ret:Dynamic = callOnScripts('onEndSong', []);
-		#else
-		final ret:Dynamic = Globals.Function_Continue;
-		#end
+		// temp
+		updateTime = true;
 		
-		if (ret != Globals.Function_Stop && !transitioning)
-		{
-			if (SONG.validScore)
-			{
-				#if !switch
-				var percent:Float = ratingPercent;
-				if (Math.isNaN(percent)) percent = 0;
-				Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent);
-				#end
-			}
-			
-			if (chartingMode)
-			{
-				openChartEditor();
-				return;
-			}
-			
-			if (isStoryMode)
-			{
-				campaignScore += songScore;
-				campaignMisses += songMisses;
-				campaignAccuracy += ratingPercent;
-				
-				storyPlaylist.remove(storyPlaylist[0]);
-				
-				if (storyPlaylist.length <= 0)
-				{
-					var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[storyWeek]);
-					
-					if (SONG.song == 'Meltdown') // hardcoded we are in a rush.
-					{
-						if (FlxG.sound != null && FlxG.sound.music != null) {
-    FlxG.sound.music.stop();
-}
-						cancelMusicFadeTween();
-						
-						FlxG.switchState(() -> new funkin.states.ImpostorCredits());
-					}
-					else
-					{
-						FlxG.sound.playMusic(Paths.music('freakyMenu'));
-						FlxG.sound.music.volume = 1;
-						
-						cancelMusicFadeTween();
-						FlxG.switchState(() -> new StoryMenuState());
-					}
-					
-					// if ()
-					if (!ClientPrefs.getGameplaySetting('practice', false) && !ClientPrefs.getGameplaySetting('botplay', false))
-					{
-						StoryMenuState.weekCompleted.set(WeekData.weeksList[storyWeek], true);
-						
-						if (SONG.validScore)
-						{
-							Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
-							Highscore.saveWeekRating(WeekData.getWeekFileName(), (campaignAccuracy * 100) / leWeek.songs.length, storyDifficulty);
-						}
-						trace(leWeek.songs.length);
-						
-						FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
-						FlxG.save.flush();
-					}
-					changedDifficulty = false;
-				}
-				else
-				{
-					var difficulty:String = DifficultyUtil.getDifficultyFilePath();
-					if (difficulty == 'null') difficulty = 'hard';
-					
-					trace('LOADING NEXT SONG');
-					trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]) + difficulty);
-					
-					FlxTransitionableState.skipNextTransIn = true;
-					FlxTransitionableState.skipNextTransOut = true;
-					
-					prevCamFollow = camFollow;
-					prevCamFollowPos = camFollowPos;
-					
-					var songLowercase = Paths.formatToSongPath(storyPlaylist[0].toLowerCase());
-					
-					PlayState.SONG = Song.loadFromJson(songLowercase + difficulty, songLowercase);
-					if (FlxG.sound != null && FlxG.sound.music != null) {
-                    FlxG.sound.music.stop();
-                    }
-
-					cancelMusicFadeTween();
-					LoadingState.loadAndSwitchState(new PlayState());
-				}
-			}
-			else
-			{
-				trace('WENT BACK TO FREEPLAY??');
-				cancelMusicFadeTween();
-				FlxG.switchState(() -> new FreeplayState());
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-				FlxG.sound.music.volume = 1;
-				changedDifficulty = false;
-			}
-			transitioning = true;
-		}
-	}
-	
-	#if ACHIEVEMENTS_ALLOWED
-	var achievementObj:AchievementObject = null;
-	
-	function startAchievement(achieve:String)
-	{
-		achievementObj = new AchievementObject(achieve, camOther);
-		achievementObj.onFinish = achievementEnd;
-		add(achievementObj);
-		trace('Giving achievement ' + achieve);
-	}
-	
-	function achievementEnd():Void
-	{
-		achievementObj = null;
-		if (endingSong && !inCutscene)
-		{
-			endSong();
-		}
-	}
-	#end
-	
-	public function KillNotes()
-	{
-		while (notes.length > 0)
-		{
-			var daNote:Note = notes.members[0];
-			daNote.active = false;
-			daNote.visible = false;
-			
-			if (modchartObjects.exists('note${daNote.ID}')) modchartObjects.remove('note${daNote.ID}');
-			daNote.kill();
-			notes.remove(daNote, true);
-			daNote.destroy();
-		}
-		unspawnNotes = [];
-		eventNotes = [];
-	}
-	
-	public var totalPlayed:Int = 0;
-	public var totalNotesHit:Float = 0.0;
-	
-	public var showCombo:Bool = true;
-	public var showRating:Bool = true;
-	
-	function popUpScore(note:Note = null):Void
-	{
-		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition + ClientPrefs.ratingOffset);
-		// trace(noteDiff, ' ' + Math.abs(note.strumTime - Conductor.songPosition));
+		playFields = new FlxTypedGroup<PlayField>();
+		add(playFields);
+		add(grpNoteCovers);
+		add(grpNoteSplashes);
 		
-		if (soundMode == 'SWAP')
-		{
-			vocals.playerVolume = 1;
-			FlxG.sound.music.volume = 0;
-		}
-		else
-		{
-			vocals.playerVolume = 1;
-		}
+		playHUD = new funkin.huds.SusHUD(this);
+		insert(members.indexOf(playFields), playHUD); // Data told me to do this
+		playHUD.cameras = [camHUD];
 		
-		var placement:String = Std.string(combo);
-		
-		// tryna do MS based judgment due to popular demand
-		var daRating:Rating = Rating.judgeNote(note, noteDiff);
-		var judgeScore:Int = daRating.score;
-		
-		totalNotesHit += daRating.ratingMod;
-		note.ratingMod = daRating.ratingMod;
-		if (!note.ratingDisabled) daRating.increase();
-		note.rating = daRating.name;
-		
-		if (daRating.noteSplash && !note.noteSplashDisabled)
-		{
-			spawnNoteSplashOnNote(note);
-			// trace('why bro');
-		}
-		
-		var field:PlayField = note.playField;
-		
-		if (!practiceMode && !field.autoPlayed)
-		{
-			if (defaultScoreAddition) songScore += judgeScore;
-			if (!note.ratingDisabled)
-			{
-				songHits++;
-				totalPlayed++;
-				RecalculateRating(false);
-			}
-		}
-		// If you're looking for the ratings graphics its done in the PlayHUDs now
-		callOnHScripts('popupScore', [note, daRating]);
-		callHUDFunc(p -> p.popUpScore(daRating.image, combo)); // only pushing the image bc is anyone ever gonna need anything else???
-		callOnHScripts('popupScorePost', [note, daRating]);
-	}
-	
-	function onKeyPress(event:KeyboardEvent):Void
-	{
-		var eventKey:FlxKey = event.keyCode;
-		var key:Int = getKeyFromEvent(eventKey);
-		// trace('Pressed: ' + eventKey);
-		if (cpuControlled || paused || !startedCountdown) return;
-		
-		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || !ClientPrefs.controllerMode))
-		{
-			if (!boyfriend.stunned && generatedMusic && !endingSong)
-			{
-				// more accurate hit time for the ratings?
-				var lastTime:Float = Conductor.songPosition;
-				Conductor.songPosition = FlxG.sound.music.time;
-				
-				var canMiss:Bool = !ClientPrefs.ghostTapping;
-				
-				var pressNotes:Array<Note> = [];
-				
-				var ghostTapped:Bool = true;
-				for (field in playFields.members)
-				{
-					if (field.playerControls && field.inControl && !field.autoPlayed)
-					{
-						var sortedNotesList:Array<Note> = field.getTapNotes(key);
-						sortedNotesList.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-						
-						if (sortedNotesList.length > 0)
-						{
-							pressNotes.push(sortedNotesList[0]);
-							field.noteHitCallback(sortedNotesList[0], field);
-						}
-					}
-				}
-				
-				if (pressNotes.length == 0)
-				{
-					callOnScripts('onGhostTap', [key]);
-					if (canMiss)
-					{
-						noteMissPress(key);
-						callOnScripts('noteMissPress', [key]);
-					}
-				}
-				
-				// I dunno what you need this for but here you go
-				//									- Shubs
-				
-				// Shubs, this is for the "Just the Two of Us" achievement lol
-				//									- Shadow Mario
-				
-				// LOOOOOL
-				// 									- ava
-				keysPressed[key] = true;
-				
-				// more accurate hit time for the ratings? part 2 (Now that the calculations are done, go back to the time it was before for not causing a note stutter)
-				Conductor.songPosition = lastTime;
-			}
-			
-			for (field in playFields.members)
-			{
-				if (field.inControl && !field.autoPlayed && field.playerControls)
-				{
-					var spr:StrumNote = field.members[key];
-					if (spr != null && spr.animation.curAnim.name != 'confirm')
-					{
-						spr.playAnim('pressed');
-						spr.resetAnim = 0;
-					}
-				}
-			}
-			
-			callOnScripts('onKeyPress', [key]);
-		}
-		// trace('pressed: ' + controlArray);
-	}
-	
-	function onKeyRelease(event:KeyboardEvent):Void
-	{
-		var eventKey:FlxKey = event.keyCode;
-		var key:Int = getKeyFromEvent(eventKey);
-		if (startedCountdown && !paused && key > -1)
-		{
-			for (field in playFields.members)
-			{
-				if (field.inControl && !field.autoPlayed && field.playerControls)
-				{
-					var spr:StrumNote = field.members[key];
-					if (spr != null)
-					{
-						spr.playAnim('static');
-						spr.resetAnim = 0;
-					}
-				}
-			}
-			callOnScripts('onKeyRelease', [key]);
-		}
-		// trace('released: ' + controlArray);
-	}
-	
-	function getKeyFromEvent(key:FlxKey):Int
-	{
-		if (key != NONE)
-		{
-			for (i in 0...keysArray.length)
-			{
-				for (j in 0...keysArray[i].length)
-				{
-					if (key == keysArray[i][j])
-					{
-						return i;
-					}
-				}
-			}
-		}
-		return -1;
-	}
-
-	private function hitboxDataKeyIsPressed(data:Int):Bool
-	{
-		if (_hitbox.array[data].pressed) 
-				{
-						return true;
-				}
-		return false;
-	}
-	
-	// Hold notes
-	function keyShit():Void
-	{
-		// HOLDING
-		var up = controls.NOTE_UP;
-		var right = controls.NOTE_RIGHT;
-		var down = controls.NOTE_DOWN;
-		var left = controls.NOTE_LEFT;
-		var dodge = controls.NOTE_DODGE;
-		
-		var controlHoldArray:Array<Bool> = [left, down, up, right, dodge];
-		
-		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if(!ClientPrefs.controllerMode)
-		{
-			#if android
-			for (i in 0..._hitbox.array.length) {
-				if (_hitbox.array[i].justPressed)
-				{
-				       onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
-				}
-			}
-			#end
-		}
-		
-		// FlxG.watch.addQuick('asdfa', upP);
-		if (startedCountdown && !boyfriend.stunned && generatedMusic)
-		{
-			// rewritten inputs???
-			
-			notes.forEachAlive(function(daNote:Note) {
-				if(!ClientPrefs.controllerMode && !ClientPrefs.keyboardEnabled)
-				{
-				// mobile hold note functions
-				if(!daNote.playField.autoPlayed && daNote.playField.inControl && daNote.playField.playerControls){
-					if (daNote.isSustainNote && hitboxDataKeyIsPressed(daNote.noteData) && daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit || (daNote.doAutoSustain && daNote.noteData > 4)) {
-						daNote.playField.noteHitCallback(daNote, daNote.playField);
-					}
-				}
-				}
-				else
-				{
-				// hold note functions
-				if (!daNote.playField.autoPlayed && daNote.playField.inControl && daNote.playField.playerControls)
-				{
-					if (daNote.isSustainNote
-						&& controlHoldArray[daNote.noteData]
-						&& daNote.canBeHit
-						&& !daNote.tooLate
-						&& !daNote.wasGoodHit
-						|| (daNote.doAutoSustain && daNote.noteData > SONG.keys))
-					{
-						if (daNote.playField.noteHitCallback != null) daNote.playField.noteHitCallback(daNote, daNote.playField);
-					}
-				}
-			    }
-			});
-			
-			if (controlHoldArray.contains(true) && !endingSong)
-			{
-				#if ACHIEVEMENTS_ALLOWED
-				var achieve:String = checkForAchievement(['oversinging']);
-				if (achieve != null)
-				{
-					startAchievement(achieve);
-				}
-				#end
-			}
-			else if (boyfriend.holdTimer > Conductor.stepCrotchet * 0.0011 * boyfriend.singDuration
-				&& boyfriend.animation.curAnim.name.startsWith('sing')
-				&& !boyfriend.animation.curAnim.name.endsWith('miss'))
-			{
-				boyfriend.dance();
-				// boyfriend.animation.curAnim.finish();
-			}
-		}
-		
-		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if(!ClientPrefs.controllerMode)
-		{
-			#if android
-			for (i in 0..._hitbox.array.length) {
-				if (_hitbox.array[i].justReleased)
-				{
-				       onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
-				}
-			}
-			#end
-		}
-	}
-	
-	function noteMiss(daNote:Note, field:PlayField):Void
-	{ // You didn't hit the key and let it go offscreen, also used by Hurt Notes
-		// Dupe note remove
-		
-		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.2, 0.4));
-		
-		notes.forEachAlive(function(note:Note) {
-			if (daNote != note
-				&& field.playerControls
-				&& daNote.noteData == note.noteData
-				&& daNote.isSustainNote == note.isSustainNote
-				&& Math.abs(daNote.strumTime - note.strumTime) < 1)
-			{
-				if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
-		});
-		if (daNote.canMiss) return;
-		
-		combo = 0;
-		health -= daNote.missHealth * healthLoss;
-		
-		if (soundMode == 'SWAP') FlxG.sound.music.volume = 1;
-		
-		if (instakillOnMiss)
-		{
-			vocals.playerVolume = 0;
-			doDeathCheck(true);
-		}
-		
-		// For testing purposes
-		// trace(daNote.missHealth);
-		songMisses++;
-		vocals.playerVolume = 0;
-		if (!practiceMode) songScore -= 10;
-		
-		totalPlayed++;
-		RecalculateRating(field.playerControls);
-		
-		var char:Character = field.owner;
-		if (daNote.gfNote) char = gf;
-		
-		if (char != null && !daNote.noMissAnimation && char.hasMissAnimations)
-		{
-			if (char.animTimer <= 0 && !char.voicelining)
-			{
-				var daAlt = '';
-				if (daNote.noteType == 'Alt Animation') daAlt = '-alt';
-				
-				var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daAlt;
-				char.playAnim(animToPlay, true);
-			}
-		}
-		
-		callOnLuas('noteMiss', [
-			notes.members.indexOf(daNote),
-			daNote.noteData,
-			daNote.noteType,
-			daNote.isSustainNote,
-			daNote.ID
-		]);
-		callOnHScripts("noteMiss", [daNote]);
-		if (daNote.noteScript != null)
-		{
-			var script:Dynamic = daNote.noteScript;
-			if (script.scriptType == LUA)
-			{
-				callScript(script, 'noteMiss', [
-					notes.members.indexOf(daNote),
-					Math.abs(daNote.noteData),
-					daNote.noteType,
-					daNote.isSustainNote,
-					daNote.ID
-				]);
-			}
-			else
-			{
-				callScript(script, "noteMiss", [daNote]);
-			}
-		}
-	}
-	
-	function noteMissPress(direction:Int = 1, anim:Bool = true):Void // You pressed a key when there was no notes to press for this key
-	{
-		if (ClientPrefs.ghostTapping) return; // fuck it
-		
-		if (!boyfriend.stunned)
-		{
-			health -= 0.05 * healthLoss;
-			if (instakillOnMiss)
-			{
-				vocals.playerVolume = 0;
-				doDeathCheck(true);
-			}
-			
-			if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
-			}
-			combo = 0;
-			
-			if (!practiceMode) songScore -= 10;
-			if (!endingSong)
-			{
-				songMisses++;
-			}
-			totalPlayed++;
-			RecalculateRating();
-			
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
-			
-			/*boyfriend.stunned = true;
-		
-																																						// get stunned for 1/60 of a second, makes you able to
-																																						new FlxTimer().start(1 / 60, function(tmr:FlxTimer)
-																																						{
-																																							boyfriend.stunned = false;
-					});*/
-			
-			if (boyfriend.hasMissAnimations && anim)
-			{
-				if (boyfriend.animTimer <= 0 && !boyfriend.voicelining) boyfriend.playAnim(noteSkin.data.singAnimations[Std.int(Math.abs(direction))]
-					+ 'miss', true);
-			}
-			vocals.playerVolume = 0;
-		}
-		callOnScripts('noteMissPress', [direction]);
-	}
-	
-	function opponentNoteHit(note:Note, playfield:PlayField):Void
-	{
-		if (Paths.formatToSongPath(SONG.song) != 'tutorial') camZooming = true;
-		
-		var char:Character = note.owner == null ? playfield.owner : note.owner;
-		
-		if (note.gfNote) char = gf;
-		
-		if (note.noteType == 'Hey!' && char.animOffsets.exists('hey'))
-		{
-			char.playAnim('hey', true);
-			char.specialAnim = true;
-			char.heyTimer = 0.6;
-		}
-		
-		if (!note.noteSplashDisabled && !note.isSustainNote && playfield.playerControls)
-		{
-			spawnNoteSplashOnNote(note);
-		}
-		else if (!note.noAnimation)
-		{
-			var altAnim:String = "";
-			
-			if (SONG.notes[curSection] != null)
-			{
-				if (SONG.notes[curSection].altAnim || note.noteType == 'Alt Animation')
-				{
-					altAnim = '-alt';
-				}
-			}
-			
-			var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
-			if (char.voicelining) char.voicelining = false;
-			
-			if (char != null)
-			{
-				char.holdTimer = 0;
-				
-				// TODO: maybe move this all away into a seperate function
-				if (!note.isSustainNote
-					&& noteRows[note.mustPress ? 0 : 1][note.row] != null
-					&& noteRows[note.mustPress ? 0 : 1][note.row].length > 1
-					&& note.noteType != "Ghost Note"
-					&& char.ghostsEnabled)
-				{
-					// potentially have jump anims?
-					var chord = noteRows[note.mustPress ? 0 : 1][note.row];
-					var animNote = chord[0];
-					var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + altAnim;
-					if (char.mostRecentRow != note.row) char.playAnim(realAnim, true);
-					
-					if (note.nextNote != null && note.prevNote != null)
-					{
-						if (note != animNote
-							&& !note.nextNote.isSustainNote /* && !note.prevNote.isSustainNote */
-							&& callOnHScripts('onGhostAnim', [animToPlay, note]) != Globals.Function_Stop)
-						{
-							char.playGhostAnim(chord.indexOf(note), animToPlay, true);
-						}
-						else if (note.nextNote.isSustainNote)
-						{
-							char.playAnim(realAnim, true);
-							char.playGhostAnim(chord.indexOf(note), animToPlay, true);
-						}
-					}
-					char.mostRecentRow = note.row;
-				}
-				else
-				{
-					if (note.noteType != "Ghost Note") char.playAnim(animToPlay, true);
-					else char.playGhostAnim(note.noteData, animToPlay, true);
-				}
-			}
-		}
-		
-		if (SONG.needsVoices)
-		{
-			if (soundMode == 'SWAP') FlxG.sound.music.volume = 0;
-			
-			if (vocals.opponentVocals.length == 0) vocals.playerVolume = 1;
-			else vocals.opponentVolume = 1;
-		}
-		
-		if (playfield.autoPlayed)
-		{
-			var time:Float = 0.15;
-			if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
-			{
-				time += 0.15;
-			}
-			strumPlayAnim(playfield, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
-		}
-		else
-		{
-			playfield.forEach(function(spr:StrumNote) {
-				if (Math.abs(note.noteData) == spr.ID)
-				{
-					spr.playAnim('confirm', true, note);
-				}
-			});
-		}
-		
-		note.hitByOpponent = true;
-		
-		var luaArgs:Array<Dynamic> = [
-			notes.members.indexOf(note),
-			Math.abs(note.noteData),
-			note.noteType,
-			note.isSustainNote,
-			note.ID
-		]; // once again, it requires i define it as a dynamic array
-		var hscriptArgs = [note];
-		
-		callOnLuas('opponentNoteHit', luaArgs);
-		callOnHScripts("opponentNoteHit", hscriptArgs);
-		if (note.noteScript != null)
-		{
-			var script:Dynamic = note.noteScript;
-			if (script.scriptType == LUA)
-			{
-				callScript(script, 'opponentNoteHit', luaArgs);
-			}
-			else
-			{
-				callScript(script, "opponentNoteHit", hscriptArgs);
-			}
-		}
-		if (!note.isSustainNote)
-		{
-			if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-			note.kill();
-			notes.remove(note, true);
-			note.destroy();
-		}
-	}
-	
-	function goodNoteHit(note:Note, field:PlayField):Void
-	{
-		if (!note.wasGoodHit)
-		{
-			if (field.autoPlayed && (note.ignoreNote || note.hitCausesMiss)) return;
-			
-			if (ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled)
-			{
-				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
-			}
-			
-			if (note.sustainLength > 0 && !note.isSustainNote)
-			{
-				// edit how the note cover spawns so it activates the one corresponding to the note that was hit instead of spawning a brand new one
-				// im sorry data
-				// spawnNoteCoverOnNote(note, note.sustainLength);
-				// trace(note.sustainLength);
-			}
-			
-			if (field.autoPlayed)
-			{
-				var time:Float = 0.15;
-				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
-				{
-					time += 0.15;
-				}
-				strumPlayAnim(field, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
-			}
-			else
-			{
-				field.forEach(function(spr:StrumNote) {
-					if (Math.abs(note.noteData) == spr.ID)
-					{
-						spr.playAnim('confirm', true, note);
-					}
-				});
-			}
-			
-			if (note.hitCausesMiss)
-			{
-				if (field.noteMissCallback != null) field.noteMissCallback(note, field);
-				if (!note.noteSplashDisabled && !note.isSustainNote && field.playerControls)
-				{
-					spawnNoteSplashOnNote(note);
-				}
-				
-				if (!note.noMissAnimation)
-				{
-					switch (note.noteType)
-					{
-						case 'Hurt Note': // Hurt note
-							if (field.owner.animation.getByName('hurt') != null)
-							{
-								field.owner.playAnim('hurt', true);
-								field.owner.specialAnim = true;
-							}
-					}
-				}
-				
-				note.wasGoodHit = true;
-				if (!note.isSustainNote)
-				{
-					if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-					note.kill();
-					notes.remove(note, true);
-					note.destroy();
-				}
-				return;
-			}
-			
-			if (!note.isSustainNote)
-			{
-				combo += 1;
-				if (combo > 9999) combo = 9999;
-				popUpScore(note);
-			}
-			health += note.hitHealth * healthGain;
-			
-			if (!note.noAnimation)
-			{
-				var daAlt = '';
-				if (note.noteType == 'Alt Animation') daAlt = '-alt';
-				
-				var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))];
-				
-				if (note.gfNote)
-				{
-					if (gf != null)
-					{
-						gf.playAnim(animToPlay + daAlt, true);
-						gf.holdTimer = 0;
-					}
-				}
-				else if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-				{
-					// field.owner.playAnim(animToPlay + daAlt, true);
-					field.owner.holdTimer = 0;
-					if (!note.isSustainNote
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row] != null
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row].length > 1
-						&& note.noteType != "Ghost Note"
-						&& field.owner.ghostsEnabled)
-					{
-						// potentially have jump anims?
-						var chord = noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row];
-						var animNote = chord[0];
-						var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + daAlt;
-						if (field.owner.mostRecentRow != note.row)
-						{
-							if (note.owner == null) field.owner.playAnim(realAnim, true);
-							else note.owner.playAnim(realAnim, true);
-						}
-						
-						if (note != animNote && chord.indexOf(note) != animNote.noteData)
-						{
-							if (note.owner == null) field.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-							else note.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-						}
-						// doGhostAnim('bf', animToPlay);
-						
-						field.owner.mostRecentRow = note.row;
-					}
-					else
-					{
-						if (note.noteType != "Ghost Note")
-						{
-							if (note.owner == null) field.owner.playAnim(animToPlay + daAlt, true);
-							else note.owner.playAnim(animToPlay + daAlt, true);
-						}
-						else
-						{
-							if (note.owner == null) field.owner.playGhostAnim(note.noteData, animToPlay, true);
-							else note.owner.playGhostAnim(note.noteData, animToPlay, true);
-						}
-					}
-				}
-				
-				if (note.noteType == 'Hey!')
-				{
-					if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-					{
-						if (field.owner.animOffsets.exists('hey'))
-						{
-							field.owner.playAnim('hey', true);
-							field.owner.specialAnim = true;
-							field.owner.heyTimer = 0.6;
-						}
-					}
-					
-					if (gf != null && gf.animOffsets.exists('cheer'))
-					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = 0.6;
-					}
-				}
-			}
-			
-			note.wasGoodHit = true;
-			vocals.playerVolume = 1;
-			
-			var luaArgs:Array<Dynamic> = [
-				notes.members.indexOf(note),
-				Math.abs(note.noteData),
-				note.noteType,
-				note.isSustainNote,
-				note.ID
-			]; // for some reason it requires me to define it as a dynamic array
-			var hscriptArgs = [note];
-			
-			callOnLuas('goodNoteHit', luaArgs);
-			callOnHScripts("goodNoteHit", hscriptArgs); // maybe have this above so you can interrupt goodNoteHit? idk we'll see
-			if (note.noteScript != null)
-			{
-				var script:Dynamic = note.noteScript;
-				if (script.scriptType == LUA)
-				{
-					callScript(script, 'goodNoteHit', luaArgs);
-				}
-				else
-				{
-					callScript(script, "goodNoteHit", hscriptArgs);
-				}
-			}
-			if (!note.isSustainNote)
-			{
-				if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
-		}
-	}
-	
-	function extraNoteHit(note:Note, field:PlayField)
-	{
-		if (!note.wasGoodHit)
-		{
-			if (field.autoPlayed && (note.ignoreNote || note.hitCausesMiss)) return;
-			
-			if (field.autoPlayed)
-			{
-				var time:Float = 0.15;
-				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
-				{
-					time += 0.15;
-				}
-				strumPlayAnim(field, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
-			}
-			else
-			{
-				field.forEach(function(spr:StrumNote) {
-					if (Math.abs(note.noteData) == spr.ID)
-					{
-						spr.playAnim('confirm', true, note);
-					}
-				});
-			}
-			
-			if (note.hitCausesMiss)
-			{
-				if (field.noteMissCallback != null) field.noteMissCallback(note, field);
-				if (!note.noteSplashDisabled && !note.isSustainNote)
-				{
-					spawnNoteSplashOnNote(note);
-				}
-				
-				if (!note.noMissAnimation)
-				{
-					switch (note.noteType)
-					{
-						case 'Hurt Note': // Hurt note
-							if (field.owner.animation.getByName('hurt') != null)
-							{
-								field.owner.playAnim('hurt', true);
-								field.owner.specialAnim = true;
-							}
-					}
-				}
-				
-				note.wasGoodHit = true;
-				if (!note.isSustainNote)
-				{
-					if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-					note.kill();
-					notes.remove(note, true);
-					note.destroy();
-				}
-				return;
-			}
-			
-			if (field.playerControls)
-			{
-				if (!note.isSustainNote)
-				{
-					combo += 1;
-					if (combo > 9999) combo = 9999;
-					popUpScore(note);
-				}
-				health += note.hitHealth * healthGain;
-			}
-			
-			if (!note.noAnimation)
-			{
-				var daAlt = '';
-				if (note.noteType == 'Alt Animation') daAlt = '-alt';
-				
-				var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))];
-				var owner = field.owner;
-				
-				if (note.gfNote)
-				{
-					if (gf != null)
-					{
-						gf.playAnim(animToPlay + daAlt, true);
-						gf.holdTimer = 0;
-					}
-				}
-				else if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-				{
-					// field.owner.playAnim(animToPlay + daAlt, true);
-					field.owner.holdTimer = 0;
-					if (!note.isSustainNote
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row] != null
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row].length > 1
-						&& note.noteType != "Ghost Note"
-						&& field.owner.ghostsEnabled)
-					{
-						if (field.owner.ghostsEnabled)
-						{
-							// potentially have jump anims?
-							var chord = noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row];
-							var animNote = chord[0];
-							var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + daAlt;
-							if (field.owner.mostRecentRow != note.row)
-							{
-								if (owner == null) field.owner.playAnim(realAnim, true);
-								else owner.playAnim(realAnim, true);
-							}
-							
-							if (note != animNote && chord.indexOf(note) != animNote.noteData)
-							{
-								if (owner == null) field.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-								else owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-							}
-							// doGhostAnim('bf', animToPlay);
-							
-							field.owner.mostRecentRow = note.row;
-						}
-					}
-					else
-					{
-						if (note.noteType != "Ghost Note")
-						{
-							if (owner == null) field.owner.playAnim(animToPlay + daAlt, true);
-							else owner.playAnim(animToPlay + daAlt, true);
-						}
-						else
-						{
-							if (owner == null) field.owner.playGhostAnim(note.noteData, animToPlay, true);
-							else owner.playGhostAnim(note.noteData, animToPlay, true);
-						}
-					}
-				}
-				
-				if (note.noteType == 'Hey!')
-				{
-					if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-					{
-						if (field.owner.animOffsets.exists('hey'))
-						{
-							field.owner.playAnim('hey', true);
-							field.owner.specialAnim = true;
-							field.owner.heyTimer = 0.6;
-						}
-					}
-					
-					if (gf != null && gf.animOffsets.exists('cheer'))
-					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = 0.6;
-					}
-				}
-			}
-			
-			note.wasGoodHit = true;
-			vocals.playerVolume = 1;
-			
-			if (note.noteData > 4)
-			{
-				note.doAutoSustain = true;
-			}
-			
-			var luaArgs:Array<Dynamic> = [
-				notes.members.indexOf(note),
-				Math.abs(note.noteData),
-				note.noteType,
-				note.isSustainNote,
-				note.ID
-			]; // for some reason it requires me to define it as a dynamic array
-			var hscriptArgs = [note];
-			
-			callOnLuas('extraNoteHit', luaArgs);
-			callOnHScripts("extraNoteHit", hscriptArgs); // maybe have this above so you can interrupt goodNoteHit? idk we'll see
-			if (note.noteScript != null)
-			{
-				var script:Dynamic = note.noteScript;
-				if (script.scriptType == LUA)
-				{
-					callScript(script, 'extraNoteHit', luaArgs);
-				}
-				else
-				{
-					callScript(script, "extraNoteHit", hscriptArgs);
-				}
-			}
-			if (!note.isSustainNote)
-			{
-				if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
-		}
-	}
-	
-	function spawnNoteSplashOnNote(note:Note)
-	{
-		if (ClientPrefs.noteSplashes && note != null)
-		{
-			var strum:StrumNote = note.playField.members[note.noteData];
-			if (strum != null)
-			{
-				spawnNoteSplash(strum.x, strum.y, note.noteData, note);
-			}
-		}
-	}
-	
-	public function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null)
-	{
-		var skin:String = noteSplashSkin;
-		// trace(skin);
-		
-		var hue:Float = ClientPrefs.arrowHSV[data % 4][0] / 360;
-		var sat:Float = ClientPrefs.arrowHSV[data % 4][1] / 100;
-		var brt:Float = ClientPrefs.arrowHSV[data % 4][2] / 100;
-		if (note != null)
-		{
-			hue = note.noteSplashHue;
-			sat = note.noteSplashSat;
-			brt = note.noteSplashBrt;
-		}
-		
-		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x + script_SPLASHOffsets[data].x, y + script_SPLASHOffsets[data].y, data, skin, hue, sat, brt, note.playField);
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
+		splash.alpha = 0.0;
 		
-		callOnHScripts('spawnNoteSplash', [splash, data, note, note.mustPress]);
-	}
-	
-	function spawnNoteCoverOnNote(note:Note, length:Float)
-	{
-		trace('FUCK FUCK FUCKING');
-		if (note != null)
+		var cover:NoteSustainCover = new NoteSustainCover(100, 100, 0);
+		grpNoteCovers.add(cover);
+		cover.alpha = 0.0;
+		
+		meta = Metadata.getSong();
+		
+		generateSong(SONG.song);
+		modManager = new ModManager(this);
+		setOnHScripts("modManager", modManager);
+		
+		noteTypeMap.clear();
+		noteTypeMap = null;
+		eventPushedMap.clear();
+		eventPushedMap = null;
+		
+		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
+		// add(strumLine);
+		
+		camFollow = new FlxPoint();
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		
+		snapCamFollowToPos(camPos.x, camPos.y);
+		if (prevCamFollow != null)
 		{
-			var strum:StrumNote = note.playField.members[note.noteData];
-			if (strum != null)
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		if (prevCamFollowPos != null)
+		{
+			camFollowPos = prevCamFollowPos;
+			prevCamFollowPos = null;
+		}
+		add(camFollowPos);
+		
+		FlxG.camera.follow(camFollowPos, LOCKON, 1);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow);
+		
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		
+		FlxG.fixedTimestep = false;
+		moveCameraSection();
+		
+		botplayTxt = new FlxText(400, 525, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt.setFormat(Paths.font("liber.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.visible = cpuControlled;
+		add(botplayTxt);
+		
+		playFields.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteCovers.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
+		
+		setOnScripts('playFields', playFields);
+		setOnScripts('grpNoteSplashes', grpNoteSplashes);
+		setOnScripts('grpNoteCovers', grpNoteCovers);
+		setOnScripts('notes', notes);
+		setOnScripts('botplayTxt', botplayTxt);
+		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
+		
+		startingSong = true;
+		
+		// SONG SPECIFIC SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
+			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+			
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
 			{
-				spawnNoteCover(strum.x, strum.y, note.noteData, note, length);
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-	}
-	
-	public function spawnNoteCover(x:Float, y:Float, data:Int, ?note:Note = null, length:Float)
-	{
-		var skin:String = noteCoverSkin;
-		trace(skin);
-		var hue:Float = ClientPrefs.arrowHSV[data % 4][0] / 360;
-		var sat:Float = ClientPrefs.arrowHSV[data % 4][1] / 100;
-		var brt:Float = ClientPrefs.arrowHSV[data % 4][2] / 100;
 		
-		var cover:NoteSustainCover = grpNoteCovers.recycle(NoteSustainCover);
-		cover.setupNoteCover(x + script_COVERLOOPOffsets[data].x, y + script_COVERLOOPOffsets[data].y, data, skin, hue, sat, brt, note.playField, note);
-		grpNoteCovers.add(cover);
-	}
-	
-	override function refreshZ(?group:FlxTypedGroup<FlxBasic>)
-	{
-		if (group == null) {
-            group = stage;
-        }
-		group.sort(CoolUtil.sortByZ, flixel.util.FlxSort.ASCENDING);
-	}
-	
-	var preventLuaRemove:Bool = false;
-	
-	override function destroy()
-	{
-		preventLuaRemove = true;
-		
-		for (script in funkyScripts)
+		if (songStartCallback == null)
 		{
-			script.call("onDestroy", []);
-			script.stop();
+			FlxG.log.error('songStartCallback is null! using default callback.');
+			songStartCallback = startCountdown;
 		}
 		
-		hscriptArray = [];
-		funkyScripts = [];
-		luaArray = [];
-		notetypeScripts.clear();
-		eventScripts.clear();
+		songStartCallback();
 		
-		onPauseSignal.removeAll();
-		onResumeSignal.removeAll();
+		RecalculateRating();
+		updateScoreBar();
+		
+		// PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
+		if (ClientPrefs.hitsoundVolume > 0) Paths.sound('hitsound');
+		Paths.sound('missnote1');
+		Paths.sound('missnote2');
+		Paths.sound('missnote3');
+		
+		if (PauseSubState.songName != null)
+		{
+			Paths.music(PauseSubState.songName);
+		}
+		else if (ClientPrefs.pauseMusic != 'None')
+		{
+			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
+		}
+		
+		#if desktop // DISCORD_ALLOWED
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, getPresence(), null);
+		#end
 		
 		if (!ClientPrefs.controllerMode)
 		{
-			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
-			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
-		super.destroy();
+		
+		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		
+		callOnScripts('onCreatePost', []);
+		
+		super.create();
+		
+		Paths.clearUnusedMemory();
+		
+		cacheCountdown();
+		
+		refreshZ(stage);
 	}
 	
-	public static function cancelMusicFadeTween()
+	function noteskinLoading(skin:String = 'default')
 	{
-		if (FlxG.sound.music.fadeTween != null)
-		{
-			FlxG.sound.music.fadeTween.cancel();
+		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
+		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
+		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
 		}
-		FlxG.sound.music.fadeTween = null;
+		
+		arrowSkin = skin;
+		
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
 	}
 	
-	public function removeLua(lua:FunkinLua)
+	function initNoteSkinning()
 	{
-		if (luaArray != null && !preventLuaRemove)
+		script_NOTEOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_STRUMOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SPLASHOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERSTARTOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERLOOPOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		
+		for (i in 0...SONG.keys)
 		{
-			luaArray.remove(lua);
+			script_NOTEOffsets[i] = new FlxPoint();
+			script_STRUMOffsets[i] = new FlxPoint();
+			script_SUSTAINOffsets[i] = new FlxPoint();
+			script_SUSTAINENDOffsets[i] = new FlxPoint();
+			script_SPLASHOffsets[i] = new FlxPoint();
+			script_COVERSTARTOffsets[i] = new FlxPoint();
+			script_COVERLOOPOffsets[i] = new FlxPoint();
+			script_COVERENDOffsets[i] = new FlxPoint();
 		}
+		
+		// trace('noteskin file: "${SONG.arrowSkin}"');
+		
+		var skin = SONG.arrowSkin;
+		if (skin == '' || skin == 'null' || skin == null) skin = 'default';
+		
+		noteskinLoading(skin);
+		
+		trace('Quants turned on: ${ClientPrefs.noteSkin.contains('Quant')}');
+		trace('HAS quants: ${noteSkin.data.hasQuants}');
+		
+		if (ClientPrefs.noteSkin.contains('Quant') && noteSkin.data.hasQuants) noteskinLoading('QUANT$skin');
+		
+		NoteSkinHelper.setNoteHelpers(noteSkin, SONG.keys);
+		
+		// trace(noteSkin.data);
+		
+		arrowSkin = noteSkin.data.globalSkin;
+		NoteSkinHelper.arrowSkins = [noteSkin.data.playerSkin, noteSkin.data.opponentSkin];
+		if (SONG.lanes > 2)
+		{
+			for (i in 2...SONG.lanes)
+			{
+				NoteSkinHelper.arrowSkins.push(noteSkin.data.extraSkin);
+			}
+		}
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i].x = noteSkin.data.noteAnimations[i][0].offsets[0];
+			script_NOTEOffsets[i].y = noteSkin.data.noteAnimations[i][0].offsets[1];
+			
+			script_SUSTAINOffsets[i].x = noteSkin.data.noteAnimations[i][1].offsets[0];
+			script_SUSTAINOffsets[i].y = noteSkin.data.noteAnimations[i][1].offsets[1];
+			
+			script_SUSTAINENDOffsets[i].x = noteSkin.data.noteAnimations[i][2].offsets[0];
+			script_SUSTAINENDOffsets[i].y = noteSkin.data.noteAnimations[i][2].offsets[1];
+			
+			script_SPLASHOffsets[i].x = noteSkin.data.noteSplashAnimations[i].offsets[0];
+			script_SPLASHOffsets[i].y = noteSkin.data.noteSplashAnimations[i].offsets[1];
+			
+			script_COVERSTARTOffsets[i].x = noteSkin.data.noteCoverAnimations[i][0].offsets[0];
+			script_COVERSTARTOffsets[i].y = noteSkin.data.noteCoverAnimations[i][0].offsets[1];
+			
+			script_COVERLOOPOffsets[i].x = noteSkin.data.noteCoverAnimations[i][1].offsets[0];
+			script_COVERLOOPOffsets[i].y = noteSkin.data.noteCoverAnimations[i][1].offsets[1];
+			
+			script_COVERENDOffsets[i].x = noteSkin.data.noteCoverAnimations[i][2].offsets[0];
+			script_COVERENDOffsets[i].y = noteSkin.data.noteCoverAnimations[i][2].offsets[1];
+		}
+		
+		noteSplashSkin = noteSkin.data.noteSplashSkin;
+		noteCoverSkin = noteSkin.data.noteCoverSkin;
 	}
 	
-	var lastStepHit:Int = -1;
-	
-	override function stepHit()
+	function set_songSpeed(value:Float):Float
 	{
-		super.stepHit();
-		
-		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
-			|| (SONG.needsVoices && vocals.getDesyncDifference(Math.abs(Conductor.songPosition - Conductor.offset)) > 20))
-		{
-			resyncVocals();
-		}
-		
-		if (curStep == lastStepHit)
-		{
-			return;
-		}
-		
-		lastStepHit = curStep;
-		setOnScripts('curStep', curStep);
-		callOnScripts('onStepHit', []);
-		callHUDFunc(p -> p.stepHit());
-	}
-	
-	var lastBeatHit:Int = -1;
-	var lastSection:Int = -1;
-	
-	override function beatHit()
-	{
-		super.beatHit();
-		
-		if (lastBeatHit >= curBeat)
-		{
-			return;
-		}
-		
 		if (generatedMusic)
 		{
-			notes.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+			var ratio:Float = value / songSpeed; // funny word huh
+			for (note in notes)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
+		}
+		songSpeed = value;
+		noteKillOffset = 350 / songSpeed;
+		return value;
+	}
+	
+	public function addTextToDebug(text:String, color:FlxColor = FlxColor.WHITE)
+	{
+		#if LUA_ALLOWED
+		if (luaDebugGroup == null)
+		{
+			luaDebugGroup = new FlxTypedGroup();
+			luaDebugGroup.cameras = [camOther];
+			add(luaDebugGroup);
 		}
 		
-		handleBoppers();
+		var recycledText = luaDebugGroup.recycle(DebugLuaText, () -> new DebugLuaText(text, luaDebugGroup, color));
+		recycledText.text = text;
+		recycledText.color = color;
+		recycledText.disableTime = 6;
+		recycledText.alpha = 1;
 		
-		if (beatsPerZoom == 0) beatsPerZoom = 4;
-		if (camZooming && ClientPrefs.camZooms && curBeat % beatsPerZoom == 0)
+		luaDebugGroup.insert(0, recycledText);
+		
+		luaDebugGroup.forEachAlive((spr:DebugLuaText) -> {
+			spr.y += recycledText.height;
+		});
+		
+		recycledText.y = 10;
+		#end
+	}
+	
+	public function addCharacterToList(newCharacter:String, type:Int)
+	{
+		switch (type)
 		{
-			FlxG.camera.zoom += 0.015 * camZoomingMult;
-			camHUD.zoom += 0.03 * camZoomingMult;
-		}
-		
-		lastBeatHit = curBeat;
-		
-		if (totalBeat > 0)
-		{
-			if (curBeat % timeBeat == 0)
-			{
-				triggerEventNote('Add Camera Zoom', '' + gameZ, '' + hudZ);
-				totalBeat -= 1;
-				
-				if (shakeTime)
+			case 0:
+				if (!boyfriendMap.exists(newCharacter))
 				{
-					triggerEventNote('Screen Shake', (((1 / (Conductor.bpm / 60)) / 2) * timeBeat)
-						+ ', '
-						+ gameShake, (((1 / (Conductor.bpm / 60)) / 2) * timeBeat)
-						+ ', '
-						+ hudShake);
+					var newBoyfriend:Character = new Character(0, 0, newCharacter, true);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterScripts(newBoyfriend.curCharacter, newBoyfriend);
 				}
-			}
-		}
-		
-		setOnScripts('curBeat', curBeat); // DAWGG?????
-		callOnScripts('onBeatHit', []);
-		callHUDFunc(p -> p.beatHit());
-	}
-	
-	// rework this
-	public function handleBoppers()
-	{
-		if (gf != null
-			&& curBeat % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0
-			&& gf.animation.curAnim != null
-			&& !gf.animation.curAnim.name.startsWith("sing")
-			&& !gf.stunned)
-		{
-			gf.dance();
-		}
-		if (curBeat % boyfriend.danceEveryNumBeats == 0
-			&& boyfriend.animation.curAnim != null
-			&& !boyfriend.animation.curAnim.name.startsWith('sing')
-			&& !boyfriend.stunned)
-		{
-			boyfriend.dance();
-		}
-		if (curBeat % dad.danceEveryNumBeats == 0
-			&& dad.animation.curAnim != null
-			&& !dad.animation.curAnim.name.startsWith('sing')
-			&& !dad.stunned)
-		{
-			dad.dance();
+				
+			case 1:
+				if (!dadMap.exists(newCharacter))
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterScripts(newDad.curCharacter, newDad);
+				}
+				
+			case 2:
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
+					var newGf:Character = new Character(0, 0, newCharacter);
+					gfMap.set(newCharacter, newGf);
+					gfGroup.add(newGf);
+					startCharacterPos(newGf);
+					newGf.alpha = 0.00001;
+					startCharacterScripts(newGf.curCharacter, newGf);
+				}
 		}
 	}
 	
-	override function sectionHit()
+	function startCharacterScripts(name:String, char:Character) // taken from SSG
 	{
-		if (SONG.notes[curSection] != null)
+		// trace(name);
+		if (char.curCharacterScript != null)
 		{
-			if (SONG.notes[curSection].changeBPM)
+			switch (char.curCharacterScript.scriptType)
 			{
-				Conductor.bpm = SONG.notes[curSection].bpm;
-				setOnScripts('curBpm', Conductor.bpm);
-				setOnScripts('crotchet', Conductor.crotchet);
-				setOnScripts('stepCrotchet', Conductor.stepCrotchet);
+				case HSCRIPT:
+					hscriptArray.push(cast char.curCharacterScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast char.curCharacterScript);
+				#end
 			}
-			
-			setOnScripts('mustHitSection', SONG.notes[curSection].mustHitSection);
-			setOnScripts('altAnim', SONG.notes[curSection].altAnim);
-			setOnScripts('gfSection', SONG.notes[curSection].gfSection);
-			setOnScripts('curSection', curSection);
-		}
-		
-		super.sectionHit();
-		
-		callOnScripts('onSectionHit', [curSection]);
-		callHUDFunc(p -> p.sectionHit());
-	}
-	
-	public var closeLuas:Array<FunkinLua> = [];
-	
-	public function callOnScripts(event:String, args:Array<Dynamic>, ignoreStops:Bool = false, ?exclusions:Array<String>, ?scriptArray:Array<Dynamic>, ?ignoreSpecialShit:Bool = true)
-	{
-		if (scriptArray == null)
-		{
-			// haxe doesnt copy arrays instead itll point to em
-			// so we doing this to create a new array
-			scriptArray = [].concat(funkyScripts);
-			for (s in eventScripts)
-				scriptArray.push(s);
-		}
-		if (exclusions == null) exclusions = [];
-		var returnVal:Dynamic = Globals.Function_Continue;
-		for (script in scriptArray)
-		{
-			if (exclusions.contains(script.scriptName)
-				|| ignoreSpecialShit
-				&& (notetypeScripts.exists(script.scriptName) || eventScripts.exists(script.scriptName)))
-			{
-				continue;
-			}
-			var ret:Dynamic = script.call(event, args);
-			if (ret == Globals.Function_Halt)
-			{
-				ret = returnVal;
-				if (!ignoreStops) return returnVal;
-			};
-			
-			if (ret != Globals.Function_Continue && ret != null) returnVal = ret;
-		}
-		if (returnVal == null) returnVal = Globals.Function_Continue;
-		
-		return returnVal;
-	}
-	
-	public function setOnScripts(variable:String, arg:Dynamic, ?scriptArray:Array<Dynamic>)
-	{
-		if (scriptArray == null) scriptArray = funkyScripts;
-		for (script in scriptArray)
-		{
-			script.set(variable, arg);
+			funkyScripts.push(char.curCharacterScript);
+			trace(char.curCharacterScript.scriptName);
 		}
 	}
 	
-	// currently from my knowledge lua does not work like at all lol so we need to look into that later
-	function callEventScript(scriptName:String, func:String, args:Array<Dynamic>, ?luaArgs:Array<Dynamic>):Dynamic
-	{
-		if (!eventScripts.exists(scriptName)) return Globals.Function_Continue;
-		
-		var script = eventScripts.get(scriptName);
-		if (luaArgs == null) luaArgs = args;
-		
-		if (script.scriptType == LUA) return callScript(script, func, luaArgs);
-		
-		return callScript(script, func, args);
-	}
-	
-	// data todo make a callNoteScript!
-	function callNoteTypeScript() {}
-	
-	public function callScript(script:Dynamic, event:String, args:Array<Dynamic>):Dynamic
+	function initFunkinIris(filePath:String, ?name:String)
 	{
 		try {
-			if (script is FunkinScript)
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
 			{
-				return callOnScripts(event, args, true, [], [script], false);
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
 			}
-			else if (script is Array)
-			{
-				return callOnScripts(event, args, true, [], script, false);
-			}
-			else if (script is String)
-			{
-				var scripts:Array<FunkinScript> = [];
-				for (scr in funkyScripts)
-				{
-					if (scr.scriptName == script) scripts.push(scr);
-				}
-				return callOnScripts(event, args, true, [], scripts, false);
-			}
-			return Globals.Function_Continue;
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
 		} catch (e:Dynamic) {
-			NativeAPI.showMessageBox("Script Runtime Error", "Error in script event '" + event + "':\n" + Std.string(e));
-			return Globals.Function_Continue;
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
 		}
 	}
 	
-	inline public function callOnHScripts(event:String, args:Array<Dynamic>, ignoreStops = false, ?exclusions:Array<String>)
+	function setStageData(stageData:StageFile)
 	{
-		return callOnScripts(event, args, ignoreStops, exclusions, hscriptArray);
-	}
-	
-	inline public function setOnHScripts(variable:String, arg:Dynamic)
-	{
-		return setOnScripts(variable, arg, hscriptArray);
-	}
-	
-	public function hscriptSetDefault(variable:String, arg:Dynamic)
-	{
-		FunkinIris.defaultVars.set(variable, arg);
-		return setOnHScripts(variable, arg);
-	}
-	
-	public function callOnLuas(event:String, args:Array<Dynamic>, ignoreStops = false, ?exclusions:Array<String>)
-	{
-		#if LUA_ALLOWED
-		return callOnScripts(event, args, ignoreStops, exclusions, luaArray);
-		#else
-		return Globals.Function_Continue;
-		#end
-	}
-	
-	public function setOnLuas(variable:String, arg:Dynamic)
-	{
-		#if LUA_ALLOWED
-		setOnScripts(variable, arg, luaArray);
-		#end
-	}
-	
-	function strumPlayAnim(field:PlayField, id:Int, time:Float, ?note:Note)
-	{
-		var spr:StrumNote = field.members[id];
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
 		
-		if (spr != null)
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
 		{
-			spr.playAnim('confirm', true, note);
-			spr.resetAnim = time;
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
 		}
 	}
 	
-	public var ratingName:String = '?';
-	public var ratingPercent:Float;
-	public var ratingFC:String;
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
 	
-	public function RecalculateRating(badHit:Bool = false)
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
 	{
-		setOnLuas('score', songScore);
-		setOnLuas('misses', songMisses);
-		setOnLuas('hits', songHits);
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
 		
-		final ret:Dynamic = callOnScripts('onRecalculateRating', []);
-		if (ret != Globals.Function_Stop)
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
 		{
-			if (totalPlayed < 1) // Prevent divide by 0
-				ratingName = '?';
-			else
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
+		#if desktop
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
+		{
+			// detailsText = "";
+		}
+		else
+		{
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
 			{
-				// Rating Percent
-				ratingPercent = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
-				// trace((totalNotesHit / totalPlayed) + ', Total: ' + totalPlayed + ', notes hit: ' + totalNotesHit);
-				
-				// Rating Name
-				if (ratingPercent >= 1)
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
+			}
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
+		}
+		
+		if (isPixelStage)
+		{
+			introSoundsSuffix = '-pixel';
+		}
+		
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
+		{
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
+		}
+		
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
+		
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
 				{
-					ratingName = ratingStuff[ratingStuff.length - 1].name; // Uses last string
-				}
-				else
-				{
-					for (i in 0...ratingStuff.length - 1)
+					if (!filesPushed.contains(file))
 					{
-						if (ratingPercent < ratingStuff[i].percent)
+						if (file.endsWith('.lua'))
 						{
-							ratingName = ratingStuff[i].name;
-							break;
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
 						}
 					}
 				}
 			}
-			
-			updateRatingFC();
 		}
 		
-		setOnLuas('rating', ratingPercent);
-		setOnLuas('ratingName', ratingName);
-		setOnLuas('ratingFC', ratingFC);
-		updateScoreBar(badHit);
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
+		{
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
+			
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
+		}
+		
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
+		{
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
+		}
+		else
+		{
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
+		}
+		
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
+			{
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
+			}
+		 */
+		
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
+		
+		Conductor.songPosition = -5000;
+		
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
+		
+		// temp
+		updateTime = true;
+		
+		playFields = new FlxTypedGroup<PlayField>();
+		add(playFields);
+		add(grpNoteCovers);
+		add(grpNoteSplashes);
+		
+		playHUD = new funkin.huds.SusHUD(this);
+		insert(members.indexOf(playFields), playHUD); // Data told me to do this
+		playHUD.cameras = [camHUD];
+		
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.0;
+		
+		var cover:NoteSustainCover = new NoteSustainCover(100, 100, 0);
+		grpNoteCovers.add(cover);
+		cover.alpha = 0.0;
+		
+		meta = Metadata.getSong();
+		
+		generateSong(SONG.song);
+		modManager = new ModManager(this);
+		setOnHScripts("modManager", modManager);
+		
+		noteTypeMap.clear();
+		noteTypeMap = null;
+		eventPushedMap.clear();
+		eventPushedMap = null;
+		
+		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
+		// add(strumLine);
+		
+		camFollow = new FlxPoint();
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		
+		snapCamFollowToPos(camPos.x, camPos.y);
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		if (prevCamFollowPos != null)
+		{
+			camFollowPos = prevCamFollowPos;
+			prevCamFollowPos = null;
+		}
+		add(camFollowPos);
+		
+		FlxG.camera.follow(camFollowPos, LOCKON, 1);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow);
+		
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		
+		FlxG.fixedTimestep = false;
+		moveCameraSection();
+		
+		botplayTxt = new FlxText(400, 525, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt.setFormat(Paths.font("liber.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.visible = cpuControlled;
+		add(botplayTxt);
+		
+		playFields.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteCovers.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
+		
+		setOnScripts('playFields', playFields);
+		setOnScripts('grpNoteSplashes', grpNoteSplashes);
+		setOnScripts('grpNoteCovers', grpNoteCovers);
+		setOnScripts('notes', notes);
+		setOnScripts('botplayTxt', botplayTxt);
+		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
+		
+		startingSong = true;
+		
+		// SONG SPECIFIC SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
+			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+			
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (songStartCallback == null)
+		{
+			FlxG.log.error('songStartCallback is null! using default callback.');
+			songStartCallback = startCountdown;
+		}
+		
+		songStartCallback();
+		
+		RecalculateRating();
+		updateScoreBar();
+		
+		// PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
+		if (ClientPrefs.hitsoundVolume > 0) Paths.sound('hitsound');
+		Paths.sound('missnote1');
+		Paths.sound('missnote2');
+		Paths.sound('missnote3');
+		
+		if (PauseSubState.songName != null)
+		{
+			Paths.music(PauseSubState.songName);
+		}
+		else if (ClientPrefs.pauseMusic != 'None')
+		{
+			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
+		}
+		
+		#if desktop // DISCORD_ALLOWED
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, getPresence(), null);
+		#end
+		
+		if (!ClientPrefs.controllerMode)
+		{
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
+		
+		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		
+		callOnScripts('onCreatePost', []);
+		
+		super.create();
+		
+		Paths.clearUnusedMemory();
+		
+		cacheCountdown();
+		
+		refreshZ(stage);
 	}
 	
-	// so you can override this in HScript
-	// e.g: PlayState.instance.updateRatingFC = function() { ... }
-	public dynamic function updateRatingFC()
+	function noteskinLoading(skin:String = 'default')
 	{
-		// Rating FC
-		ratingFC = "";
-		if (epics > 0) ratingFC = "KFC";
-		if (sicks > 0) ratingFC = "SFC";
-		if (goods > 0) ratingFC = "GFC";
-		if (bads > 0 || shits > 0) ratingFC = "FC";
-		if (songMisses > 0 && songMisses < 10) ratingFC = "SDCB";
-		else if (songMisses >= 10) ratingFC = "Clear";
+		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
+		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
+		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+		
+		arrowSkin = skin;
+		
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
 	}
 	
-	override public function startOutro(onOutroComplete:() -> Void)
+	function initNoteSkinning()
 	{
-		if (isPixelStage != stageData.isPixelStage) isPixelStage = stageData.isPixelStage;
-		super.startOutro(onOutroComplete);
+		script_NOTEOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_STRUMOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SPLASHOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERSTARTOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERLOOPOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i] = new FlxPoint();
+			script_STRUMOffsets[i] = new FlxPoint();
+			script_SUSTAINOffsets[i] = new FlxPoint();
+			script_SUSTAINENDOffsets[i] = new FlxPoint();
+			script_SPLASHOffsets[i] = new FlxPoint();
+			script_COVERSTARTOffsets[i] = new FlxPoint();
+			script_COVERLOOPOffsets[i] = new FlxPoint();
+			script_COVERENDOffsets[i] = new FlxPoint();
+		}
+		
+		// trace('noteskin file: "${SONG.arrowSkin}"');
+		
+		var skin = SONG.arrowSkin;
+		if (skin == '' || skin == 'null' || skin == null) skin = 'default';
+		
+		noteskinLoading(skin);
+		
+		trace('Quants turned on: ${ClientPrefs.noteSkin.contains('Quant')}');
+		trace('HAS quants: ${noteSkin.data.hasQuants}');
+		
+		if (ClientPrefs.noteSkin.contains('Quant') && noteSkin.data.hasQuants) noteskinLoading('QUANT$skin');
+		
+		NoteSkinHelper.setNoteHelpers(noteSkin, SONG.keys);
+		
+		// trace(noteSkin.data);
+		
+		arrowSkin = noteSkin.data.globalSkin;
+		NoteSkinHelper.arrowSkins = [noteSkin.data.playerSkin, noteSkin.data.opponentSkin];
+		if (SONG.lanes > 2)
+		{
+			for (i in 2...SONG.lanes)
+			{
+				NoteSkinHelper.arrowSkins.push(noteSkin.data.extraSkin);
+			}
+		}
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i].x = noteSkin.data.noteAnimations[i][0].offsets[0];
+			script_NOTEOffsets[i].y = noteSkin.data.noteAnimations[i][0].offsets[1];
+			
+			script_SUSTAINOffsets[i].x = noteSkin.data.noteAnimations[i][1].offsets[0];
+			script_SUSTAINOffsets[i].y = noteSkin.data.noteAnimations[i][1].offsets[1];
+			
+			script_SUSTAINENDOffsets[i].x = noteSkin.data.noteAnimations[i][2].offsets[0];
+			script_SUSTAINENDOffsets[i].y = noteSkin.data.noteAnimations[i][2].offsets[1];
+			
+			script_SPLASHOffsets[i].x = noteSkin.data.noteSplashAnimations[i].offsets[0];
+			script_SPLASHOffsets[i].y = noteSkin.data.noteSplashAnimations[i].offsets[1];
+			
+			script_COVERSTARTOffsets[i].x = noteSkin.data.noteCoverAnimations[i][0].offsets[0];
+			script_COVERSTARTOffsets[i].y = noteSkin.data.noteCoverAnimations[i][0].offsets[1];
+			
+			script_COVERLOOPOffsets[i].x = noteSkin.data.noteCoverAnimations[i][1].offsets[0];
+			script_COVERLOOPOffsets[i].y = noteSkin.data.noteCoverAnimations[i][1].offsets[1];
+			
+			script_COVERENDOffsets[i].x = noteSkin.data.noteCoverAnimations[i][2].offsets[0];
+			script_COVERENDOffsets[i].y = noteSkin.data.noteCoverAnimations[i][2].offsets[1];
+		}
+		
+		noteSplashSkin = noteSkin.data.noteSplashSkin;
+		noteCoverSkin = noteSkin.data.noteCoverSkin;
 	}
-	/*
-	function getPresence()
+	
+	function set_songSpeed(value:Float):Float
 	{
-		// Get the discord presence
-
-		return ClientPrefs.disc_rpc ? SONG.song : FlxG.random.getObject(DiscordClient.discordPresences);
+		if (generatedMusic)
+		{
+			var ratio:Float = value / songSpeed; // funny word huh
+			for (note in notes)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
+		}
+		songSpeed = value;
+		noteKillOffset = 350 / songSpeed;
+		return value;
 	}
+	
+	public function addTextToDebug(text:String, color:FlxColor = FlxColor.WHITE)
+	{
+		#if LUA_ALLOWED
+		if (luaDebugGroup == null)
+		{
+			luaDebugGroup = new FlxTypedGroup();
+			luaDebugGroup.cameras = [camOther];
+			add(luaDebugGroup);
+		}
+		
+		var recycledText = luaDebugGroup.recycle(DebugLuaText, () -> new DebugLuaText(text, luaDebugGroup, color));
+		recycledText.text = text;
+		recycledText.color = color;
+		recycledText.disableTime = 6;
+		recycledText.alpha = 1;
+		
+		luaDebugGroup.insert(0, recycledText);
+		
+		luaDebugGroup.forEachAlive((spr:DebugLuaText) -> {
+			spr.y += recycledText.height;
+		});
+		
+		recycledText.y = 10;
+		#end
+	}
+	
+	public function addCharacterToList(newCharacter:String, type:Int)
+	{
+		switch (type)
+		{
+			case 0:
+				if (!boyfriendMap.exists(newCharacter))
+				{
+					var newBoyfriend:Character = new Character(0, 0, newCharacter, true);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterScripts(newBoyfriend.curCharacter, newBoyfriend);
+				}
+				
+			case 1:
+				if (!dadMap.exists(newCharacter))
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterScripts(newDad.curCharacter, newDad);
+				}
+				
+			case 2:
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
+					var newGf:Character = new Character(0, 0, newCharacter);
+					gfMap.set(newCharacter, newGf);
+					gfGroup.add(newGf);
+					startCharacterPos(newGf);
+					newGf.alpha = 0.00001;
+					startCharacterScripts(newGf.curCharacter, newGf);
+				}
+		}
+	}
+	
+	function startCharacterScripts(name:String, char:Character) // taken from SSG
+	{
+		// trace(name);
+		if (char.curCharacterScript != null)
+		{
+			switch (char.curCharacterScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast char.curCharacterScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast char.curCharacterScript);
+				#end
+			}
+			funkyScripts.push(char.curCharacterScript);
+			trace(char.curCharacterScript.scriptName);
+		}
+	}
+	
+	function initFunkinIris(filePath:String, ?name:String)
+	{
+		try {
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
+			{
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
+			}
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
+		}
+	}
+	
+	function setStageData(stageData:StageFile)
+	{
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
+		
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
 
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
 
-	*/
-}
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
+		{
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
+		}
+	}
+	
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
+	
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
+	{
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
+		
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
+		{
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
+		#if desktop
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
+		{
+			// detailsText = "";
+		}
+		else
+		{
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
+			}
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
+		}
+		
+		if (isPixelStage)
+		{
+			introSoundsSuffix = '-pixel';
+		}
+		
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
+		{
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
+		}
+		
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
+		
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
+		{
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
+			
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
+		}
+		
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
+		{
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
+		}
+		else
+		{
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
+		}
+		
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
+			{
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
+			}
+		 */
+		
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
+		
+		Conductor.songPosition = -5000;
+		
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
+		
+		// temp
+		updateTime = true;
+		
+		playFields = new FlxTypedGroup<PlayField>();
+		add(playFields);
+		add(grpNoteCovers);
+		add(grpNoteSplashes);
+		
+		playHUD = new funkin.huds.SusHUD(this);
+		insert(members.indexOf(playFields), playHUD); // Data told me to do this
+		playHUD.cameras = [camHUD];
+		
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.0;
+		
+		var cover:NoteSustainCover = new NoteSustainCover(100, 100, 0);
+		grpNoteCovers.add(cover);
+		cover.alpha = 0.0;
+		
+		meta = Metadata.getSong();
+		
+		generateSong(SONG.song);
+		modManager = new ModManager(this);
+		setOnHScripts("modManager", modManager);
+		
+		noteTypeMap.clear();
+		noteTypeMap = null;
+		eventPushedMap.clear();
+		eventPushedMap = null;
+		
+		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
+		// add(strumLine);
+		
+		camFollow = new FlxPoint();
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		
+		snapCamFollowToPos(camPos.x, camPos.y);
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		if (prevCamFollowPos != null)
+		{
+			camFollowPos = prevCamFollowPos;
+			prevCamFollowPos = null;
+		}
+		add(camFollowPos);
+		
+		FlxG.camera.follow(camFollowPos, LOCKON, 1);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow);
+		
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		
+		FlxG.fixedTimestep = false;
+		moveCameraSection();
+		
+		botplayTxt = new FlxText(400, 525, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt.setFormat(Paths.font("liber.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.visible = cpuControlled;
+		add(botplayTxt);
+		
+		playFields.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteCovers.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
+		
+		setOnScripts('playFields', playFields);
+		setOnScripts('grpNoteSplashes', grpNoteSplashes);
+		setOnScripts('grpNoteCovers', grpNoteCovers);
+		setOnScripts('notes', notes);
+		setOnScripts('botplayTxt', botplayTxt);
+		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
+		
+		startingSong = true;
+		
+		// SONG SPECIFIC SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
+			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+			
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (songStartCallback == null)
+		{
+			FlxG.log.error('songStartCallback is null! using default callback.');
+			songStartCallback = startCountdown;
+		}
+		
+		songStartCallback();
+		
+		RecalculateRating();
+		updateScoreBar();
+		
+		// PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
+		if (ClientPrefs.hitsoundVolume > 0) Paths.sound('hitsound');
+		Paths.sound('missnote1');
+		Paths.sound('missnote2');
+		Paths.sound('missnote3');
+		
+		if (PauseSubState.songName != null)
+		{
+			Paths.music(PauseSubState.songName);
+		}
+		else if (ClientPrefs.pauseMusic != 'None')
+		{
+			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
+		}
+		
+		#if desktop // DISCORD_ALLOWED
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, getPresence(), null);
+		#end
+		
+		if (!ClientPrefs.controllerMode)
+		{
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
+		
+		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		
+		callOnScripts('onCreatePost', []);
+		
+		super.create();
+		
+		Paths.clearUnusedMemory();
+		
+		cacheCountdown();
+		
+		refreshZ(stage);
+	}
+	
+	function noteskinLoading(skin:String = 'default')
+	{
+		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
+		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
+		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+		
+		arrowSkin = skin;
+		
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+	}
+	
+	function initNoteSkinning()
+	{
+		script_NOTEOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_STRUMOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SPLASHOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERSTARTOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERLOOPOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i] = new FlxPoint();
+			script_STRUMOffsets[i] = new FlxPoint();
+			script_SUSTAINOffsets[i] = new FlxPoint();
+			script_SUSTAINENDOffsets[i] = new FlxPoint();
+			script_SPLASHOffsets[i] = new FlxPoint();
+			script_COVERSTARTOffsets[i] = new FlxPoint();
+			script_COVERLOOPOffsets[i] = new FlxPoint();
+			script_COVERENDOffsets[i] = new FlxPoint();
+		}
+		
+		// trace('noteskin file: "${SONG.arrowSkin}"');
+		
+		var skin = SONG.arrowSkin;
+		if (skin == '' || skin == 'null' || skin == null) skin = 'default';
+		
+		noteskinLoading(skin);
+		
+		trace('Quants turned on: ${ClientPrefs.noteSkin.contains('Quant')}');
+		trace('HAS quants: ${noteSkin.data.hasQuants}');
+		
+		if (ClientPrefs.noteSkin.contains('Quant') && noteSkin.data.hasQuants) noteskinLoading('QUANT$skin');
+		
+		NoteSkinHelper.setNoteHelpers(noteSkin, SONG.keys);
+		
+		// trace(noteSkin.data);
+		
+		arrowSkin = noteSkin.data.globalSkin;
+		NoteSkinHelper.arrowSkins = [noteSkin.data.playerSkin, noteSkin.data.opponentSkin];
+		if (SONG.lanes > 2)
+		{
+			for (i in 2...SONG.lanes)
+			{
+				NoteSkinHelper.arrowSkins.push(noteSkin.data.extraSkin);
+			}
+		}
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i].x = noteSkin.data.noteAnimations[i][0].offsets[0];
+			script_NOTEOffsets[i].y = noteSkin.data.noteAnimations[i][0].offsets[1];
+			
+			script_SUSTAINOffsets[i].x = noteSkin.data.noteAnimations[i][1].offsets[0];
+			script_SUSTAINOffsets[i].y = noteSkin.data.noteAnimations[i][1].offsets[1];
+			
+			script_SUSTAINENDOffsets[i].x = noteSkin.data.noteAnimations[i][2].offsets[0];
+			script_SUSTAINENDOffsets[i].y = noteSkin.data.noteAnimations[i][2].offsets[1];
+			
+			script_SPLASHOffsets[i].x = noteSkin.data.noteSplashAnimations[i].offsets[0];
+			script_SPLASHOffsets[i].y = noteSkin.data.noteSplashAnimations[i].offsets[1];
+			
+			script_COVERSTARTOffsets[i].x = noteSkin.data.noteCoverAnimations[i][0].offsets[0];
+			script_COVERSTARTOffsets[i].y = noteSkin.data.noteCoverAnimations[i][0].offsets[1];
+			
+			script_COVERLOOPOffsets[i].x = noteSkin.data.noteCoverAnimations[i][1].offsets[0];
+			script_COVERLOOPOffsets[i].y = noteSkin.data.noteCoverAnimations[i][1].offsets[1];
+			
+			script_COVERENDOffsets[i].x = noteSkin.data.noteCoverAnimations[i][2].offsets[0];
+			script_COVERENDOffsets[i].y = noteSkin.data.noteCoverAnimations[i][2].offsets[1];
+		}
+		
+		noteSplashSkin = noteSkin.data.noteSplashSkin;
+		noteCoverSkin = noteSkin.data.noteCoverSkin;
+	}
+	
+	function set_songSpeed(value:Float):Float
+	{
+		if (generatedMusic)
+		{
+			var ratio:Float = value / songSpeed; // funny word huh
+			for (note in notes)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
+		}
+		songSpeed = value;
+		noteKillOffset = 350 / songSpeed;
+		return value;
+	}
+	
+	public function addTextToDebug(text:String, color:FlxColor = FlxColor.WHITE)
+	{
+		#if LUA_ALLOWED
+		if (luaDebugGroup == null)
+		{
+			luaDebugGroup = new FlxTypedGroup();
+			luaDebugGroup.cameras = [camOther];
+			add(luaDebugGroup);
+		}
+		
+		var recycledText = luaDebugGroup.recycle(DebugLuaText, () -> new DebugLuaText(text, luaDebugGroup, color));
+		recycledText.text = text;
+		recycledText.color = color;
+		recycledText.disableTime = 6;
+		recycledText.alpha = 1;
+		
+		luaDebugGroup.insert(0, recycledText);
+		
+		luaDebugGroup.forEachAlive((spr:DebugLuaText) -> {
+			spr.y += recycledText.height;
+		});
+		
+		recycledText.y = 10;
+		#end
+	}
+	
+	public function addCharacterToList(newCharacter:String, type:Int)
+	{
+		switch (type)
+		{
+			case 0:
+				if (!boyfriendMap.exists(newCharacter))
+				{
+					var newBoyfriend:Character = new Character(0, 0, newCharacter, true);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterScripts(newBoyfriend.curCharacter, newBoyfriend);
+				}
+				
+			case 1:
+				if (!dadMap.exists(newCharacter))
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterScripts(newDad.curCharacter, newDad);
+				}
+				
+			case 2:
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
+					var newGf:Character = new Character(0, 0, newCharacter);
+					gfMap.set(newCharacter, newGf);
+					gfGroup.add(newGf);
+					startCharacterPos(newGf);
+					newGf.alpha = 0.00001;
+					startCharacterScripts(newGf.curCharacter, newGf);
+				}
+		}
+	}
+	
+	function startCharacterScripts(name:String, char:Character) // taken from SSG
+	{
+		// trace(name);
+		if (char.curCharacterScript != null)
+		{
+			switch (char.curCharacterScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast char.curCharacterScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast char.curCharacterScript);
+				#end
+			}
+			funkyScripts.push(char.curCharacterScript);
+			trace(char.curCharacterScript.scriptName);
+		}
+	}
+	
+	function initFunkinIris(filePath:String, ?name:String)
+	{
+		try {
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
+			{
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
+			}
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
+		}
+	}
+	
+	function setStageData(stageData:StageFile)
+	{
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
+		
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
+		{
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
+		}
+	}
+	
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
+	
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
+	{
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
+		
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
+		{
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
+		#if desktop
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
+		{
+			// detailsText = "";
+		}
+		else
+		{
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
+			}
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
+		}
+		
+		if (isPixelStage)
+		{
+			introSoundsSuffix = '-pixel';
+		}
+		
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
+		{
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
+		}
+		
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
+		
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
+		{
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
+			
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
+		}
+		
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
+		{
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
+		}
+		else
+		{
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
+		}
+		
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
+			{
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
+			}
+		 */
+		
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
+		
+		Conductor.songPosition = -5000;
+		
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
+		
+		// temp
+		updateTime = true;
+		
+		playFields = new FlxTypedGroup<PlayField>();
+		add(playFields);
+		add(grpNoteCovers);
+		add(grpNoteSplashes);
+		
+		playHUD = new funkin.huds.SusHUD(this);
+		insert(members.indexOf(playFields), playHUD); // Data told me to do this
+		playHUD.cameras = [camHUD];
+		
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.0;
+		
+		var cover:NoteSustainCover = new NoteSustainCover(100, 100, 0);
+		grpNoteCovers.add(cover);
+		cover.alpha = 0.0;
+		
+		meta = Metadata.getSong();
+		
+		generateSong(SONG.song);
+		modManager = new ModManager(this);
+		setOnHScripts("modManager", modManager);
+		
+		noteTypeMap.clear();
+		noteTypeMap = null;
+		eventPushedMap.clear();
+		eventPushedMap = null;
+		
+		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
+		// add(strumLine);
+		
+		camFollow = new FlxPoint();
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		
+		snapCamFollowToPos(camPos.x, camPos.y);
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		if (prevCamFollowPos != null)
+		{
+			camFollowPos = prevCamFollowPos;
+			prevCamFollowPos = null;
+		}
+		add(camFollowPos);
+		
+		FlxG.camera.follow(camFollowPos, LOCKON, 1);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow);
+		
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		
+		FlxG.fixedTimestep = false;
+		moveCameraSection();
+		
+		botplayTxt = new FlxText(400, 525, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt.setFormat(Paths.font("liber.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.visible = cpuControlled;
+		add(botplayTxt);
+		
+		playFields.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteCovers.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
+		
+		setOnScripts('playFields', playFields);
+		setOnScripts('grpNoteSplashes', grpNoteSplashes);
+		setOnScripts('grpNoteCovers', grpNoteCovers);
+		setOnScripts('notes', notes);
+		setOnScripts('botplayTxt', botplayTxt);
+		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
+		
+		startingSong = true;
+		
+		// SONG SPECIFIC SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
+			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+			
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (songStartCallback == null)
+		{
+			FlxG.log.error('songStartCallback is null! using default callback.');
+			songStartCallback = startCountdown;
+		}
+		
+		songStartCallback();
+		
+		RecalculateRating();
+		updateScoreBar();
+		
+		// PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
+		if (ClientPrefs.hitsoundVolume > 0) Paths.sound('hitsound');
+		Paths.sound('missnote1');
+		Paths.sound('missnote2');
+		Paths.sound('missnote3');
+		
+		if (PauseSubState.songName != null)
+		{
+			Paths.music(PauseSubState.songName);
+		}
+		else if (ClientPrefs.pauseMusic != 'None')
+		{
+			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
+		}
+		
+		#if desktop // DISCORD_ALLOWED
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, getPresence(), null);
+		#end
+		
+		if (!ClientPrefs.controllerMode)
+		{
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
+		
+		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		
+		callOnScripts('onCreatePost', []);
+		
+		super.create();
+		
+		Paths.clearUnusedMemory();
+		
+		cacheCountdown();
+		
+		refreshZ(stage);
+	}
+	
+	function noteskinLoading(skin:String = 'default')
+	{
+		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
+		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
+		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+		
+		arrowSkin = skin;
+		
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+	}
+	
+	function initNoteSkinning()
+	{
+		script_NOTEOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_STRUMOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SPLASHOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERSTARTOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERLOOPOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i] = new FlxPoint();
+			script_STRUMOffsets[i] = new FlxPoint();
+			script_SUSTAINOffsets[i] = new FlxPoint();
+			script_SUSTAINENDOffsets[i] = new FlxPoint();
+			script_SPLASHOffsets[i] = new FlxPoint();
+			script_COVERSTARTOffsets[i] = new FlxPoint();
+			script_COVERLOOPOffsets[i] = new FlxPoint();
+			script_COVERENDOffsets[i] = new FlxPoint();
+		}
+		
+		// trace('noteskin file: "${SONG.arrowSkin}"');
+		
+		var skin = SONG.arrowSkin;
+		if (skin == '' || skin == 'null' || skin == null) skin = 'default';
+		
+		noteskinLoading(skin);
+		
+		trace('Quants turned on: ${ClientPrefs.noteSkin.contains('Quant')}');
+		trace('HAS quants: ${noteSkin.data.hasQuants}');
+		
+		if (ClientPrefs.noteSkin.contains('Quant') && noteSkin.data.hasQuants) noteskinLoading('QUANT$skin');
+		
+		NoteSkinHelper.setNoteHelpers(noteSkin, SONG.keys);
+		
+		// trace(noteSkin.data);
+		
+		arrowSkin = noteSkin.data.globalSkin;
+		NoteSkinHelper.arrowSkins = [noteSkin.data.playerSkin, noteSkin.data.opponentSkin];
+		if (SONG.lanes > 2)
+		{
+			for (i in 2...SONG.lanes)
+			{
+				NoteSkinHelper.arrowSkins.push(noteSkin.data.extraSkin);
+			}
+		}
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i].x = noteSkin.data.noteAnimations[i][0].offsets[0];
+			script_NOTEOffsets[i].y = noteSkin.data.noteAnimations[i][0].offsets[1];
+			
+			script_SUSTAINOffsets[i].x = noteSkin.data.noteAnimations[i][1].offsets[0];
+			script_SUSTAINOffsets[i].y = noteSkin.data.noteAnimations[i][1].offsets[1];
+			
+			script_SUSTAINENDOffsets[i].x = noteSkin.data.noteAnimations[i][2].offsets[0];
+			script_SUSTAINENDOffsets[i].y = noteSkin.data.noteAnimations[i][2].offsets[1];
+			
+			script_SPLASHOffsets[i].x = noteSkin.data.noteSplashAnimations[i].offsets[0];
+			script_SPLASHOffsets[i].y = noteSkin.data.noteSplashAnimations[i].offsets[1];
+			
+			script_COVERSTARTOffsets[i].x = noteSkin.data.noteCoverAnimations[i][0].offsets[0];
+			script_COVERSTARTOffsets[i].y = noteSkin.data.noteCoverAnimations[i][0].offsets[1];
+			
+			script_COVERLOOPOffsets[i].x = noteSkin.data.noteCoverAnimations[i][1].offsets[0];
+			script_COVERLOOPOffsets[i].y = noteSkin.data.noteCoverAnimations[i][1].offsets[1];
+			
+			script_COVERENDOffsets[i].x = noteSkin.data.noteCoverAnimations[i][2].offsets[0];
+			script_COVERENDOffsets[i].y = noteSkin.data.noteCoverAnimations[i][2].offsets[1];
+		}
+		
+		noteSplashSkin = noteSkin.data.noteSplashSkin;
+		noteCoverSkin = noteSkin.data.noteCoverSkin;
+	}
+	
+	function set_songSpeed(value:Float):Float
+	{
+		if (generatedMusic)
+		{
+			var ratio:Float = value / songSpeed; // funny word huh
+			for (note in notes)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
+		}
+		songSpeed = value;
+		noteKillOffset = 350 / songSpeed;
+		return value;
+	}
+	
+	public function addTextToDebug(text:String, color:FlxColor = FlxColor.WHITE)
+	{
+		#if LUA_ALLOWED
+		if (luaDebugGroup == null)
+		{
+			luaDebugGroup = new FlxTypedGroup();
+			luaDebugGroup.cameras = [camOther];
+			add(luaDebugGroup);
+		}
+		
+		var recycledText = luaDebugGroup.recycle(DebugLuaText, () -> new DebugLuaText(text, luaDebugGroup, color));
+		recycledText.text = text;
+		recycledText.color = color;
+		recycledText.disableTime = 6;
+		recycledText.alpha = 1;
+		
+		luaDebugGroup.insert(0, recycledText);
+		
+		luaDebugGroup.forEachAlive((spr:DebugLuaText) -> {
+			spr.y += recycledText.height;
+		});
+		
+		recycledText.y = 10;
+		#end
+	}
+	
+	public function addCharacterToList(newCharacter:String, type:Int)
+	{
+		switch (type)
+		{
+			case 0:
+				if (!boyfriendMap.exists(newCharacter))
+				{
+					var newBoyfriend:Character = new Character(0, 0, newCharacter, true);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterScripts(newBoyfriend.curCharacter, newBoyfriend);
+				}
+				
+			case 1:
+				if (!dadMap.exists(newCharacter))
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterScripts(newDad.curCharacter, newDad);
+				}
+				
+			case 2:
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
+					var newGf:Character = new Character(0, 0, newCharacter);
+					gfMap.set(newCharacter, newGf);
+					gfGroup.add(newGf);
+					startCharacterPos(newGf);
+					newGf.alpha = 0.00001;
+					startCharacterScripts(newGf.curCharacter, newGf);
+				}
+		}
+	}
+	
+	function startCharacterScripts(name:String, char:Character) // taken from SSG
+	{
+		// trace(name);
+		if (char.curCharacterScript != null)
+		{
+			switch (char.curCharacterScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast char.curCharacterScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast char.curCharacterScript);
+				#end
+			}
+			funkyScripts.push(char.curCharacterScript);
+			trace(char.curCharacterScript.scriptName);
+		}
+	}
+	
+	function initFunkinIris(filePath:String, ?name:String)
+	{
+		try {
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
+			{
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
+			}
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
+		}
+	}
+	
+	function setStageData(stageData:StageFile)
+	{
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
+		
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
+		{
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
+		}
+	}
+	
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
+	
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
+	{
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
+		
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
+		{
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
+		#if desktop
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
+		{
+			// detailsText = "";
+		}
+		else
+		{
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
+			}
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
+		}
+		
+		if (isPixelStage)
+		{
+			introSoundsSuffix = '-pixel';
+		}
+		
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
+		{
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
+		}
+		
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
+		
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
+		{
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
+			
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
+		}
+		
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
+		{
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
+		}
+		else
+		{
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
+		}
+		
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
+			{
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
+			}
+		 */
+		
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
+		
+		Conductor.songPosition = -5000;
+		
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
+		
+		// temp
+		updateTime = true;
+		
+		playFields = new FlxTypedGroup<PlayField>();
+		add(playFields);
+		add(grpNoteCovers);
+		add(grpNoteSplashes);
+		
+		playHUD = new funkin.huds.SusHUD(this);
+		insert(members.indexOf(playFields), playHUD); // Data told me to do this
+		playHUD.cameras = [camHUD];
+		
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.0;
+		
+		var cover:NoteSustainCover = new NoteSustainCover(100, 100, 0);
+		grpNoteCovers.add(cover);
+		cover.alpha = 0.0;
+		
+		meta = Metadata.getSong();
+		
+		generateSong(SONG.song);
+		modManager = new ModManager(this);
+		setOnHScripts("modManager", modManager);
+		
+		noteTypeMap.clear();
+		noteTypeMap = null;
+		eventPushedMap.clear();
+		eventPushedMap = null;
+		
+		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
+		// add(strumLine);
+		
+		camFollow = new FlxPoint();
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		
+		snapCamFollowToPos(camPos.x, camPos.y);
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		if (prevCamFollowPos != null)
+		{
+			camFollowPos = prevCamFollowPos;
+			prevCamFollowPos = null;
+		}
+		add(camFollowPos);
+		
+		FlxG.camera.follow(camFollowPos, LOCKON, 1);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow);
+		
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		
+		FlxG.fixedTimestep = false;
+		moveCameraSection();
+		
+		botplayTxt = new FlxText(400, 525, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt.setFormat(Paths.font("liber.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.visible = cpuControlled;
+		add(botplayTxt);
+		
+		playFields.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteCovers.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
+		
+		setOnScripts('playFields', playFields);
+		setOnScripts('grpNoteSplashes', grpNoteSplashes);
+		setOnScripts('grpNoteCovers', grpNoteCovers);
+		setOnScripts('notes', notes);
+		setOnScripts('botplayTxt', botplayTxt);
+		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
+		
+		startingSong = true;
+		
+		// SONG SPECIFIC SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
+			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+			
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (songStartCallback == null)
+		{
+			FlxG.log.error('songStartCallback is null! using default callback.');
+			songStartCallback = startCountdown;
+		}
+		
+		songStartCallback();
+		
+		RecalculateRating();
+		updateScoreBar();
+		
+		// PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
+		if (ClientPrefs.hitsoundVolume > 0) Paths.sound('hitsound');
+		Paths.sound('missnote1');
+		Paths.sound('missnote2');
+		Paths.sound('missnote3');
+		
+		if (PauseSubState.songName != null)
+		{
+			Paths.music(PauseSubState.songName);
+		}
+		else if (ClientPrefs.pauseMusic != 'None')
+		{
+			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
+		}
+		
+		#if desktop // DISCORD_ALLOWED
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, getPresence(), null);
+		#end
+		
+		if (!ClientPrefs.controllerMode)
+		{
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
+		
+		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		
+		callOnScripts('onCreatePost', []);
+		
+		super.create();
+		
+		Paths.clearUnusedMemory();
+		
+		cacheCountdown();
+		
+		refreshZ(stage);
+	}
+	
+	function noteskinLoading(skin:String = 'default')
+	{
+		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
+		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
+		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+		
+		arrowSkin = skin;
+		
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+	}
+	
+	function initNoteSkinning()
+	{
+		script_NOTEOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_STRUMOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SPLASHOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERSTARTOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERLOOPOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i] = new FlxPoint();
+			script_STRUMOffsets[i] = new FlxPoint();
+			script_SUSTAINOffsets[i] = new FlxPoint();
+			script_SUSTAINENDOffsets[i] = new FlxPoint();
+			script_SPLASHOffsets[i] = new FlxPoint();
+			script_COVERSTARTOffsets[i] = new FlxPoint();
+			script_COVERLOOPOffsets[i] = new FlxPoint();
+			script_COVERENDOffsets[i] = new FlxPoint();
+		}
+		
+		// trace('noteskin file: "${SONG.arrowSkin}"');
+		
+		var skin = SONG.arrowSkin;
+		if (skin == '' || skin == 'null' || skin == null) skin = 'default';
+		
+		noteskinLoading(skin);
+		
+		trace('Quants turned on: ${ClientPrefs.noteSkin.contains('Quant')}');
+		trace('HAS quants: ${noteSkin.data.hasQuants}');
+		
+		if (ClientPrefs.noteSkin.contains('Quant') && noteSkin.data.hasQuants) noteskinLoading('QUANT$skin');
+		
+		NoteSkinHelper.setNoteHelpers(noteSkin, SONG.keys);
+		
+		// trace(noteSkin.data);
+		
+		arrowSkin = noteSkin.data.globalSkin;
+		NoteSkinHelper.arrowSkins = [noteSkin.data.playerSkin, noteSkin.data.opponentSkin];
+		if (SONG.lanes > 2)
+		{
+			for (i in 2...SONG.lanes)
+			{
+				NoteSkinHelper.arrowSkins.push(noteSkin.data.extraSkin);
+			}
+		}
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i].x = noteSkin.data.noteAnimations[i][0].offsets[0];
+			script_NOTEOffsets[i].y = noteSkin.data.noteAnimations[i][0].offsets[1];
+			
+			script_SUSTAINOffsets[i].x = noteSkin.data.noteAnimations[i][1].offsets[0];
+			script_SUSTAINOffsets[i].y = noteSkin.data.noteAnimations[i][1].offsets[1];
+			
+			script_SUSTAINENDOffsets[i].x = noteSkin.data.noteAnimations[i][2].offsets[0];
+			script_SUSTAINENDOffsets[i].y = noteSkin.data.noteAnimations[i][2].offsets[1];
+			
+			script_SPLASHOffsets[i].x = noteSkin.data.noteSplashAnimations[i].offsets[0];
+			script_SPLASHOffsets[i].y = noteSkin.data.noteSplashAnimations[i].offsets[1];
+			
+			script_COVERSTARTOffsets[i].x = noteSkin.data.noteCoverAnimations[i][0].offsets[0];
+			script_COVERSTARTOffsets[i].y = noteSkin.data.noteCoverAnimations[i][0].offsets[1];
+			
+			script_COVERLOOPOffsets[i].x = noteSkin.data.noteCoverAnimations[i][1].offsets[0];
+			script_COVERLOOPOffsets[i].y = noteSkin.data.noteCoverAnimations[i][1].offsets[1];
+			
+			script_COVERENDOffsets[i].x = noteSkin.data.noteCoverAnimations[i][2].offsets[0];
+			script_COVERENDOffsets[i].y = noteSkin.data.noteCoverAnimations[i][2].offsets[1];
+		}
+		
+		noteSplashSkin = noteSkin.data.noteSplashSkin;
+		noteCoverSkin = noteSkin.data.noteCoverSkin;
+	}
+	
+	function set_songSpeed(value:Float):Float
+	{
+		if (generatedMusic)
+		{
+			var ratio:Float = value / songSpeed; // funny word huh
+			for (note in notes)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
+		}
+		songSpeed = value;
+		noteKillOffset = 350 / songSpeed;
+		return value;
+	}
+	
+	public function addTextToDebug(text:String, color:FlxColor = FlxColor.WHITE)
+	{
+		#if LUA_ALLOWED
+		if (luaDebugGroup == null)
+		{
+			luaDebugGroup = new FlxTypedGroup();
+			luaDebugGroup.cameras = [camOther];
+			add(luaDebugGroup);
+		}
+		
+		var recycledText = luaDebugGroup.recycle(DebugLuaText, () -> new DebugLuaText(text, luaDebugGroup, color));
+		recycledText.text = text;
+		recycledText.color = color;
+		recycledText.disableTime = 6;
+		recycledText.alpha = 1;
+		
+		luaDebugGroup.insert(0, recycledText);
+		
+		luaDebugGroup.forEachAlive((spr:DebugLuaText) -> {
+			spr.y += recycledText.height;
+		});
+		
+		recycledText.y = 10;
+		#end
+	}
+	
+	public function addCharacterToList(newCharacter:String, type:Int)
+	{
+		switch (type)
+		{
+			case 0:
+				if (!boyfriendMap.exists(newCharacter))
+				{
+					var newBoyfriend:Character = new Character(0, 0, newCharacter, true);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterScripts(newBoyfriend.curCharacter, newBoyfriend);
+				}
+				
+			case 1:
+				if (!dadMap.exists(newCharacter))
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterScripts(newDad.curCharacter, newDad);
+				}
+				
+			case 2:
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
+					var newGf:Character = new Character(0, 0, newCharacter);
+					gfMap.set(newCharacter, newGf);
+					gfGroup.add(newGf);
+					startCharacterPos(newGf);
+					newGf.alpha = 0.00001;
+					startCharacterScripts(newGf.curCharacter, newGf);
+				}
+		}
+	}
+	
+	function startCharacterScripts(name:String, char:Character) // taken from SSG
+	{
+		// trace(name);
+		if (char.curCharacterScript != null)
+		{
+			switch (char.curCharacterScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast char.curCharacterScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast char.curCharacterScript);
+				#end
+			}
+			funkyScripts.push(char.curCharacterScript);
+			trace(char.curCharacterScript.scriptName);
+		}
+	}
+	
+	function initFunkinIris(filePath:String, ?name:String)
+	{
+		try {
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
+			{
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
+			}
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
+		}
+	}
+	
+	function setStageData(stageData:StageFile)
+	{
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
+		
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
+		{
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
+		}
+	}
+	
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
+	
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
+	{
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
+		
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
+		{
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
+		#if desktop
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
+		{
+			// detailsText = "";
+		}
+		else
+		{
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
+			}
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
+		}
+		
+		if (isPixelStage)
+		{
+			introSoundsSuffix = '-pixel';
+		}
+		
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
+		{
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
+		}
+		
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
+		
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
+		{
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
+			
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
+		}
+		
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
+		{
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
+		}
+		else
+		{
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
+		}
+		
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
+			{
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
+			}
+		 */
+		
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
+		
+		Conductor.songPosition = -5000;
+		
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
+		
+		// temp
+		updateTime = true;
+		
+		playFields = new FlxTypedGroup<PlayField>();
+		add(playFields);
+		add(grpNoteCovers);
+		add(grpNoteSplashes);
+		
+		playHUD = new funkin.huds.SusHUD(this);
+		insert(members.indexOf(playFields), playHUD); // Data told me to do this
+		playHUD.cameras = [camHUD];
+		
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.0;
+		
+		var cover:NoteSustainCover = new NoteSustainCover(100, 100, 0);
+		grpNoteCovers.add(cover);
+		cover.alpha = 0.0;
+		
+		meta = Metadata.getSong();
+		
+		generateSong(SONG.song);
+		modManager = new ModManager(this);
+		setOnHScripts("modManager", modManager);
+		
+		noteTypeMap.clear();
+		noteTypeMap = null;
+		eventPushedMap.clear();
+		eventPushedMap = null;
+		
+		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
+		// add(strumLine);
+		
+		camFollow = new FlxPoint();
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		
+		snapCamFollowToPos(camPos.x, camPos.y);
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+		if (prevCamFollowPos != null)
+		{
+			camFollowPos = prevCamFollowPos;
+			prevCamFollowPos = null;
+		}
+		add(camFollowPos);
+		
+		FlxG.camera.follow(camFollowPos, LOCKON, 1);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow);
+		
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		
+		FlxG.fixedTimestep = false;
+		moveCameraSection();
+		
+		botplayTxt = new FlxText(400, 525, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt.setFormat(Paths.font("liber.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+		botplayTxt.borderSize = 1.25;
+		botplayTxt.visible = cpuControlled;
+		add(botplayTxt);
+		
+		playFields.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteCovers.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		botplayTxt.cameras = [camHUD];
+		
+		setOnScripts('playFields', playFields);
+		setOnScripts('grpNoteSplashes', grpNoteSplashes);
+		setOnScripts('grpNoteCovers', grpNoteCovers);
+		setOnScripts('notes', notes);
+		setOnScripts('botplayTxt', botplayTxt);
+		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
+		
+		startingSong = true;
+		
+		// SONG SPECIFIC SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('songs/' + Paths.formatToSongPath(SONG.song) + '/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0,
+			Paths.mods(Paths.currentModDirectory + '/songs/' + Paths.formatToSongPath(SONG.song) + '/'));
+			
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/songs/' + Paths.formatToSongPath(SONG.song) + '/')); // using push instead of insert because these should run after everything else
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (songStartCallback == null)
+		{
+			FlxG.log.error('songStartCallback is null! using default callback.');
+			songStartCallback = startCountdown;
+		}
+		
+		songStartCallback();
+		
+		RecalculateRating();
+		updateScoreBar();
+		
+		// PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
+		if (ClientPrefs.hitsoundVolume > 0) Paths.sound('hitsound');
+		Paths.sound('missnote1');
+		Paths.sound('missnote2');
+		Paths.sound('missnote3');
+		
+		if (PauseSubState.songName != null)
+		{
+			Paths.music(PauseSubState.songName);
+		}
+		else if (ClientPrefs.pauseMusic != 'None')
+		{
+			Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic));
+		}
+		
+		#if desktop // DISCORD_ALLOWED
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, getPresence(), null);
+		#end
+		
+		if (!ClientPrefs.controllerMode)
+		{
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
+		}
+		
+		Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		
+		callOnScripts('onCreatePost', []);
+		
+		super.create();
+		
+		Paths.clearUnusedMemory();
+		
+		cacheCountdown();
+		
+		refreshZ(stage);
+	}
+	
+	function noteskinLoading(skin:String = 'default')
+	{
+		if (FileSystem.exists(Paths.modsNoteskin(skin))) noteSkin = new NoteSkinHelper(Paths.modsNoteskin(skin));
+		else if (FileSystem.exists(Paths.noteskin(skin))) noteSkin = new NoteSkinHelper(Paths.noteskin(skin));
+		
+		if (noteSkin == null) {
+			noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+		
+		arrowSkin = skin;
+		
+		if (noteSkin == null) {
+            noteSkin = new NoteSkinHelper(Paths.noteskin('default'));
+		}
+	}
+	
+	function initNoteSkinning()
+	{
+		script_NOTEOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SUSTAINENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_STRUMOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_SPLASHOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERSTARTOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERLOOPOffsets = new Vector<FlxPoint>(SONG.keys);
+		script_COVERENDOffsets = new Vector<FlxPoint>(SONG.keys);
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i] = new FlxPoint();
+			script_STRUMOffsets[i] = new FlxPoint();
+			script_SUSTAINOffsets[i] = new FlxPoint();
+			script_SUSTAINENDOffsets[i] = new FlxPoint();
+			script_SPLASHOffsets[i] = new FlxPoint();
+			script_COVERSTARTOffsets[i] = new FlxPoint();
+			script_COVERLOOPOffsets[i] = new FlxPoint();
+			script_COVERENDOffsets[i] = new FlxPoint();
+		}
+		
+		// trace('noteskin file: "${SONG.arrowSkin}"');
+		
+		var skin = SONG.arrowSkin;
+		if (skin == '' || skin == 'null' || skin == null) skin = 'default';
+		
+		noteskinLoading(skin);
+		
+		trace('Quants turned on: ${ClientPrefs.noteSkin.contains('Quant')}');
+		trace('HAS quants: ${noteSkin.data.hasQuants}');
+		
+		if (ClientPrefs.noteSkin.contains('Quant') && noteSkin.data.hasQuants) noteskinLoading('QUANT$skin');
+		
+		NoteSkinHelper.setNoteHelpers(noteSkin, SONG.keys);
+		
+		// trace(noteSkin.data);
+		
+		arrowSkin = noteSkin.data.globalSkin;
+		NoteSkinHelper.arrowSkins = [noteSkin.data.playerSkin, noteSkin.data.opponentSkin];
+		if (SONG.lanes > 2)
+		{
+			for (i in 2...SONG.lanes)
+			{
+				NoteSkinHelper.arrowSkins.push(noteSkin.data.extraSkin);
+			}
+		}
+		
+		for (i in 0...SONG.keys)
+		{
+			script_NOTEOffsets[i].x = noteSkin.data.noteAnimations[i][0].offsets[0];
+			script_NOTEOffsets[i].y = noteSkin.data.noteAnimations[i][0].offsets[1];
+			
+			script_SUSTAINOffsets[i].x = noteSkin.data.noteAnimations[i][1].offsets[0];
+			script_SUSTAINOffsets[i].y = noteSkin.data.noteAnimations[i][1].offsets[1];
+			
+			script_SUSTAINENDOffsets[i].x = noteSkin.data.noteAnimations[i][2].offsets[0];
+			script_SUSTAINENDOffsets[i].y = noteSkin.data.noteAnimations[i][2].offsets[1];
+			
+			script_SPLASHOffsets[i].x = noteSkin.data.noteSplashAnimations[i].offsets[0];
+			script_SPLASHOffsets[i].y = noteSkin.data.noteSplashAnimations[i].offsets[1];
+			
+			script_COVERSTARTOffsets[i].x = noteSkin.data.noteCoverAnimations[i][0].offsets[0];
+			script_COVERSTARTOffsets[i].y = noteSkin.data.noteCoverAnimations[i][0].offsets[1];
+			
+			script_COVERLOOPOffsets[i].x = noteSkin.data.noteCoverAnimations[i][1].offsets[0];
+			script_COVERLOOPOffsets[i].y = noteSkin.data.noteCoverAnimations[i][1].offsets[1];
+			
+			script_COVERENDOffsets[i].x = noteSkin.data.noteCoverAnimations[i][2].offsets[0];
+			script_COVERENDOffsets[i].y = noteSkin.data.noteCoverAnimations[i][2].offsets[1];
+		}
+		
+		noteSplashSkin = noteSkin.data.noteSplashSkin;
+		noteCoverSkin = noteSkin.data.noteCoverSkin;
+	}
+	
+	function set_songSpeed(value:Float):Float
+	{
+		if (generatedMusic)
+		{
+			var ratio:Float = value / songSpeed; // funny word huh
+			for (note in notes)
+				note.resizeByRatio(ratio);
+			for (note in unspawnNotes)
+				note.resizeByRatio(ratio);
+		}
+		songSpeed = value;
+		noteKillOffset = 350 / songSpeed;
+		return value;
+	}
+	
+	public function addTextToDebug(text:String, color:FlxColor = FlxColor.WHITE)
+	{
+		#if LUA_ALLOWED
+		if (luaDebugGroup == null)
+		{
+			luaDebugGroup = new FlxTypedGroup();
+			luaDebugGroup.cameras = [camOther];
+			add(luaDebugGroup);
+		}
+		
+		var recycledText = luaDebugGroup.recycle(DebugLuaText, () -> new DebugLuaText(text, luaDebugGroup, color));
+		recycledText.text = text;
+		recycledText.color = color;
+		recycledText.disableTime = 6;
+		recycledText.alpha = 1;
+		
+		luaDebugGroup.insert(0, recycledText);
+		
+		luaDebugGroup.forEachAlive((spr:DebugLuaText) -> {
+			spr.y += recycledText.height;
+		});
+		
+		recycledText.y = 10;
+		#end
+	}
+	
+	public function addCharacterToList(newCharacter:String, type:Int)
+	{
+		switch (type)
+		{
+			case 0:
+				if (!boyfriendMap.exists(newCharacter))
+				{
+					var newBoyfriend:Character = new Character(0, 0, newCharacter, true);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterScripts(newBoyfriend.curCharacter, newBoyfriend);
+				}
+				
+			case 1:
+				if (!dadMap.exists(newCharacter))
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterScripts(newDad.curCharacter, newDad);
+				}
+				
+			case 2:
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
+					var newGf:Character = new Character(0, 0, newCharacter);
+					gfMap.set(newCharacter, newGf);
+					gfGroup.add(newGf);
+					startCharacterPos(newGf);
+					newGf.alpha = 0.00001;
+					startCharacterScripts(newGf.curCharacter, newGf);
+				}
+		}
+	}
+	
+	function startCharacterScripts(name:String, char:Character) // taken from SSG
+	{
+		// trace(name);
+		if (char.curCharacterScript != null)
+		{
+			switch (char.curCharacterScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast char.curCharacterScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast char.curCharacterScript);
+				#end
+			}
+			funkyScripts.push(char.curCharacterScript);
+			trace(char.curCharacterScript.scriptName);
+		}
+	}
+	
+	function initFunkinIris(filePath:String, ?name:String)
+	{
+		try {
+			var script:FunkinIris = FunkinIris.fromFile(filePath);
+			if (script.parsingException != null)
+			{
+				script.stop();
+				NativeAPI.showMessageBox("Script Error", "Error parsing script:\n" + filePath + "\n" + Std.string(script.parsingException));
+				return null;
+			}
+			trace('script $filePath initiated.');
+			script.call('onCreate');
+			hscriptArray.push(script);
+			funkyScripts.push(script);
+			return script;
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Script Error", "Failed to load script:\n" + filePath + "\n" + Std.string(e));
+			return null;
+		}
+	}
+	
+	function setStageData(stageData:StageFile)
+	{
+		defaultCamZoom = stageData.defaultZoom;
+		FlxG.camera.zoom = defaultCamZoom;
+		isPixelStage = stageData.isPixelStage;
+		BF_X = stageData.boyfriend[0];
+		BF_Y = stageData.boyfriend[1];
+		GF_X = stageData.girlfriend[0];
+		GF_Y = stageData.girlfriend[1];
+		DAD_X = stageData.opponent[0];
+		DAD_Y = stageData.opponent[1];
+		
+		if (stageData.camera_speed != null) cameraSpeed = stageData.camera_speed;
+		
+		boyfriendCameraOffset = stageData.camera_boyfriend != null ? stageData.camera_boyfriend : [0, 0];
+
+		opponentCameraOffset = stageData.camera_opponent != null ? stageData.camera_opponent : [0, 0];
+
+		girlfriendCameraOffset = stageData.camera_girlfriend != null ? stageData.camera_girlfriend : [0, 0];
+
+		if (boyfriendGroup == null) boyfriendGroup = new FlxSpriteGroup(BF_X, BF_Y);
+		else
+		{
+			boyfriendGroup.x = BF_X;
+			boyfriendGroup.y = BF_Y;
+		}
+		if (dadGroup == null) dadGroup = new FlxSpriteGroup(DAD_X, DAD_Y);
+		else
+		{
+			dadGroup.x = DAD_X;
+			dadGroup.y = DAD_Y;
+		}
+		
+		if (gfGroup == null) gfGroup = new FlxSpriteGroup(GF_X, GF_Y);
+		else
+		{
+			gfGroup.x = GF_X;
+			gfGroup.y = GF_Y;
+		}
+	}
+	
+	// null checking
+	function callHUDFunc(f:BaseHUD->Void) if (playHUD != null) f(playHUD);
+	
+	#if (debug && !RELEASE_BUILD)
+	inline function addFlxWatches()
+	{
+		FlxG.watch.addFunction('curStep', () -> curStep);
+		FlxG.watch.addFunction('curBeat', () -> curBeat);
+		FlxG.watch.addFunction('curSection', () -> curSection);
+		
+		FlxG.watch.addFunction('songTime', () -> Std.string(FlxStringUtil.formatTime(FlxG.sound.music.time / 1000) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length / 1000)));
+		FlxG.watch.addFunction('conductorPos', () -> Std.int(Conductor.songPosition));
+	}
+	#end
+	
+	override public function create()
+	{
+		Paths.clearStoredMemory();
+		
+		skipCountdown = false;
+		countdownSounds = true;
+		
+		// for lua
+		instance = this;
+		
+		#if (debug && !RELEASE_BUILD)
+		addFlxWatches();
+		#end
+		
+		GameOverSubstate.resetVariables();
+		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
+		PauseSubState.songName = null; // Reset to default
+		
+		keysArray = [
+			ClientPrefs.keyBinds.exists('note_left') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')) : null,
+			ClientPrefs.keyBinds.exists('note_down') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')) : null,
+			ClientPrefs.keyBinds.exists('note_up') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')) : null,
+			ClientPrefs.keyBinds.exists('note_right') ? ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')) : null
+		];
+		
+		songStartCallback = startCountdown;
+		songEndCallback = endSong;
+		
+		// For the "Just the Two of Us" achievement
+		for (i in 0...keysArray.length)
+		{
+			keysPressed.push(false);
+		}
+		
+		if (FlxG.sound != null && FlxG.sound.music != null) {
+            if (FlxG.sound.music != null) {
+                FlxG.sound.music.stop();
+            }
+        }
+		
+		// Gameplay settings
+		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
+		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
+		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
+		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
+		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		
+		camGame = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD = new FlxCamera();
+		camPause = new FlxCamera(); // camera for da pause menu, doing this bc pause menu goes to whatever the highest camera is
+		
+		camHUD.bgColor = 0x0;
+		camOther.bgColor = 0x0;
+		camPause.bgColor = 0x0;
+		
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camOther, false);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camPause, false);
+		
+		setOnScripts('this', this);
+		
+		setOnScripts('camGame', camGame);
+		setOnScripts('camHUD', camHUD);
+		setOnScripts('camOther', camOther);
+		setOnScripts('camPause', camPause); // doubt we'll need but incase
+		
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		grpNoteCovers = new FlxTypedGroup<NoteSustainCover>();
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+		
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		
+		Conductor.mapBPMChanges(SONG);
+		Conductor.bpm = SONG.bpm;
+		
+		arrowSkin = SONG.arrowSkin;
+		
+		initNoteSkinning();
+		
+		#if desktop
+		storyDifficultyText = DifficultyUtil.difficulties[storyDifficulty];
+		
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode) // fix this again
+		{
+			// detailsText = "";
+		}
+		else
+		{
+			// detailsText = "";
+		}
+		setOnScripts('isStoryMode', isStoryMode);
+		
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		#end
+		
+		var songName:String = Paths.formatToSongPath(SONG.song);
+		
+		if (SONG.stage == null || SONG.stage.length == 0) SONG.stage = 'stage';
+		curStage = SONG.stage;
+		
+		stage = new Stage(curStage);
+		stageData = stage.stageData;
+		setStageData(stageData); // change to setter
+		setOnScripts('stage', stage);
+		
+		// STAGE SCRIPTS
+		stage.buildStage();
+		
+		if (stage.curStageScript != null)
+		{
+			switch (stage.curStageScript.scriptType)
+			{
+				case HSCRIPT:
+					hscriptArray.push(cast stage.curStageScript);
+				#if LUA_ALLOWED
+				case LUA:
+					luaArray.push(cast stage.curStageScript);
+				#end
+			}
+			funkyScripts.push(stage.curStageScript);
+			// trace(stage.curStageScript.scriptName);
+		}
+		
+		if (isPixelStage)
+		{
+			introSoundsSuffix = '-pixel';
+		}
+		
+		if (callOnHScripts("onAddSpriteGroups", []) != Globals.Function_Stop)
+		{
+			add(stage);
+			stage.add(gfGroup);
+			stage.add(dadGroup);
+			stage.add(boyfriendGroup);
+		}
+		
+		// "GLOBAL" SCRIPTS
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getSharedPath('scripts/')];
+		
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('scripts/'));
+		if (Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0) foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/scripts/'));
+		
+		for (mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/scripts/'));
+		#end
+		
+		for (folder in foldersToCheck)
+		{
+			if (FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if (!filesPushed.contains(file))
+					{
+						if (file.endsWith('.lua'))
+						{
+							#if LUA_ALLOWED
+							var script = new FunkinLua(folder + file);
+							luaArray.push(script);
+							funkyScripts.push(script);
+							filesPushed.push(file);
+							#end
+						}
+						else
+						{
+							for (ext in FunkinIris.exts)
+							{
+								if (file.endsWith('.$ext'))
+								{
+									var sc = initFunkinIris(folder + file);
+									if (sc != null)
+									{
+										filesPushed.push(file);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length < 1) SONG.gfVersion = gfVersion = 'gf';
+		
+		if (!stageData.hide_girlfriend)
+		{
+			gf = new Character(0, 0, gfVersion);
+			startCharacterPos(gf);
+			gfGroup.add(gf);
+			startCharacterScripts(gf.curCharacter, gf);
+			
+			setOnScripts('gf', gf);
+			setOnScripts('gfGroup', gfGroup);
+		}
+		
+		dad = new Character(0, 0, SONG.player2);
+		startCharacterPos(dad, true);
+		dadGroup.add(dad);
+		startCharacterScripts(dad.curCharacter, dad);
+		dadMap.set(dad.curCharacter, dad);
+		
+		boyfriend = new Character(0, 0, SONG.player1, true);
+		startCharacterPos(boyfriend);
+		boyfriendGroup.add(boyfriend);
+		startCharacterScripts(boyfriend.curCharacter, boyfriend);
+		boyfriendMap.set(boyfriend.curCharacter, boyfriend);
+		
+		setOnScripts('dad', dad);
+		setOnScripts('dadGroup', dadGroup);
+		
+		setOnScripts('boyfriend', boyfriend);
+		setOnScripts('boyfriendGroup', boyfriendGroup);
+		
+		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
+		if (gf != null)
+		{
+			camPos.x += gf.getGraphicMidpoint().x + gf.cameraPosition[0];
+			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
+		}
+		else
+		{
+			camPos.set(opponentCameraOffset[0], opponentCameraOffset[1]);
+			camPos.x += dad.getGraphicMidpoint().x + dad.cameraPosition[0];
+			camPos.y += dad.getGraphicMidpoint().y + dad.cameraPosition[1];
+		}
+		
+		/* this is unneeded i think
+			if (dad.curCharacter == gf.curCharacter && gf != null)
+			{
+				dad.setPosition(GF_X, GF_Y);
+				if (gf != null) gf.visible = false;
+			}
+		 */
+		
+		flashSprite = new FlxSprite(0, 0).makeGraphic(1280, 720, 0xFFb30000);
+		flashSprite.alpha = 0;
+		flashSprite.cameras = [camOther];
+		add(flashSprite);
+		setOnScripts('flashSprite', flashSprite);
+		
+		Conductor.songPosition = -5000;
+		
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50);
+		strumLine.visible = false;
+		strumLine.scrollFactor.set();
+		
+		// temp
+		updateTime = true;
+		
+		playFields
