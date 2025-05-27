@@ -8,7 +8,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.ui.FlxBar;
 import flixel.ui.FlxBar.FlxBarFillDirection;
-import openfl.utils.Assets;
 
 class LoadingScreen extends MusicBeatState
 {
@@ -19,11 +18,8 @@ class LoadingScreen extends MusicBeatState
     public var loadedText:FlxText;
     public var ready:Bool = false;
     public var tapped:Bool = false;
-    public var minTime:Float = 3; // segundos mínimos de loading, mas depende do fps
+    public var minTime:Float = 5; // 5 segundos fixos
     var elapsedTime:Float = 0;
-    var assetsToLoad:Array<String>;
-    var loadedAssets:Int = 0;
-    var totalAssets:Int = 0;
 
     public function new()
     {
@@ -46,83 +42,12 @@ class LoadingScreen extends MusicBeatState
         loadingBar = new FlxBar(0, FlxG.height - 26, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width, 26);
         add(loadingBar);
 
-        loadedText = new FlxText(loadingBar.x, loadingBar.y + 4, FlxG.width, '', 16);
+        loadedText = new FlxText(loadingBar.x, loadingBar.y + 4, FlxG.width, 'Loading...', 16);
         loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, "center");
         add(loadedText);
 
-        // Carrega todos os arquivos de assets/ e content/ (qualquer extensão)
-        assetsToLoad = Assets.list().filter(path ->
-            path.startsWith("assets/") || path.startsWith("content/")
-        );
-        totalAssets = assetsToLoad.length;
-        loadedAssets = 0;
-
-        if (totalAssets == 0) {
-            // Se não houver assets, só espera o tempo mínimo
-            ready = false;
-        } else {
-            loadNextAsset();
-        }
-    }
-
-    function loadNextAsset()
-    {
-        if (loadedAssets < totalAssets) {
-            var asset = assetsToLoad[loadedAssets];
-            if (asset.endsWith(".png")) {
-                Assets.loadBitmapData(asset).onComplete(_ -> {
-                    loadedAssets++;
-                    updateBar();
-                    loadNextAsset();
-                });
-            } else if (asset.endsWith(".ogg") || asset.endsWith(".mp3")) {
-                Assets.loadSound(asset).onComplete(_ -> {
-                    loadedAssets++;
-                    updateBar();
-                    loadNextAsset();
-                });
-            } else if (
-                asset.endsWith(".json") ||
-                asset.endsWith(".txt") ||
-                asset.endsWith(".hx") ||
-                asset.endsWith(".sml") ||
-                asset.endsWith(".frag")
-            ) {
-                Assets.loadText(asset).onComplete(_ -> {
-                    loadedAssets++;
-                    updateBar();
-                    loadNextAsset();
-                });
-            } else if (
-                asset.endsWith(".ttf") ||
-                asset.endsWith(".otf") ||
-                asset.endsWith(".mp4")
-            ) {
-                // Não há loader assíncrono para esses tipos, apenas conta como carregado
-                loadedAssets++;
-                updateBar();
-                loadNextAsset();
-            } else {
-                // Outros tipos, apenas conta como carregado
-                loadedAssets++;
-                updateBar();
-                loadNextAsset();
-            }
-        } else {
-            ready = true;
-            updateBar();
-        }
-    }
-
-    function updateBar()
-    {
-        loadingBar.setRange(0, totalAssets);
-        loadingBar.value = loadedAssets;
-        loadedText.text = '${loadedAssets}/${totalAssets}';
-        loadingBar.percent = totalAssets > 0 ? Math.min((loadedAssets / totalAssets) * 100, 100) : 100;
-        if (loadedAssets >= totalAssets) {
-            loadedText.text = "Completed! Tap to continue...";
-        }
+        // Não carrega nada, só espera o tempo mínimo
+        ready = false;
     }
 
     override public function update(elapsed:Float)
@@ -131,14 +56,19 @@ class LoadingScreen extends MusicBeatState
 
         elapsedTime += elapsed;
 
-        // Só libera se carregou tudo E passou o tempo mínimo
-        if (ready && elapsedTime >= minTime) {
+        // Só libera se passou o tempo mínimo
+        if (!ready && elapsedTime >= minTime) {
+            ready = true;
+            loadedText.text = "Completed! Tap to continue...";
+            loadingBar.value = loadingBar.range.end;
+        }
+
+        if (ready) {
             if (!tapped && (FlxG.mouse.justPressed || FlxG.touches.justStarted().length > 0)) {
                 tapped = true;
-                FlxG.sound.play(Paths.sound('confirmMenu')); // se quiser, pode tirar
+                FlxG.sound.play(Paths.sound('confirmMenu'));
                 FlxG.save.data.loadedOnce = true;
                 FlxG.save.flush();
-                //FlxG.switchState(new Splash());
                 FlxG.switchState(() -> Type.createInstance(nextState, []));
             }
         }
