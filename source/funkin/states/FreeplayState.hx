@@ -76,10 +76,11 @@ class FreeplayState extends MusicBeatState
 			var notblack:FlxSprite = new FlxSprite(0, 0).makeScaledGraphic(FlxG.width, FlxG.height, 0x06080C);
 			add(notblack);
 
+			var shader:FunkinRuntimeShader = null;
 			try {
 			    var shaderPath = Paths.assetsShaderFragment('outline');
 			    trace('Trying to load shader from: ' + shaderPath);
-			    var shader:FunkinRuntimeShader = createShader('outline');
+			    shader = createShader('outline');
 			    shader.setFloat("dist", 2);
 			    shader.setFloatArray("outlineColor", [255, 255, 255]);
 			} catch (e:Dynamic) {
