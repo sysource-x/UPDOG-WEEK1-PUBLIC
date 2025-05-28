@@ -62,7 +62,7 @@ class FreeplayState extends MusicBeatState
 			Paths.clearStoredMemory();
 			Paths.clearUnusedMemory();
 
-			#if DISCORD_ALLOWED
+			#if desktop // DISCORD_ALLOWED
 			// Updating Discord Rich Presence
 			DiscordClient.changePresence("Freeplay Menu", null);
 			#end
@@ -76,9 +76,15 @@ class FreeplayState extends MusicBeatState
 			var notblack:FlxSprite = new FlxSprite(0, 0).makeScaledGraphic(FlxG.width, FlxG.height, 0x06080C);
 			add(notblack);
 
-			var shader:FunkinRuntimeShader = createShader('outline');
-			shader.setFloat("dist", 2);
-			shader.setFloatArray("outlineColor", [255, 255, 255]);
+			try {
+			    var shaderPath = Paths.assetsShaderFragment('outline');
+			    trace('Trying to load shader from: ' + shaderPath);
+			    var shader:FunkinRuntimeShader = createShader('outline');
+			    shader.setFloat("dist", 2);
+			    shader.setFloatArray("outlineColor", [255, 255, 255]);
+			} catch (e:Dynamic) {
+			    NativeAPI.showMessageBox("FreeplayState Error", "Failed to load outline shader:\n" + Std.string(e));
+			}
 
 			opts = new FlxTypedGroup<FlxSprite>(); // GROUP ON GOD!
 			rankgrp = new FlxTypedGroup<RankIcon>(); // GROUP ON GOD!

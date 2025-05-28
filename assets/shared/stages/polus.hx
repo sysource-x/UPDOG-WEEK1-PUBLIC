@@ -68,7 +68,6 @@ function onLoad()
         global.set('base_bg', bg);
         global.set('base_stars', stars);
         
-        
         mountains = new BGSprite(null, -1569, -185).loadFromSheet(ext + 'bg2', 'bgBack', 0);
         mountains.scrollFactor.set(0.8, 0.8);
         mountains.zIndex = 2;
@@ -104,7 +103,7 @@ function onLoad()
         if (ClientPrefs.shaders)
         {
             var overlayShader:OverlayShader = new OverlayShader();
-            overlayShader.setBitmapOverlay(Paths.image(ext + 'overlay', 'impostor').bitmap);
+            // Removido o uso da imagem "impostor" que não existe
             game.camGame.filters = [new ShaderFilter(overlayShader)];
         }
         
