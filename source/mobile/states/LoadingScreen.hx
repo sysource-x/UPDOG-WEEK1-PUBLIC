@@ -60,7 +60,7 @@ class LoadingScreen extends MusicBeatState
         if (!ready && elapsedTime >= minTime) {
             ready = true;
             loadedText.text = "Completed! Tap to continue...";
-            loadingBar.value = loadingBar.range.end;
+            loadingBar.value = loadingBar.max;
         }
 
         if (ready) {
