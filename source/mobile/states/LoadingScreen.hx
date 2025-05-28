@@ -25,12 +25,6 @@ class LoadingScreen extends MusicBeatState
     {
         super();
 
-        // Só mostra a tela se for a primeira vez
-        if (FlxG.save.data.loadedOnce == true) {
-            FlxG.switchState(new Splash());
-            return;
-        }
-
         add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xfffde871));
 
         loadingImage = new FlxSprite(0, 0, Paths.image('menuBG'));
@@ -46,7 +40,6 @@ class LoadingScreen extends MusicBeatState
         loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, "center");
         add(loadedText);
 
-        // Não carrega nada, só espera o tempo mínimo
         ready = false;
     }
 
@@ -56,7 +49,6 @@ class LoadingScreen extends MusicBeatState
 
         elapsedTime += elapsed;
 
-        // Só libera se passou o tempo mínimo
         if (!ready && elapsedTime >= minTime) {
             ready = true;
             loadedText.text = "Completed! Tap to continue...";
@@ -67,8 +59,6 @@ class LoadingScreen extends MusicBeatState
             if (!tapped && (FlxG.mouse.justPressed || FlxG.touches.justStarted().length > 0)) {
                 tapped = true;
                 FlxG.sound.play(Paths.sound('confirmMenu'));
-                FlxG.save.data.loadedOnce = true;
-                FlxG.save.flush();
                 FlxG.switchState(() -> Type.createInstance(nextState, []));
             }
         }

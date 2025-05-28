@@ -60,7 +60,7 @@
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
-	<assets path="assets/songs" library="songs" exclude="*.mp3" unless="web"/>
+	<assets path="assets/shared/songs" library="songs" exclude="*.mp3" unless="web"/>
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
@@ -78,8 +78,7 @@
 	<!-- _____________________________  SOME ASSETS  ____________________________ -->
 
 	<assets path="assets" include="**/*" unless="web"/>
-	<assets path="content" include="**/*" if="MODS_ALLOWED" unless="web"/>
-	<!-- <assets path="content" include="**/*" if="MODS_ALLOWED"/> -->
+	<!-- <assets path="content" include="**/*" if="MODS_ALLOWED" unless="web"/>-->
 
 	<!-- _______________________________ Libraries ______________________________ -->
 

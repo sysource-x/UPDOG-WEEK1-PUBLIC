@@ -162,6 +162,9 @@ class FreeplayState extends MusicBeatState
 			changeSong(0);
 			refreshDiffText();
 			super.create();
+			#if mobile
+		    addVirtualPad(FULL,A_B_C_X_Y_Z);
+		    #end
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("FreeplayState Error", "An error occurred while opening Freeplay:\n" + Std.string(e));
 		}
@@ -169,7 +172,7 @@ class FreeplayState extends MusicBeatState
 
 	function createShader(fragFile:String = null, vertFile:String = null):FunkinRuntimeShader
 	{
-		return new FunkinRuntimeShader(fragFile == null ? null : File.getContent(Paths.modsShaderFragment(fragFile)));
+		return new FunkinRuntimeShader(fragFile == null ? null : File.getContent(Paths.assetsShaderFragment(fragFile))); // modsShaderFragment
 	}
 
 	function reloadWeekShit()
@@ -406,25 +409,28 @@ class FreeplayState extends MusicBeatState
 
 			if (!controlsLocked)
 			{
-				if (FlxG.keys.justPressed.CONTROL)
+				if (FlxG.keys.justPressed.CONTROL #if mobile || _virtualpad.buttonC.justPressed #end)
 				{
 					persistentUpdate = false;
+					#if mobile
+			        removeVirtualPad();
+			        #end
 					openSubState(new GameplayChangersSubstate());
 				}
 
-				if (controls.UI_UP_P) changeSong(-1);
-				if (controls.UI_DOWN_P) changeSong(1);
-				if (controls.UI_LEFT_P) changeWeek(-1);
-				if (controls.UI_RIGHT_P) changeWeek(1);
-				if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q) changeDiff();
-				if (controls.ACCEPT) startSong();
-				if (controls.BACK)
+				if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end) changeSong(-1);
+			    if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end) changeSong(1);
+			    if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) changeWeek(-1);
+			    if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end) changeWeek(1);
+			    if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonY.justPressed || _virtualpad.buttonZ.justPressed #end) changeDiff();
+			    if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) startSong();
+			    if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end)
 				{
 					controlsLocked = true;
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					FlxG.switchState(() -> new TitleState());
 				}
-				if (FlxG.keys.justPressed.R)
+				if (FlxG.keys.justPressed.R #if mobile || _virtualpad.buttonX.justPressed #end)
 				{
 					persistentUpdate = false;
 					openSubState(new ResetScoreSubStateImpostor(songs[curSong][0], curDiff));
@@ -442,5 +448,9 @@ class FreeplayState extends MusicBeatState
 		persistentUpdate = true;
 		changeSong(0);
 		super.closeSubState();
+		#if mobile
+		removeVirtualPad();
+		addVirtualPad(FULL,A_B_C_X_Y_Z);
+		#end
 	}
 }

@@ -669,4 +669,14 @@ class Paths
 		return list;
 	}
 	#end
+
+	inline static public function assetsShaderFragment(key:String):String
+	{
+	    return getPath('shaders/' + key + '.frag', 'assets');
+	}
+
+	inline static public function assetsShaderVertex(key:String):String
+	{
+	    return getPath('shaders/' + key + '.vert', 'assets');
+	}
 }

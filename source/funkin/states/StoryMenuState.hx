@@ -184,6 +184,9 @@ class StoryMenuState extends MusicBeatState
 			}
 
 			reloadSongList();
+			#if mobile
+			addVirtualPad(LEFT_RIGHT,A_B_X_C_D);
+		    #end
 			super.create();
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("StoryMenuState Error", "An error occurred while opening the Story Menu:\n" + Std.string(e));
@@ -269,20 +272,21 @@ class StoryMenuState extends MusicBeatState
 			scoreText.text = "Score: " + FlxStringUtil.formatMoney(lerpScore, false, true);
 			if (!selectedWeek)
 			{
-				if (controls.UI_LEFT_P) changeWeek(-1);
-				if (controls.UI_RIGHT_P) changeWeek(1);
-				if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q) changeDiff();
-				if (controls.ACCEPT) selectWeek();
-				if (controls.BACK) 
+				if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end) changeWeek(-1);
+			    if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end) changeWeek(1);
+				if (FlxG.keys.justPressed.E || FlxG.keys.justPressed.Q #if mobile || _virtualpad.buttonD.justPressed || _virtualpad.buttonC.justPressed #end) changeDiff();
+			    if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) selectWeek();
+			    if (controls.BACK #if mobile || _virtualpad.buttonB.justPressed #end) 
 				{
 					FlxG.switchState(new TitleState());
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 				}
-				if (FlxG.keys.justPressed.R) 
+				if (FlxG.keys.justPressed.R #if mobile || _virtualpad.buttonX.justPressed #end) 
 				{
 					persistentUpdate = false;
 					openSubState(new ResetScoreSubStateImpostor('', curDiff, curWeek));
 				}
+				super.update(elapsed);
 			}
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("StoryMenuState Error", "An error occurred during Story Menu update:\n" + Std.string(e));
@@ -349,5 +353,9 @@ class StoryMenuState extends MusicBeatState
 		persistentUpdate = true;
 		changeWeek();
 		super.closeSubState();
+		#if mobile
+		removeVirtualPad();
+		addVirtualPad(LEFT_RIGHT,A_B_X_C_D);
+		#end
 	}
 }
