@@ -62,7 +62,7 @@ class Init extends FlxState
 		FlxG.console.registerClass(funkin.states.PlayState);
 		#end
 		
-		#if DISCORD_ALLOWED
+		#if desktop
 		if (!DiscordClient.isInitialized)
 		{
 			DiscordClient.initialize();

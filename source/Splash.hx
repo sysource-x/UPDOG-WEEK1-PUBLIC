@@ -9,7 +9,7 @@ using StringTools;
 @:access(Main)
 class Splash extends FlxState
 {
-	public static var nextState:Class<FlxState>;
+	public static var nextState:Class<FlxState> = Init; // Init file
 	// var video:FunkinVideo;
 	var _cachedAutoPause:Bool;
 

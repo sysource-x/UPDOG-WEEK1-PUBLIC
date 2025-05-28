@@ -18,7 +18,7 @@ class LoadingScreen extends MusicBeatState
     public var loadedText:FlxText;
     public var ready:Bool = false;
     public var tapped:Bool = false;
-    public var minTime:Float = 5; // 5 segundos fixos
+    public var minTime:Float = 3; // 3 segundos fixos
     var elapsedTime:Float = 0;
 
     public function new()

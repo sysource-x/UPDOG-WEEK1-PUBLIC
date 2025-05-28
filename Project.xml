@@ -97,7 +97,7 @@
 	<define name="hscriptPos"/>
 
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
-	<haxelib name="discord_rpc" if="DISCORD_ALLOWED"/>
+	<haxelib name="discord_rpc" if="desktop"/> <!-- DISCORD_ALLOWED -->
 	<haxelib name="hxvlc" if="VIDEOS_ALLOWED"/>
 
 	<haxelib name="hxcpp-debug-server" if="debug"/> <!-- see debug things -->
