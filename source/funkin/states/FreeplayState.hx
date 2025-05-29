@@ -375,10 +375,10 @@ class FreeplayState extends MusicBeatState
 				controlsLocked = true;
 
 				FlxG.sound.play(Paths.sound('confirmMenu'));
-				var songLowercase = songs[curSong][0];
-				if (songLowercase.contains("/")) {
-				    var parts = songLowercase.split("/");
-				    songLowercase = parts[parts.length - 1];
+				var songLowercase = Std.string(songs[curSong][0]);
+				if (songLowercase.indexOf("/") != -1) {
+					var parts = songLowercase.split("/");
+					songLowercase = parts[parts.length - 1];
 				}
 				trace('songLowercase: ' + songLowercase);
 				PlayState.SONG = Song.loadFromJson(songLowercase + diffs[curDiff - 1], songLowercase);
