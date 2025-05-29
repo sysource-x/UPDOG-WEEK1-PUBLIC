@@ -78,7 +78,7 @@ class FreeplayState extends MusicBeatState
 
 			var shader:FunkinRuntimeShader = null;
 			try {
-			    var shaderPath = Paths.assetsShaderFragment('outline');
+			    var shaderPath = Paths.shaderFragment('outline'); // assetsShaderFragment
 			    trace('Trying to load shader from: ' + shaderPath);
 			    shader = createShader('outline');
 			    shader.setFloat("dist", 2);

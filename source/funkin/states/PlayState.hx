@@ -1508,13 +1508,13 @@ class PlayState extends MusicBeatState
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length;
 		
-		#if desktop
+		#if desktop // DISCORD_ALLOWED
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, getPresence(), null, true, songLength);
 		#end
 		setOnScripts('songLength', songLength);
 		callOnScripts('onSongStart', []);
-		callHUDFunc((p) -> p.onSongStart());
+		//callHUDFunc((p) -> p.onSongStart());
 	}
 	
 	var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
@@ -1984,7 +1984,7 @@ class PlayState extends MusicBeatState
 				speedChanges.push(
 					{
 						position: getNoteInitialTime(event.strumTime),
-						songTime: event.strumTime,
+											//songTime: event.strumTime,
 						startTime: event.strumTime,
 						speed: speed
 					});
@@ -2888,362 +2888,367 @@ class PlayState extends MusicBeatState
 	
 	public function triggerEventNote(eventName:String, value1:String, value2:String)
 	{
-		switch (eventName)
-		{
-			case 'Game Flash':
-				var dur:Float = Std.parseFloat(value2);
-				if (Math.isNaN(dur)) dur = 0.5;
-				FlxG.camera.flash(FlxColor.fromString(value1), dur);
-			case 'Hey!':
-				var value:Int = 2;
-				switch (value1.toLowerCase().trim())
-				{
-					case 'bf' | 'boyfriend' | '0':
-						value = 0;
-					case 'gf' | 'girlfriend' | '1':
-						value = 1;
-				}
-				
-				var time:Float = Std.parseFloat(value2);
-				if (Math.isNaN(time) || time <= 0) time = 0.6;
-				
-				if (value != 0)
-				{
-					if (dad.curCharacter.startsWith('gf'))
-					{ // Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
-						dad.playAnim('cheer', true);
-						dad.specialAnim = true;
-						dad.heyTimer = time;
-					}
-					else if (gf != null)
+		try {
+			switch (eventName)
+			{
+				case 'Game Flash':
+					var dur:Float = Std.parseFloat(value2);
+					if (Math.isNaN(dur)) dur = 0.5;
+					FlxG.camera.flash(FlxColor.fromString(value1), dur);
+				case 'Hey!':
+					var value:Int = 2;
+					switch (value1.toLowerCase().trim())
 					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = time;
+						case 'bf' | 'boyfriend' | '0':
+							value = 0;
+						case 'gf' | 'girlfriend' | '1':
+							value = 1;
 					}
-				}
-				if (value != 1)
-				{
-					boyfriend.playAnim('hey', true);
-					boyfriend.specialAnim = true;
-					boyfriend.heyTimer = time;
-				}
-				
-			case 'Set GF Speed':
-				var value:Int = Std.parseInt(value1);
-				if (Math.isNaN(value) || value < 1) value = 1;
-				gfSpeed = value;
-			case 'Add Camera Zoom':
-				if (ClientPrefs.camZooms && FlxG.camera.zoom < 1.35)
-				{
-					var camZoom:Float = Std.parseFloat(value1);
-					var hudZoom:Float = Std.parseFloat(value2);
-					if (Math.isNaN(camZoom)) camZoom = 0.015;
-					if (Math.isNaN(hudZoom)) hudZoom = 0.03;
 					
-					FlxG.camera.zoom += camZoom;
-					camHUD.zoom += hudZoom;
-				}
-				
-			case 'Camera Zoom':
-				FlxTween.cancelTweensOf(FlxG.camera, ['zoom']);
-				
-				var val1:Float = Std.parseFloat(value1);
-				if (Math.isNaN(val1)) val1 = 1;
-				
-				var targetZoom = defaultCamZoom * val1;
-				if (value2 != '')
-				{
-					var split = value2.split(',');
-					var duration:Float = 0;
-					var leEase:String = 'linear';
-					if (split[0] != null) duration = Std.parseFloat(split[0].trim());
-					if (split[1] != null) leEase = split[1].trim();
-					if (Math.isNaN(duration)) duration = 0;
+					var time:Float = Std.parseFloat(value2);
+					if (Math.isNaN(time) || time <= 0) time = 0.6;
+					
+					if (value != 0)
+					{
+						if (dad.curCharacter.startsWith('gf'))
+						{ // Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
+							dad.playAnim('cheer', true);
+							dad.specialAnim = true;
+							dad.heyTimer = time;
+						}
+						else if (gf != null)
+						{
+							gf.playAnim('cheer', true);
+							gf.specialAnim = true;
+							gf.heyTimer = time;
+						}
+					}
+					if (value != 1)
+					{
+						boyfriend.playAnim('hey', true);
+						boyfriend.specialAnim = true;
+						boyfriend.heyTimer = time;
+					}
+					
+				case 'Set GF Speed':
+					var value:Int = Std.parseInt(value1);
+					if (Math.isNaN(value) || value < 1) value = 1;
+					gfSpeed = value;
+				case 'Add Camera Zoom':
+					if (ClientPrefs.camZooms && FlxG.camera.zoom < 1.35)
+					{
+						var camZoom:Float = Std.parseFloat(value1);
+						var hudZoom:Float = Std.parseFloat(value2);
+						if (Math.isNaN(camZoom)) camZoom = 0.015;
+						if (Math.isNaN(hudZoom)) hudZoom = 0.03;
+						
+						FlxG.camera.zoom += camZoom;
+						camHUD.zoom += hudZoom;
+					}
+					
+				case 'Camera Zoom':
+					FlxTween.cancelTweensOf(FlxG.camera, ['zoom']);
+					
+					var val1:Float = Std.parseFloat(value1);
+					if (Math.isNaN(val1)) val1 = 1;
+					
+					var targetZoom = defaultCamZoom * val1;
+					if (value2 != '')
+					{
+						var split = value2.split(',');
+						var duration:Float = 0;
+						var leEase:String = 'linear';
+						if (split[0] != null) duration = Std.parseFloat(split[0].trim());
+						if (split[1] != null) leEase = split[1].trim();
+						if (Math.isNaN(duration)) duration = 0;
+						
+						if (duration > 0)
+						{
+							FlxTween.tween(FlxG.camera, {zoom: targetZoom}, duration, {ease: FlxEase.circOut});
+						}
+						else
+						{
+							FlxG.camera.zoom = targetZoom;
+						}
+					}
+					defaultCamZoom = targetZoom;
+					setOnHScripts('defaultCamZoom', defaultCamZoom);
+					
+				case 'HUD Fade':
+					FlxTween.cancelTweensOf(camHUD, ['alpha']);
+					
+					var leAlpha:Float = Std.parseFloat(value1);
+					if (Math.isNaN(leAlpha)) leAlpha = 1;
+					
+					var duration:Float = Std.parseFloat(value2);
+					if (Math.isNaN(duration)) duration = 1;
 					
 					if (duration > 0)
 					{
-						FlxTween.tween(FlxG.camera, {zoom: targetZoom}, duration, {ease: FlxEase.circOut});
+						FlxTween.tween(camHUD, {alpha: leAlpha}, duration);
 					}
 					else
 					{
-						FlxG.camera.zoom = targetZoom;
+						camHUD.alpha = leAlpha;
 					}
-				}
-				defaultCamZoom = targetZoom;
-				setOnHScripts('defaultCamZoom', defaultCamZoom);
-				
-			case 'HUD Fade':
-				FlxTween.cancelTweensOf(camHUD, ['alpha']);
-				
-				var leAlpha:Float = Std.parseFloat(value1);
-				if (Math.isNaN(leAlpha)) leAlpha = 1;
-				
-				var duration:Float = Std.parseFloat(value2);
-				if (Math.isNaN(duration)) duration = 1;
-				
-				if (duration > 0)
-				{
-					FlxTween.tween(camHUD, {alpha: leAlpha}, duration);
-				}
-				else
-				{
-					camHUD.alpha = leAlpha;
-				}
-			case 'Play Animation':
-				// trace('Anim to play: ' + value1);
-				var char:Character = dad;
-				switch (value2.toLowerCase().trim())
-				{
-					case 'bf' | 'boyfriend':
-						char = boyfriend;
-					case 'gf' | 'girlfriend':
-						char = gf;
-					default:
-						var val2:Int = Std.parseInt(value2);
-						if (Math.isNaN(val2)) val2 = 0;
-						
-						switch (val2)
-						{
-							case 1: char = boyfriend;
-							case 2: char = gf;
-						}
-				}
-				
-				if (char != null)
-				{
-					char.playAnim(value1, true);
-					char.specialAnim = true;
-				}
-				
-			case 'Camera Follow Pos':
-				var val1:Float = Std.parseFloat(value1);
-				var val2:Float = Std.parseFloat(value2);
-				if (Math.isNaN(val1)) val1 = 0;
-				if (Math.isNaN(val2)) val2 = 0;
-				
-				isCameraOnForcedPos = false;
-				if (!Math.isNaN(Std.parseFloat(value1)) || !Math.isNaN(Std.parseFloat(value2)))
-				{
-					camFollow.x = val1;
-					camFollow.y = val2;
-					isCameraOnForcedPos = true;
-				}
-				
-			case 'Alt Idle Animation':
-				var char:Character = dad;
-				switch (value1.toLowerCase())
-				{
-					case 'gf' | 'girlfriend':
-						char = gf;
-					case 'boyfriend' | 'bf':
-						char = boyfriend;
-					default:
-						var val:Int = Std.parseInt(value1);
-						if (Math.isNaN(val)) val = 0;
-						
-						switch (val)
-						{
-							case 1: char = boyfriend;
-							case 2: char = gf;
-						}
-				}
-				
-				if (char != null)
-				{
-					char.idleSuffix = value2;
-					char.recalculateDanceIdle();
-				}
-				
-			case 'Screen Shake':
-				var valuesArray:Array<String> = [value1, value2];
-				var targetsArray:Array<FlxCamera> = [camGame, camHUD];
-				for (i in 0...targetsArray.length)
-				{
-					var split:Array<String> = valuesArray[i].split(',');
-					var duration:Float = 0;
-					var intensity:Float = 0;
-					if (split[0] != null) duration = Std.parseFloat(split[0].trim());
-					if (split[1] != null) intensity = Std.parseFloat(split[1].trim());
-					if (Math.isNaN(duration)) duration = 0;
-					if (Math.isNaN(intensity)) intensity = 0;
+				case 'Play Animation':
+					// trace('Anim to play: ' + value1);
+					var char:Character = dad;
+					switch (value2.toLowerCase().trim())
+					{
+						case 'bf' | 'boyfriend':
+							char = boyfriend;
+						case 'gf' | 'girlfriend':
+							char = gf;
+						default:
+							var val2:Int = Std.parseInt(value2);
+							if (Math.isNaN(val2)) val2 = 0;
+							
+							switch (val2)
+							{
+								case 1: char = boyfriend;
+								case 2: char = gf;
+							}
+					}
 					
-					if (duration > 0 && intensity != 0)
+					if (char != null)
 					{
-						targetsArray[i].shake(intensity, duration);
+						char.playAnim(value1, true);
+						char.specialAnim = true;
 					}
-				}
-				
-			case 'Change Character':
-				var charType:Int = 0;
-				switch (value1)
-				{
-					case 'gf' | 'girlfriend':
-						charType = 2;
-					case 'dad' | 'opponent':
-						charType = 1;
-					default:
-						charType = Std.parseInt(value1);
-						if (Math.isNaN(charType)) charType = 0;
-				}
-				
-				var curChar:Character = boyfriend;
-				switch (charType)
-				{
-					case 2:
-						curChar = gf;
-					case 1:
-						curChar = dad;
-					case 0:
-						curChar = boyfriend;
-				}
-				
-				var newCharacter:String = value2;
-				var anim:String = '';
-				var frame:Int = 0;
-				if (newCharacter.startsWith(curChar.curCharacter) || curChar.curCharacter.startsWith(newCharacter))
-				{
-					if (curChar.animation != null && curChar.animation.curAnim != null)
+					
+				case 'Camera Follow Pos':
+					var val1:Float = Std.parseFloat(value1);
+					var val2:Float = Std.parseFloat(value2);
+					if (Math.isNaN(val1)) val1 = 0;
+					if (Math.isNaN(val2)) val2 = 0;
+					
+					isCameraOnForcedPos = false;
+					if (!Math.isNaN(Std.parseFloat(value1)) || !Math.isNaN(Std.parseFloat(value2)))
 					{
-						anim = curChar.animation.curAnim.name;
-						frame = curChar.animation.curAnim.curFrame;
+						camFollow.x = val1;
+						camFollow.y = val2;
+						isCameraOnForcedPos = true;
 					}
-				}
-				
-				changeCharacter(value2, charType);
-				if (anim != '')
-				{
-					var char:Character = boyfriend;
+					
+				case 'Alt Idle Animation':
+					var char:Character = dad;
+					switch (value1.toLowerCase())
+					{
+						case 'gf' | 'girlfriend':
+							char = gf;
+						case 'boyfriend' | 'bf':
+							char = boyfriend;
+						default:
+							var val:Int = Std.parseInt(value1);
+							if (Math.isNaN(val)) val = 0;
+							
+							switch (val)
+							{
+								case 1: char = boyfriend;
+								case 2: char = gf;
+							}
+					}
+					
+					if (char != null)
+					{
+						char.idleSuffix = value2;
+						char.recalculateDanceIdle();
+					}
+					
+				case 'Screen Shake':
+					var valuesArray:Array<String> = [value1, value2];
+					var targetsArray:Array<FlxCamera> = [camGame, camHUD];
+					for (i in 0...targetsArray.length)
+					{
+						var split:Array<String> = valuesArray[i].split(',');
+						var duration:Float = 0;
+						var intensity:Float = 0;
+						if (split[0] != null) duration = Std.parseFloat(split[0].trim());
+						if (split[1] != null) intensity = Std.parseFloat(split[1].trim());
+						if (Math.isNaN(duration)) duration = 0;
+						if (Math.isNaN(intensity)) intensity = 0;
+						
+						if (duration > 0 && intensity != 0)
+						{
+							targetsArray[i].shake(intensity, duration);
+						}
+					}
+					
+				case 'Change Character':
+					var charType:Int = 0;
+					switch (value1)
+					{
+						case 'gf' | 'girlfriend':
+							charType = 2;
+						case 'dad' | 'opponent':
+							charType = 1;
+						default:
+							charType = Std.parseInt(value1);
+							if (Math.isNaN(charType)) charType = 0;
+					}
+					
+					var curChar:Character = boyfriend;
 					switch (charType)
 					{
 						case 2:
-							char = gf;
+							curChar = gf;
 						case 1:
-							char = dad;
+							curChar = dad;
 						case 0:
-							char = boyfriend;
+							curChar = boyfriend;
 					}
 					
-					if (char.animation.getByName(anim) != null)
+					var newCharacter:String = value2;
+					var anim:String = '';
+					var frame:Int = 0;
+					if (newCharacter.startsWith(curChar.curCharacter) || curChar.curCharacter.startsWith(newCharacter))
 					{
-						char.playAnim(anim, true);
-						char.animation.curAnim.curFrame = frame;
-					}
-				}
-			case 'Change Scroll Speed':
-				if (songSpeedType == "constant") return;
-				var val1:Float = Std.parseFloat(value1);
-				var val2:Float = Std.parseFloat(value2);
-				if (Math.isNaN(val1)) val1 = 1;
-				if (Math.isNaN(val2)) val2 = 0;
-				
-				var newValue:Float = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * val1;
-				
-				if (val2 <= 0)
-				{
-					songSpeed = newValue;
-				}
-				else
-				{
-					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2,
+						if (curChar.animation != null && curChar.animation.curAnim != null)
 						{
-							ease: FlxEase.linear,
-							onComplete: function(twn:FlxTween) {
-								songSpeedTween = null;
-							}
-						});
-				}
-				
-			case 'Camera Zoom Chain':
-				var split1:Array<String> = value1.split(',');
-				var gameZoom:Float = Std.parseFloat(split1[0].trim());
-				var hudZoom:Float = Std.parseFloat(split1[1].trim());
-				
-				if (!Math.isNaN(gameZoom)) gameZ = 0.015;
-				if (!Math.isNaN(hudZoom)) hudZ = 0.03;
-				
-				if (split1.length == 4)
-				{
-					var shGame:Float = Std.parseFloat(split1[2].trim());
-					var shHUD:Float = Std.parseFloat(split1[3].trim());
+							anim = curChar.animation.curAnim.name;
+							frame = curChar.animation.curAnim.curFrame;
+						}
+					}
 					
-					if (!Math.isNaN(shGame)) gameShake = shGame;
-					if (!Math.isNaN(shHUD)) hudShake = shHUD;
-					shakeTime = true;
-				}
-				else
-				{
-					shakeTime = false;
-				}
-				
-				var split2:Array<String> = value2.split(',');
-				var toBeat:Int = Std.parseInt(split2[0].trim());
-				var tiBeat:Float = Std.parseFloat(split2[1].trim());
-				
-				if (Math.isNaN(toBeat)) toBeat = 4;
-				if (Math.isNaN(tiBeat)) tiBeat = 1;
-				
-				totalBeat = toBeat;
-				timeBeat = tiBeat;
-				
-			case 'Screen Shake Chain':
-				var split1:Array<String> = value1.split(',');
-				var gmShake:Float = Std.parseFloat(split1[0].trim());
-				var hdShake:Float = Std.parseFloat(split1[1].trim());
-				
-				if (!Math.isNaN(gmShake)) gameShake = gmShake;
-				if (!Math.isNaN(hdShake)) hudShake = hdShake;
-				
-				var toBeat:Int = Std.parseInt(value2);
-				if (!Math.isNaN(toBeat)) totalShake = 4;
-				
-				totalShake = toBeat;
-				
-			case 'Set Cam Zoom':
-				defaultCamZoom = Std.parseFloat(value1);
-				
-			case 'Set Cam Pos':
-				var split:Array<String> = value1.split(',');
-				var xPos:Float = Std.parseFloat(split[0].trim());
-				var yPos:Float = Std.parseFloat(split[1].trim());
-				if (Math.isNaN(xPos)) xPos = 0;
-				if (Math.isNaN(yPos)) yPos = 0;
-				switch (value2)
-				{
-					case 'bf' | 'boyfriend':
-						boyfriendCameraOffset[0] = xPos;
-						boyfriendCameraOffset[1] = yPos;
-					case 'gf' | 'girlfriend':
-						girlfriendCameraOffset[0] = xPos;
-						girlfriendCameraOffset[1] = yPos;
-					case 'dad' | 'opponent':
-						opponentCameraOffset[0] = xPos;
-						opponentCameraOffset[1] = yPos;
-				}
-				
-			case 'Set Property':
-				var killMe:Array<String> = value1.split('.');
-				if (killMe.length > 1)
-				{
-					Reflect.setProperty(FunkinLua.getPropertyLoopThingWhatever(killMe, true, true), killMe[killMe.length - 1], value2);
-				}
-				else
-				{
-					Reflect.setProperty(this, value1, value2);
-				}
-			case 'Reactor Flash': // value 1 determines duration
-				if (ClientPrefs.flashing)
-				{
-					flashSprite.alpha = 0.3;
-					var flashDuration:Float = Std.parseFloat(value1);
-					if (Math.isNaN(flashDuration)) flashDuration = 0.5;
-					FlxTween.tween(flashSprite, {alpha: 0}, flashDuration);
-				}
+					changeCharacter(value2, charType);
+					if (anim != '')
+					{
+						var char:Character = boyfriend;
+						switch (charType)
+						{
+							case 2:
+								char = gf;
+							case 1:
+								char = dad;
+							case 0:
+								char = boyfriend;
+						}
+						
+						if (char.animation.getByName(anim) != null)
+						{
+							char.playAnim(anim, true);
+							char.animation.curAnim.curFrame = frame;
+						}
+					}
+				case 'Change Scroll Speed':
+					if (songSpeedType == "constant") return;
+					var val1:Float = Std.parseFloat(value1);
+					var val2:Float = Std.parseFloat(value2);
+					if (Math.isNaN(val1)) val1 = 1;
+					if (Math.isNaN(val2)) val2 = 0;
+					
+					var newValue:Float = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * val1;
+					
+					if (val2 <= 0)
+					{
+						songSpeed = newValue;
+					}
+					else
+					{
+						songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2,
+							{
+								ease: FlxEase.linear,
+								onComplete: function(twn:FlxTween) {
+									songSpeedTween = null;
+								}
+							});
+					}
+					
+				case 'Camera Zoom Chain':
+					var split1:Array<String> = value1.split(',');
+					var gameZoom:Float = Std.parseFloat(split1[0].trim());
+					var hudZoom:Float = Std.parseFloat(split1[1].trim());
+					
+					if (!Math.isNaN(gameZoom)) gameZ = 0.015;
+					if (!Math.isNaN(hudZoom)) hudZ = 0.03;
+					
+					if (split1.length == 4)
+					{
+						var shGame:Float = Std.parseFloat(split1[2].trim());
+						var shHUD:Float = Std.parseFloat(split1[3].trim());
+						
+						if (!Math.isNaN(shGame)) gameShake = shGame;
+						if (!Math.isNaN(shHUD)) hudShake = shHUD;
+						shakeTime = true;
+					}
+					else
+					{
+						shakeTime = false;
+					}
+					
+					var split2:Array<String> = value2.split(',');
+					var toBeat:Int = Std.parseInt(split2[0].trim());
+					var tiBeat:Float = Std.parseFloat(split2[1].trim());
+					
+					if (Math.isNaN(toBeat)) toBeat = 4;
+					if (Math.isNaN(tiBeat)) tiBeat = 1;
+					
+					totalBeat = toBeat;
+					timeBeat = tiBeat;
+					
+				case 'Screen Shake Chain':
+					var split1:Array<String> = value1.split(',');
+					var gmShake:Float = Std.parseFloat(split1[0].trim());
+					var hdShake:Float = Std.parseFloat(split1[1].trim());
+					
+					if (!Math.isNaN(gmShake)) gameShake = gmShake;
+					if (!Math.isNaN(hdShake)) hudShake = hdShake;
+					
+					var toBeat:Int = Std.parseInt(value2);
+					if (!Math.isNaN(toBeat)) totalShake = 4;
+					
+					totalShake = toBeat;
+					
+				case 'Set Cam Zoom':
+					defaultCamZoom = Std.parseFloat(value1);
+					
+				case 'Set Cam Pos':
+					var split:Array<String> = value1.split(',');
+					var xPos:Float = Std.parseFloat(split[0].trim());
+					var yPos:Float = Std.parseFloat(split[1].trim());
+					if (Math.isNaN(xPos)) xPos = 0;
+					if (Math.isNaN(yPos)) yPos = 0;
+					switch (value2)
+					{
+						case 'bf' | 'boyfriend':
+							boyfriendCameraOffset[0] = xPos;
+							boyfriendCameraOffset[1] = yPos;
+						case 'gf' | 'girlfriend':
+							girlfriendCameraOffset[0] = xPos;
+							girlfriendCameraOffset[1] = yPos;
+						case 'dad' | 'opponent':
+							opponentCameraOffset[0] = xPos;
+							opponentCameraOffset[1] = yPos;
+					}
+					
+				case 'Set Property':
+					var killMe:Array<String> = value1.split('.');
+					if (killMe.length > 1)
+					{
+						Reflect.setProperty(FunkinLua.getPropertyLoopThingWhatever(killMe, true, true), killMe[killMe.length - 1], value2);
+					}
+					else
+					{
+						Reflect.setProperty(this, value1, value2);
+					}
+				case 'Reactor Flash': // value 1 determines duration
+					if (ClientPrefs.flashing)
+					{
+						flashSprite.alpha = 0.3;
+						var flashDuration:Float = Std.parseFloat(value1);
+						if (Math.isNaN(flashDuration)) flashDuration = 0.5;
+						FlxTween.tween(flashSprite, {alpha: 0}, flashDuration);
+					}
+			}
+		} catch (e:Dynamic) {
+			#if desktop
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred in triggerEventNote:\n" + Std.string(e));
+			#end
 		}
 		
 		callOnScripts('onEvent', [eventName, value1, value2]);
-		
-		callEventScript(eventName, 'onTrigger', [value1, value2]);
+		// callEventScript(eventName, 'onTrigger', [value1, value2]);
 	}
 	
 	function moveCameraSection():Void
@@ -3769,7 +3774,7 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('asdfa', upP);
 		if (startedCountdown && !boyfriend.stunned && generatedMusic)
 		{
-			// rewritten inputs???
+			// rewritten inputs????
 			
 			notes.forEachAlive(function(daNote:Note) {
 				if(!ClientPrefs.controllerMode && !ClientPrefs.keyboardEnabled)
@@ -3916,221 +3921,156 @@ class PlayState extends MusicBeatState
 		}
 	}
 	
-	function noteMissPress(direction:Int = 1, anim:Bool = true):Void // You pressed a key when there was no notes to press for this key
+	function noteMissPress(direction:Int = 1, anim:Bool = true):Void
 	{
-		if (ClientPrefs.ghostTapping) return; // fuck it
-		
-		if (!boyfriend.stunned)
-		{
-			health -= 0.05 * healthLoss;
-			if (instakillOnMiss)
+		try {
+			if (ClientPrefs.ghostTapping) return; // fuck it
+			
+			if (!boyfriend.stunned)
 			{
-				vocals.playerVolume = 0;
-				doDeathCheck(true);
-			}
-			
-			if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
-			}
-			combo = 0;
-			
-			if (!practiceMode) songScore -= 10;
-			if (!endingSong)
-			{
-				songMisses++;
-			}
-			totalPlayed++;
-			RecalculateRating();
-			
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
-			
-			/*boyfriend.stunned = true;
+				health -= 0.05 * healthLoss;
+				if (instakillOnMiss)
+				{
+					vocals.playerVolume = 0;
+					doDeathCheck(true);
+				}
+				
+				if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
+				{
+					gf.playAnim('sad');
+				}
+				combo = 0;
+				
+				if (!practiceMode) songScore -= 10;
+				if (!endingSong)
+				{
+					songMisses++;
+				}
+				totalPlayed++;
+				RecalculateRating();
+				
+				// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
+				// FlxG.log.add('played imss note');
+				
+				/*boyfriend.stunned = true;
 		
 																																						// get stunned for 1/60 of a second, makes you able to
 																																						new FlxTimer().start(1 / 60, function(tmr:FlxTimer)
 																																						{
 																																							boyfriend.stunned = false;
 					});*/
-			
-			if (boyfriend.hasMissAnimations && anim)
-			{
-				if (boyfriend.animTimer <= 0 && !boyfriend.voicelining) boyfriend.playAnim(noteSkin.data.singAnimations[Std.int(Math.abs(direction))]
-					+ 'miss', true);
+				
+				if (boyfriend.hasMissAnimations && anim)
+				{
+					if (boyfriend.animTimer <= 0 && !boyfriend.voicelining) boyfriend.playAnim(noteSkin.data.singAnimations[Std.int(Math.abs(direction))]
+						+ 'miss', true);
+				}
+				vocals.playerVolume = 0;
 			}
-			vocals.playerVolume = 0;
+		    // callOnScripts('noteMissPress', [direction]);
+		} catch (e:Dynamic) {
+			#if desktop
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred in noteMissPress:\n" + Std.string(e));
+			#end
 		}
-		callOnScripts('noteMissPress', [direction]);
 	}
 	
 	function opponentNoteHit(note:Note, playfield:PlayField):Void
 	{
-		if (Paths.formatToSongPath(SONG.song) != 'tutorial') camZooming = true;
-		
-		var char:Character = note.owner == null ? playfield.owner : note.owner;
-		
-		if (note.gfNote) char = gf;
-		
-		if (note.noteType == 'Hey!' && char.animOffsets.exists('hey'))
-		{
-			char.playAnim('hey', true);
-			char.specialAnim = true;
-			char.heyTimer = 0.6;
-		}
-		
-		if (!note.noteSplashDisabled && !note.isSustainNote && playfield.playerControls)
-		{
-			spawnNoteSplashOnNote(note);
-		}
-		else if (!note.noAnimation)
-		{
-			var altAnim:String = "";
+		try {
+			if (Paths.formatToSongPath(SONG.song) != 'tutorial') camZooming = true;
 			
-			if (SONG.notes[curSection] != null)
+			var char:Character = note.owner == null ? playfield.owner : note.owner;
+			
+			if (note.gfNote) char = gf;
+			
+			if (note.noteType == 'Hey!' && char.animOffsets.exists('hey'))
 			{
-				if (SONG.notes[curSection].altAnim || note.noteType == 'Alt Animation')
-				{
-					altAnim = '-alt';
-				}
+				char.playAnim('hey', true);
+				char.specialAnim = true;
+				char.heyTimer = 0.6;
 			}
 			
-			var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
-			if (char.voicelining) char.voicelining = false;
-			
-			if (char != null)
+			if (!note.noteSplashDisabled && !note.isSustainNote && playfield.playerControls)
 			{
-				char.holdTimer = 0;
+				spawnNoteSplashOnNote(note);
+			}
+			else if (!note.noAnimation)
+			{
+				var altAnim:String = "";
 				
-				// TODO: maybe move this all away into a seperate function
-				if (!note.isSustainNote
-					&& noteRows[note.mustPress ? 0 : 1][note.row] != null
-					&& noteRows[note.mustPress ? 0 : 1][note.row].length > 1
-					&& note.noteType != "Ghost Note"
-					&& char.ghostsEnabled)
+				if (SONG.notes[curSection] != null)
 				{
-					// potentially have jump anims?
-					var chord = noteRows[note.mustPress ? 0 : 1][note.row];
-					var animNote = chord[0];
-					var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + altAnim;
-					if (char.mostRecentRow != note.row) char.playAnim(realAnim, true);
-					
-					if (note.nextNote != null && note.prevNote != null)
+					if (SONG.notes[curSection].altAnim || note.noteType == 'Alt Animation')
 					{
-						if (note != animNote
-							&& !note.nextNote.isSustainNote /* && !note.prevNote.isSustainNote */
-							&& callOnHScripts('onGhostAnim', [animToPlay, note]) != Globals.Function_Stop)
-						{
-							char.playGhostAnim(chord.indexOf(note), animToPlay, true);
-						}
-						else if (note.nextNote.isSustainNote)
-						{
-							char.playAnim(realAnim, true);
-							char.playGhostAnim(chord.indexOf(note), animToPlay, true);
-						}
+						altAnim = '-alt';
 					}
-					char.mostRecentRow = note.row;
 				}
-				else
+				
+				var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
+				if (char.voicelining) char.voicelining = false;
+				
+				if (char != null)
 				{
-					if (note.noteType != "Ghost Note") char.playAnim(animToPlay, true);
-					else char.playGhostAnim(note.noteData, animToPlay, true);
+					char.holdTimer = 0;
+					
+					// TODO: maybe move this all away into a seperate function
+					if (!note.isSustainNote
+						&& noteRows[note.mustPress ? 0 : 1][note.row] != null
+						&& noteRows[note.mustPress ? 0 : 1][note.row].length > 1
+						&& note.noteType != "Ghost Note"
+						&& char.ghostsEnabled)
+					{
+						// potentially have jump anims?
+						var chord = noteRows[note.mustPress ? 0 : 1][note.row];
+						var animNote = chord[0];
+						var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + altAnim;
+						if (char.mostRecentRow != note.row) char.playAnim(realAnim, true);
+						
+						if (note.nextNote != null && note.prevNote != null)
+						{
+							if (note != animNote
+								&& !note.nextNote.isSustainNote /* && !note.prevNote.isSustainNote */
+								&& callOnHScripts('onGhostAnim', [animToPlay, note]) != Globals.Function_Stop)
+							{
+								char.playGhostAnim(chord.indexOf(note), animToPlay, true);
+							}
+							else if (note.nextNote.isSustainNote)
+							{
+								char.playAnim(realAnim, true);
+								char.playGhostAnim(chord.indexOf(note), animToPlay, true);
+							}
+						}
+						//char.mostRecentRow = note.row;
+					}
+					else
+					{
+						if (note.noteType != "Ghost Note") char.playAnim(animToPlay, true);
+						else char.playGhostAnim(note.noteData, animToPlay, true);
+					}
 				}
 			}
-		}
-		
-		if (SONG.needsVoices)
-		{
-			if (soundMode == 'SWAP') FlxG.sound.music.volume = 0;
 			
-			if (vocals.opponentVocals.length == 0) vocals.playerVolume = 1;
-			else vocals.opponentVolume = 1;
-		}
-		
-		if (playfield.autoPlayed)
-		{
-			var time:Float = 0.15;
-			if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+			if (SONG.needsVoices)
 			{
-				time += 0.15;
-			}
-			strumPlayAnim(playfield, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
-		}
-		else
-		{
-			playfield.forEach(function(spr:StrumNote) {
-				if (Math.abs(note.noteData) == spr.ID)
-				{
-					spr.playAnim('confirm', true, note);
-				}
-			});
-		}
-		
-		note.hitByOpponent = true;
-		
-		var luaArgs:Array<Dynamic> = [
-			notes.members.indexOf(note),
-			Math.abs(note.noteData),
-			note.noteType,
-			note.isSustainNote,
-			note.ID
-		]; // once again, it requires i define it as a dynamic array
-		var hscriptArgs = [note];
-		
-		callOnLuas('opponentNoteHit', luaArgs);
-		callOnHScripts("opponentNoteHit", hscriptArgs);
-		if (note.noteScript != null)
-		{
-			var script:Dynamic = note.noteScript;
-			if (script.scriptType == LUA)
-			{
-				callScript(script, 'opponentNoteHit', luaArgs);
-			}
-			else
-			{
-				callScript(script, "opponentNoteHit", hscriptArgs);
-			}
-		}
-		if (!note.isSustainNote)
-		{
-			if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-			note.kill();
-			notes.remove(note, true);
-			note.destroy();
-		}
-	}
-	
-	function goodNoteHit(note:Note, field:PlayField):Void
-	{
-		if (!note.wasGoodHit)
-		{
-			if (field.autoPlayed && (note.ignoreNote || note.hitCausesMiss)) return;
-			
-			if (ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled)
-			{
-				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
+				if (soundMode == 'SWAP') FlxG.sound.music.volume = 0;
+				
+				if (vocals.opponentVocals.length == 0) vocals.playerVolume = 1;
+				else vocals.opponentVolume = 1;
 			}
 			
-			if (note.sustainLength > 0 && !note.isSustainNote)
-			{
-				// edit how the note cover spawns so it activates the one corresponding to the note that was hit instead of spawning a brand new one
-				// im sorry data
-				// spawnNoteCoverOnNote(note, note.sustainLength);
-				// trace(note.sustainLength);
-			}
-			
-			if (field.autoPlayed)
+			if (playfield.autoPlayed)
 			{
 				var time:Float = 0.15;
-				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+				if (note.isSustainNote && ! !note.animation.curAnim.name.endsWith('end'))
 				{
 					time += 0.15;
 				}
-				strumPlayAnim(field, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
+				strumPlayAnim(playfield, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
 			}
 			else
 			{
-				field.forEach(function(spr:StrumNote) {
+				playfield.forEach(function(spr:StrumNote) {
 					if (Math.abs(note.noteData) == spr.ID)
 					{
 						spr.playAnim('confirm', true, note);
@@ -4138,128 +4078,7 @@ class PlayState extends MusicBeatState
 				});
 			}
 			
-			if (note.hitCausesMiss)
-			{
-				if (field.noteMissCallback != null) field.noteMissCallback(note, field);
-				if (!note.noteSplashDisabled && !note.isSustainNote && field.playerControls)
-				{
-					spawnNoteSplashOnNote(note);
-				}
-				
-				if (!note.noMissAnimation)
-				{
-					switch (note.noteType)
-					{
-						case 'Hurt Note': // Hurt note
-							if (field.owner.animation.getByName('hurt') != null)
-							{
-								field.owner.playAnim('hurt', true);
-								field.owner.specialAnim = true;
-							}
-					}
-				}
-				
-				note.wasGoodHit = true;
-				if (!note.isSustainNote)
-				{
-					if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-					note.kill();
-					notes.remove(note, true);
-					note.destroy();
-				}
-				return;
-			}
-			
-			if (!note.isSustainNote)
-			{
-				combo += 1;
-				if (combo > 9999) combo = 9999;
-				popUpScore(note);
-			}
-			health += note.hitHealth * healthGain;
-			
-			if (!note.noAnimation)
-			{
-				var daAlt = '';
-				if (note.noteType == 'Alt Animation') daAlt = '-alt';
-				
-				var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))];
-				
-				if (note.gfNote)
-				{
-					if (gf != null)
-					{
-						gf.playAnim(animToPlay + daAlt, true);
-						gf.holdTimer = 0;
-					}
-				}
-				else if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-				{
-					// field.owner.playAnim(animToPlay + daAlt, true);
-					field.owner.holdTimer = 0;
-					if (!note.isSustainNote
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row] != null
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row].length > 1
-						&& note.noteType != "Ghost Note"
-						&& field.owner.ghostsEnabled)
-					{
-						// potentially have jump anims?
-						var chord = noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row];
-						var animNote = chord[0];
-						var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + daAlt;
-						if (field.owner.mostRecentRow != note.row)
-						{
-							if (note.owner == null) field.owner.playAnim(realAnim, true);
-							else note.owner.playAnim(realAnim, true);
-						}
-						
-						if (note != animNote && chord.indexOf(note) != animNote.noteData)
-						{
-							if (note.owner == null) field.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-							else note.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-						}
-						// doGhostAnim('bf', animToPlay);
-						
-						field.owner.mostRecentRow = note.row;
-					}
-					else
-					{
-						if (note.noteType != "Ghost Note")
-						{
-							if (note.owner == null) field.owner.playAnim(animToPlay + daAlt, true);
-							else note.owner.playAnim(animToPlay + daAlt, true);
-						}
-						else
-						{
-							if (note.owner == null) field.owner.playGhostAnim(note.noteData, animToPlay, true);
-							else note.owner.playGhostAnim(note.noteData, animToPlay, true);
-						}
-					}
-				}
-				
-				if (note.noteType == 'Hey!')
-				{
-					if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-					{
-						if (field.owner.animOffsets.exists('hey'))
-						{
-							field.owner.playAnim('hey', true);
-							field.owner.specialAnim = true;
-							field.owner.heyTimer = 0.6;
-						}
-					}
-					
-					if (gf != null && gf.animOffsets.exists('cheer'))
-					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = 0.6;
-					}
-				}
-			}
-			
-			note.wasGoodHit = true;
-			vocals.playerVolume = 1;
+			note.hitByOpponent = true;
 			
 			var luaArgs:Array<Dynamic> = [
 				notes.members.indexOf(note),
@@ -4267,92 +4086,107 @@ class PlayState extends MusicBeatState
 				note.noteType,
 				note.isSustainNote,
 				note.ID
-			]; // for some reason it requires me to define it as a dynamic array
+			]; // once again, it requires i define it as a dynamic array
 			var hscriptArgs = [note];
 			
-			callOnLuas('goodNoteHit', luaArgs);
-			callOnHScripts("goodNoteHit", hscriptArgs); // maybe have this above so you can interrupt goodNoteHit? idk we'll see
+			callOnLuas('opponentNoteHit', luaArgs);
+			callOnHScripts("opponentNoteHit", hscriptArgs);
 			if (note.noteScript != null)
 			{
 				var script:Dynamic = note.noteScript;
 				if (script.scriptType == LUA)
 				{
-					callScript(script, 'goodNoteHit', luaArgs);
+					callScript(script, 'opponentNoteHit', luaArgs);
 				}
 				else
 				{
-					callScript(script, "goodNoteHit", hscriptArgs);
+					callScript(script, "opponentNoteHit", hscriptArgs);
 				}
 			}
-			if (!note.isSustainNote)
-			{
-				if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
+			/*if (!note.isSustainNote)
+		    {
+			if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
+			note.kill();
+			notes.remove(note, true);
+			note.destroy();*/
+		} catch (e:Dynamic) {
+			#if desktop
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred in opponentNoteHit:\n" + Std.string(e));
+			#end
 		}
 	}
 	
-	function extraNoteHit(note:Note, field:PlayField)
+	function goodNoteHit(note:Note, field:PlayField):Void
 	{
-		if (!note.wasGoodHit)
-		{
-			if (field.autoPlayed && (note.ignoreNote || note.hitCausesMiss)) return;
-			
-			if (field.autoPlayed)
+		try {
+			if (!note.wasGoodHit)
 			{
-				var time:Float = 0.15;
-				if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+				if (field.autoPlayed && (note.ignoreNote || note.hitCausesMiss)) return;
+				
+				if (ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled)
 				{
-					time += 0.15;
-				}
-				strumPlayAnim(field, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
-			}
-			else
-			{
-				field.forEach(function(spr:StrumNote) {
-					if (Math.abs(note.noteData) == spr.ID)
-					{
-						spr.playAnim('confirm', true, note);
-					}
-				});
-			}
-			
-			if (note.hitCausesMiss)
-			{
-				if (field.noteMissCallback != null) field.noteMissCallback(note, field);
-				if (!note.noteSplashDisabled && !note.isSustainNote)
-				{
-					spawnNoteSplashOnNote(note);
+					FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
 				}
 				
-				if (!note.noMissAnimation)
+				if (note.sustainLength > 0 && !note.isSustainNote)
 				{
-					switch (note.noteType)
-					{
-						case 'Hurt Note': // Hurt note
-							if (field.owner.animation.getByName('hurt') != null)
-							{
-								field.owner.playAnim('hurt', true);
-								field.owner.specialAnim = true;
-							}
-					}
+					// edit how the note cover spawns so it activates the one corresponding to the note that was hit instead of spawning a brand new one
+					// im sorry data
+					// spawnNoteCoverOnNote(note, note.sustainLength);
+					// trace(note.sustainLength);
 				}
 				
-				note.wasGoodHit = true;
-				if (!note.isSustainNote)
+				if (field.autoPlayed)
 				{
-					if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-					note.kill();
-					notes.remove(note, true);
-					note.destroy();
+					var time:Float = 0.15;
+					if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+					{
+						time += 0.15;
+					}
+					strumPlayAnim(field, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
 				}
-				return;
-			}
-			
-			if (field.playerControls)
-			{
+				else
+				{
+					field.forEach(function(spr:StrumNote) {
+						if (Math.abs(note.noteData) == spr.ID)
+						{
+							spr.playAnim('confirm', true, note);
+						}
+					});
+				}
+				
+				if (note.hitCausesMiss)
+				{
+					if (field.noteMissCallback != null) field.noteMissCallback(note, field);
+					if (!note.noteSplashDisabled && !note.isSustainNote && field.playerControls)
+					{
+						spawnNoteSplashOnNote(note);
+					}
+					
+					if (!note.noMissAnimation)
+					{
+						switch (note.noteType)
+						{
+							case 'Hurt Note': // Hurt note
+								if (field.owner.animation.getByName('hurt') != null)
+								{
+									field.owner.playAnim('hurt', true);
+									field.owner.specialAnim = true;
+								}
+						}
+					}
+					
+					note.wasGoodHit = true;
+					if (!note.isSustainNote)
+					{
+						if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
+						note.kill();
+						notes.remove(note, true);
+						note.destroy();
+					}
+					return;
+				}
+				
 				if (!note.isSustainNote)
 				{
 					combo += 1;
@@ -4360,131 +4194,323 @@ class PlayState extends MusicBeatState
 					popUpScore(note);
 				}
 				health += note.hitHealth * healthGain;
-			}
-			
-			if (!note.noAnimation)
-			{
-				var daAlt = '';
-				if (note.noteType == 'Alt Animation') daAlt = '-alt';
 				
-				var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))];
-				var owner = field.owner;
-				
-				if (note.gfNote)
+				if (!note.noAnimation)
 				{
-					if (gf != null)
+					var daAlt = '';
+					if (note.noteType == 'Alt Animation') daAlt = '-alt';
+					
+					var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))];
+					
+					if (note.gfNote)
 					{
-						gf.playAnim(animToPlay + daAlt, true);
-						gf.holdTimer = 0;
+						if (gf != null)
+						{
+							gf.playAnim(animToPlay + daAlt, true);
+							gf.holdTimer = 0;
+						}
 					}
-				}
-				else if (field.owner.animTimer <= 0 && !field.owner.voicelining)
-				{
-					// field.owner.playAnim(animToPlay + daAlt, true);
-					field.owner.holdTimer = 0;
-					if (note.owner != null) owner = note.owner;
-					if (!note.isSustainNote
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row] != null
-						&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row].length > 1
-						&& note.noteType != "Ghost Note"
-						&& field.owner.ghostsEnabled)
+					else if (field.owner.animTimer <= 0 && !field.owner.voicelining)
 					{
-						if (field.owner.ghostsEnabled)
+						// field.owner.playAnim(animToPlay + daAlt, true);
+						field.owner.holdTimer = 0;
+						if (!note.isSustainNote
+							&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row] != null
+							&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row].length > 1
+							&& note.noteType != "Ghost Note"
+							&& field.owner.ghostsEnabled)
 						{
 							// potentially have jump anims?
 							var chord = noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row];
 							var animNote = chord[0];
 							var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + daAlt;
-							if (field.owner.mostRecentRow != note.row)
-							{
-								if (owner == null) field.owner.playAnim(realAnim, true);
-								else owner.playAnim(realAnim, true);
-							}
+							if (field.owner.mostRecentRow != note.row) field.owner.playAnim(realAnim, true);
+							/*if (note.owner == null) field.owner.playAnim(realAnim, true);
+							else note.owner.playAnim(realAnim, true);*/
 							
 							if (note != animNote && chord.indexOf(note) != animNote.noteData)
 							{
-								if (owner == null) field.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
-								else owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
+								if (note.owner == null) field.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
+								else note.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
 							}
 							// doGhostAnim('bf', animToPlay);
 							
 							field.owner.mostRecentRow = note.row;
 						}
-					}
-					else
-					{
-						if (note.noteType != "Ghost Note")
-						{
-							if (owner == null) field.owner.playAnim(animToPlay + daAlt, true);
-							else owner.playAnim(animToPlay + daAlt, true);
-						}
 						else
 						{
-							if (owner == null) field.owner.playGhostAnim(note.noteData, animToPlay, true);
-							else owner.playGhostAnim(note.noteData, animToPlay, true);
+							if (note.noteType != "Ghost Note")
+							{
+								if (note.owner == null) field.owner.playAnim(animToPlay + daAlt, true);
+								else note.owner.playAnim(animToPlay + daAlt, true);
+							}
+							else
+							{
+								if (note.owner == null) field.owner.playGhostAnim(note.noteData, animToPlay, true);
+								else note.owner.playGhostAnim(note.noteData, animToPlay, true);
+							}
+						}
+					}
+					
+					if (note.noteType == 'Hey!')
+					{
+						if (field.owner.animTimer <= 0 && !field.owner.voicelining)
+						{
+							if (field.owner.animOffsets.exists('hey'))
+							{
+								field.owner.playAnim('hey', true);
+								field.owner.specialAnim = true;
+								field.owner.heyTimer = 0.6;
+							}
+						}
+						
+						if (gf != null && gf.animOffsets.exists('cheer'))
+						{
+							gf.playAnim('cheer', true);
+							gf.specialAnim = true;
+							gf.heyTimer = 0.6;
 						}
 					}
 				}
 				
-				if (note.noteType == 'Hey!')
+				note.wasGoodHit = true;
+				vocals.playerVolume = 1;
+				
+				var luaArgs:Array<Dynamic> = [
+					notes.members.indexOf(note),
+					Math.abs(note.noteData),
+					note.noteType,
+					note.isSustainNote,
+					note.ID
+				]; // for some reason it requires me to define it as a dynamic array
+				var hscriptArgs = [note];
+				
+				callOnLuas('goodNoteHit', luaArgs);
+				callOnHScripts("goodNoteHit", hscriptArgs); // maybe have this above so you can interrupt goodNoteHit? idk we'll see
+				if (note.noteScript != null)
 				{
-					if (field.owner.animTimer <= 0 && !field.owner.voicelining)
+					var script:Dynamic = note.noteScript;
+					if (script.scriptType == LUA)
 					{
-						if (field.owner.animOffsets.exists('hey'))
-						{
-							field.owner.playAnim('hey', true);
-							field.owner.specialAnim = true;
-							field.owner.heyTimer = 0.6;
-						}
+						callScript(script, 'goodNoteHit', luaArgs);
 					}
-					
-					if (gf != null && gf.animOffsets.exists('cheer'))
+					else
 					{
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = 0.6;
+						callScript(script, "goodNoteHit", hscriptArgs);
 					}
 				}
-			}
-			
-			note.wasGoodHit = true;
-			vocals.playerVolume = 1;
-			
-			if (note.noteData > 4)
-			{
-				note.doAutoSustain = true;
-			}
-			
-			var luaArgs:Array<Dynamic> = [
-				notes.members.indexOf(note),
-				Math.abs(note.noteData),
-				note.noteType,
-				note.isSustainNote,
-				note.ID
-			]; // for some reason it requires me to define it as a dynamic array
-			var hscriptArgs = [note];
-			
-			callOnLuas('extraNoteHit', luaArgs);
-			callOnHScripts("extraNoteHit", hscriptArgs); // maybe have this above so you can interrupt goodNoteHit? idk we'll see
-			if (note.noteScript != null)
-			{
-				var script:Dynamic = note.noteScript;
-				if (script.scriptType == LUA)
+				if (!note.isSustainNote)
 				{
-					callScript(script, 'extraNoteHit', luaArgs);
+					if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
+					note.kill();
+					notes.remove(note, true);
+					note.destroy();
+				}
+			}
+		} catch (e:Dynamic) {
+			#if desktop
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred in goodNoteHit:\n" + Std.string(e));
+			#end
+		}
+	}
+	
+	function extraNoteHit(note:Note, field:PlayField)
+	{
+		try {
+			if (!note.wasGoodHit)
+			{
+				if (field.autoPlayed && (note.ignoreNote || note.hitCausesMiss)) return;
+				
+				if (field.autoPlayed)
+				{
+					var time:Float = 0.15;
+					if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+					{
+						time += 0.15;
+					}
+					strumPlayAnim(field, Std.int(Math.abs(note.noteData)) % SONG.keys, time, note);
 				}
 				else
 				{
-					callScript(script, "extraNoteHit", hscriptArgs);
+					field.forEach(function(spr:StrumNote) {
+						if (Math.abs(note.noteData) == spr.ID)
+						{
+							spr.playAnim('confirm', true, note);
+						}
+					});
+				}
+				
+				if (note.hitCausesMiss)
+				{
+					if (field.noteMissCallback != null) field.noteMissCallback(note, field);
+					if (!note.noteSplashDisabled && !note.isSustainNote)
+					{
+						spawnNoteSplashOnNote(note);
+					}
+					
+					if (!note.noMissAnimation)
+					{
+						switch (note.noteType)
+						{
+							case 'Hurt Note': // Hurt note
+								if (field.owner.animation.getByName('hurt') != null)
+								{
+									field.owner.playAnim('hurt', true);
+									field.owner.specialAnim = true;
+								}
+						}
+					}
+					
+					note.wasGoodHit = true;
+					if (!note.isSustainNote)
+					{
+						if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
+						note.kill();
+						notes.remove(note, true);
+						note.destroy();
+					}
+					return;
+				}
+				
+				if (field.playerControls)
+				{
+					if (!note.isSustainNote)
+					{
+						combo += 1;
+						if (combo > 9999) combo = 9999;
+						popUpScore(note);
+					}
+					health += note.hitHealth * healthGain;
+				}
+				
+				if (!note.noAnimation)
+				{
+					var daAlt = '';
+					if (note.noteType == 'Alt Animation') daAlt = '-alt';
+					
+					var animToPlay:String = noteSkin.data.singAnimations[Std.int(Math.abs(note.noteData))];
+					var owner = field.owner;
+					
+					if (note.gfNote)
+					{
+						if (gf != null)
+						{
+							gf.playAnim(animToPlay + daAlt, true);
+							gf.holdTimer = 0;
+						}
+					}
+					else if (field.owner.animTimer <= 0 && !field.owner.voicelining)
+					{
+						// field.owner.playAnim(animToPlay + daAlt, true);
+						field.owner.holdTimer = 0;
+						if (note.owner != null) owner = note.owner;
+						if (!note.isSustainNote
+							&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row] != null
+							&& noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row].length > 1
+							&& note.noteType != "Ghost Note"
+							&& field.owner.ghostsEnabled)
+						{
+							if (field.owner.ghostsEnabled)
+							{
+								// potentially have jump anims?
+								var chord = noteRows[note.gfNote ? 2 : note.mustPress ? 0 : 1][note.row];
+								var animNote = chord[0];
+								var realAnim = noteSkin.data.singAnimations[Std.int(Math.abs(animNote.noteData))] + daAlt;
+								if (field.owner.mostRecentRow != note.row)
+								{
+									if (owner == null) field.owner.playAnim(realAnim, true);
+									else owner.playAnim(realAnim, true);
+								}
+								
+								if (note != animNote && chord.indexOf(note) != animNote.noteData)
+								{
+									if (owner == null) field.owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
+									else owner.playGhostAnim(chord.indexOf(note), animToPlay, true);
+								}
+								// doGhostAnim('bf', animToPlay);
+								
+								field.owner.mostRecentRow = note.row;
+							}
+						}
+						else
+						{
+							if (note.noteType != "Ghost Note")
+							{
+								if (owner == null) field.owner.playAnim(animToPlay + daAlt, true);
+								else owner.playAnim(animToPlay + daAlt, true);
+							}
+							else
+							{
+								if (owner == null) field.owner.playGhostAnim(note.noteData, animToPlay, true);
+								else owner.playGhostAnim(note.noteData, animToPlay, true);
+							}
+						}
+					}
+					
+					if (note.noteType == 'Hey!')
+					{
+						if (field.owner.animTimer <= 0 && !field.owner.voicelining)
+						{
+							if (field.owner.animOffsets.exists('hey'))
+							{
+								field.owner.playAnim('hey', true);
+								field.owner.specialAnim = true;
+								field.owner.heyTimer = 0.6;
+							}
+						}
+						
+						if (gf != null && gf.animOffsets.exists('cheer'))
+						{
+							gf.playAnim('cheer', true);
+							gf.specialAnim = true;
+							gf.heyTimer = 0.6;
+						}
+					}
+				}
+				
+				note.wasGoodHit = true;
+				vocals.playerVolume = 1;
+				
+				if (note.noteData > 4)
+				{
+					note.doAutoSustain = true;
+				}
+				
+				var luaArgs:Array<Dynamic> = [
+					notes.members.indexOf(note),
+					Math.abs(note.noteData),
+					note.noteType,
+					note.isSustainNote,
+					note.ID
+				]; // for some reason it requires me to define it as a dynamic array
+				var hscriptArgs = [note];
+				
+				callOnLuas('extraNoteHit', luaArgs);
+				callOnHScripts("extraNoteHit", hscriptArgs); // maybe have this above so you can interrupt goodNoteHit? idk we'll see
+				if (note.noteScript != null)
+				{
+					var script:Dynamic = note.noteScript;
+					if (script.scriptType == LUA)
+					{
+						callScript(script, 'extraNoteHit', luaArgs);
+					}
+					else
+					{
+						callScript(script, "extraNoteHit", hscriptArgs);
+					}
+				}
+				if (!note.isSustainNote)
+				{
+					if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
+					note.kill();
+					notes.remove(note, true);
+					note.destroy();
 				}
 			}
-			if (!note.isSustainNote)
-			{
-				if (modchartObjects.exists('note${note.ID}')) modchartObjects.remove('note${note.ID}');
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
+		} catch (e:Dynamic) {
+			#if desktop
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred in extraNoteHit:\n" + Std.string(e));
+			#end
 		}
 	}
 	
@@ -4929,5 +4955,4 @@ class PlayState extends MusicBeatState
 
 
 	*/
-
 }
