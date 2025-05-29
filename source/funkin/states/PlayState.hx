@@ -1945,7 +1945,7 @@ class PlayState extends MusicBeatState
 			{
 				position: 0,
 				songTime: 0,
-				startTime: 0,
+				startTime: 1,
 				startSpeed: 1,
 				speed: 1
 			};
@@ -1981,10 +1981,10 @@ class PlayState extends MusicBeatState
 				}
 				
 				speedChanges.sort(svSort);
-				speedChanges.push(
+							speedChanges.push(
 					{
 						position: getNoteInitialTime(event.strumTime),
-											//songTime: event.strumTime,
+						songTime: event.strumTime, // <-- Adicione esta linha!
 						startTime: event.strumTime,
 						speed: speed
 					});
