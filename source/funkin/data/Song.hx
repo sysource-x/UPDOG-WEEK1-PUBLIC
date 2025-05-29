@@ -99,9 +99,24 @@ class Song
 	public static function loadFromJson(jsonInput:String, ?folder:String, ?mod:Bool = false):SwagSong
 	{
 		var rawJson = null;
-		
+
 		var formattedFolder:String = Paths.formatToSongPath(folder);
 		var formattedSong:String = Paths.formatToSongPath(jsonInput);
+
+		// Clean up the folder and song names
+		if (formattedFolder.lastIndexOf("/") != -1) {
+			formattedFolder = formattedFolder.substr(formattedFolder.lastIndexOf("/") + 1);
+		}
+		if (formattedFolder.lastIndexOf("\\") != -1) {
+			formattedFolder = formattedFolder.substr(formattedFolder.lastIndexOf("\\") + 1);
+		}
+		if (formattedSong.lastIndexOf("/") != -1) {
+			formattedSong = formattedSong.substr(formattedSong.lastIndexOf("/") + 1);
+		}
+		if (formattedSong.lastIndexOf("\\") != -1) {
+			formattedSong = formattedSong.substr(formattedSong.lastIndexOf("\\") + 1);
+		}
+
 		#if MODS_ALLOWED
 		var moddyFile:String = Paths.modsJson(formattedFolder + '/' + formattedSong);
 		if (FileSystem.exists(moddyFile))
@@ -109,7 +124,7 @@ class Song
 			rawJson = File.getContent(moddyFile).trim();
 		}
 		#end
-		
+
 		if (rawJson == null)
 		{
 			if (mod)
@@ -122,7 +137,7 @@ class Song
 			{
 				try
 				{
-					rawJson = openfl.Assets.getText('assets/songs/$formattedFolder/$formattedSong.json'); //shitty as hell but the pathing system in this ver of the engine is annoying
+					rawJson = openfl.Assets.getText('assets/songs/$formattedFolder/$formattedSong.json');
 				}
 				catch (e)
 				{
