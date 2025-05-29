@@ -339,8 +339,12 @@ class StoryMenuState extends MusicBeatState
 
 		PlayState.storyDifficulty = curDiff;
 
-		var songLowercase = Paths.formatToSongPath(PlayState.storyPlaylist[0].toLowerCase());
-
+		var songName = PlayState.storyPlaylist[0].toLowerCase();
+		var songLowercase = Paths.formatToSongPath(songName);
+		if (songLowercase.contains("/")) {
+			var parts = songLowercase.split("/");
+			songLowercase = parts[parts.length - 1];
+		}
 		PlayState.SONG = Song.loadFromJson(songLowercase + diffs[curDiff - 1], songLowercase);
 		PlayState.campaignScore = 0;
 		PlayState.campaignMisses = 0;

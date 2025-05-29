@@ -420,7 +420,12 @@ class TitleState extends MusicBeatState
 						new FlxTimer().start(1.4, function(tmr:FlxTimer) {
 							PlayState.storyDifficulty = 1;
 							PlayState.isStoryMode = false;
-							PlayState.SONG = Song.loadFromJson('bananas', 'bananas');
+                            var songName = 'bananas';
+                            if (songName.contains("/")) {
+                                var parts = songName.split("/");
+                                songName = parts[parts.length - 1];
+                            }
+                            PlayState.SONG = Song.loadFromJson(songName, songName);
 							FlxG.switchState(new PlayState());
 							FlxG.mouse.visible = false;
 						});

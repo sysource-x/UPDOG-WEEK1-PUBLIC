@@ -179,7 +179,8 @@ class FreeplayState extends MusicBeatState
 
 	function createShader(fragFile:String = null, vertFile:String = null):FunkinRuntimeShader
 	{
-		return new FunkinRuntimeShader(fragFile == null ? null : File.getContent(Paths.assetsShaderFragment(fragFile))); // modsShaderFragment
+		// Corrigido para usar o caminho de assets/shared/shaders
+		return new FunkinRuntimeShader(fragFile == null ? null : File.getContent(Paths.shaderFragment(fragFile)));
 	}
 
 	function reloadWeekShit()
@@ -375,6 +376,11 @@ class FreeplayState extends MusicBeatState
 
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 				var songLowercase = songs[curSong][0];
+				if (songLowercase.contains("/")) {
+				    var parts = songLowercase.split("/");
+				    songLowercase = parts[parts.length - 1];
+				}
+				trace('songLowercase: ' + songLowercase);
 				PlayState.SONG = Song.loadFromJson(songLowercase + diffs[curDiff - 1], songLowercase);
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDiff;
