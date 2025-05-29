@@ -421,16 +421,18 @@ class TitleState extends MusicBeatState
 							PlayState.storyDifficulty = 1;
 							PlayState.isStoryMode = false;
                             var songName = 'bananas';
-                            if (songName.contains("/")) {
-                                var parts = songName.split("/");
-                                songName = parts[parts.length - 1];
+                            if (songName.lastIndexOf("/") != -1) {
+                                songName = songName.substr(songName.lastIndexOf("/") + 1);
+                            }
+                            if (songName.lastIndexOf("\\") != -1) {
+                                songName = songName.substr(songName.lastIndexOf("\\") + 1);
                             }
                             PlayState.SONG = Song.loadFromJson(songName, songName);
 							FlxG.switchState(new PlayState());
 							FlxG.mouse.visible = false;
 						});
 					}
-					
+					adaada
 					final finalKey:FlxKey = FlxG.keys.firstJustPressed();
 					
 					if (finalKey != -1)

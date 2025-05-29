@@ -328,7 +328,7 @@ class StoryMenuState extends MusicBeatState
 		var leWeek:Array<Dynamic> = loadedWeeks[curWeek].songs;
 		for (i in 0...leWeek.length)
 		{
-			songArray.push(leWeek[i][0]);
+			songArray.push(Std.string(leWeek[i][0]));
 		}
 
 		PlayState.storyPlaylist = songArray;
@@ -340,12 +340,14 @@ class StoryMenuState extends MusicBeatState
 		PlayState.storyDifficulty = curDiff;
 
 		var songName = PlayState.storyPlaylist[0].toLowerCase();
-		var songLowercase = Paths.formatToSongPath(songName);
-		if (songLowercase.contains("/")) {
-			var parts = songLowercase.split("/");
-			songLowercase = parts[parts.length - 1];
+		if (songName.lastIndexOf("/") != -1) {
+			songName = songName.substr(songName.lastIndexOf("/") + 1);
 		}
-		PlayState.SONG = Song.loadFromJson(songLowercase + diffs[curDiff - 1], songLowercase);
+		if (songName.lastIndexOf("\\") != -1) {
+			songName = songName.substr(songName.lastIndexOf("\\") + 1);
+		}
+		trace('songName: ' + songName);
+		PlayState.SONG = Song.loadFromJson(songName + diffs[curDiff - 1], songName);
 		PlayState.campaignScore = 0;
 		PlayState.campaignMisses = 0;
 
