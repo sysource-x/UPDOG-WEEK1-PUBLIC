@@ -432,8 +432,7 @@ class TitleState extends MusicBeatState
 							FlxG.mouse.visible = false;
 						});
 					}
-					adaada
-					final finalKey:FlxKey = FlxG.keys.firstJustPressed();
+					var finalKey:FlxKey = FlxG.keys.firstJustPressed();
 					
 					if (finalKey != -1)
 					{
