@@ -237,21 +237,31 @@ class WeekData
 	private static function getWeekFile(path:String):WeekFile
 	{
 		var rawJson:String = null;
-		#if desktop
-		if (FileSystem.exists(path))
-		{
-			rawJson = File.getContent(path);
+		try {
+			#if desktop
+			if (FileSystem.exists(path))
+			{
+				rawJson = File.getContent(path);
+			}
+			#else
+			if (OpenFlAssets.exists(path))
+			{
+				rawJson = Assets.getText(path);
+			}
+			#end
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Week Load Error", "Failed to load week file:\n" + path + "\n" + Std.string(e));
+			return null;
 		}
-		#else
-		if (OpenFlAssets.exists(path))
-		{
-			rawJson = Assets.getText(path);
-		}
-		#end
 
 		if (rawJson != null && rawJson.length > 0)
 		{
-			return cast Json.parse(rawJson);
+			try {
+				return cast Json.parse(rawJson);
+			} catch (e:Dynamic) {
+				NativeAPI.showMessageBox("Week Parse Error", "Failed to parse week JSON:\n" + path + "\n" + Std.string(e));
+				return null;
+			}
 		}
 		return null;
 	}

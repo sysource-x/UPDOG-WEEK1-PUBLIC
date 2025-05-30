@@ -129,9 +129,7 @@ class Song
 		{
 			if (mod)
 			{
-				#if desktop // nothing
 				rawJson = File.getContent(moddyFile).trim();
-				#end
 			}
 			else
 			{
@@ -142,36 +140,34 @@ class Song
 				catch (e)
 				{
 					#if desktop
-					rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+					try {
+						rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+					} catch (e2:Dynamic) {
+						NativeAPI.showMessageBox("Song Load Error", "Failed to load chart (desktop):\n" + Std.string(e2));
+						throw e2;
+					}
 					#else
-					rawJson = openfl.Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+					try {
+						rawJson = openfl.Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+					} catch (e2:Dynamic) {
+						NativeAPI.showMessageBox("Song Load Error", "Failed to load chart (assets):\n" + Std.string(e2));
+						throw e2;
+					}
 					#end
 				}
 			}
 		}
-		
+
+		if (rawJson == null) {
+			NativeAPI.showMessageBox("Song Load Error", "Could not load chart for song: " + formattedSong);
+			throw "Chart not found: " + formattedSong;
+		}
+
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-		
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-		
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
 
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
-		
 		var songJson:Dynamic = parseJSONshit(rawJson);
 		if (jsonInput != 'events') StageData.loadDirectory(songJson);
 		onLoadJson(songJson);

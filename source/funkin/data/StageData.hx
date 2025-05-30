@@ -45,25 +45,31 @@ class StageData
 		var rawJson:String = null;
 		var path:String = Paths.getSharedPath('stages/' + stage + '.json');
 
-		#if MODS_ALLOWED
-		var modPath:String = Paths.modFolders('stages/' + stage + '.json');
-		if (FileSystem.exists(modPath))
-		{
-			rawJson = File.getContent(modPath);
+		try {
+			#if desktop
+			var modPath:String = Paths.modFolders('stages/' + stage + '.json');
+			if (FileSystem.exists(modPath))
+			{
+				rawJson = File.getContent(modPath);
+			}
+			else if (FileSystem.exists(path))
+			{
+				rawJson = File.getContent(path);
+			}
+			else #end
+			if (Assets.exists(path))
+			{
+				rawJson = Assets.getText(path);
+			}
+			else
+			{
+				NativeAPI.showMessageBox("Stage Load Error", "Stage file not found:\n" + path);
+				return null;
+			}
+		} catch (e:Dynamic) {
+			NativeAPI.showMessageBox("Stage Load Error", "Failed to load stage file:\n" + Std.string(e));
+			return null;
 		}
-		else if (FileSystem.exists(path))
-		{
-			rawJson = File.getContent(path);
-		}
-		else #end
-		if (Assets.exists(path))
-		{
-			rawJson = Assets.getText(path);
-		}
-	else
-	{
-		return null;
-	}
 
 		trace(rawJson);
 		return cast Json.parse(rawJson);

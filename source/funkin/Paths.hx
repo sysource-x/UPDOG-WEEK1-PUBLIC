@@ -68,7 +68,7 @@ class Paths
 	}
 	
 	public static var dumpExclusions:Array<String> = [
-		'$CORE_DIRECTORY/music/freakyMenu.$SOUND_EXT',
+		'$CORE_DIRECTORY/shared/music/freakyMenu.$SOUND_EXT',
 		'$CORE_DIRECTORY/shared/music/breakfast.$SOUND_EXT',
 		'$CORE_DIRECTORY/shared/music/tea-time.$SOUND_EXT',
 	];
@@ -309,7 +309,7 @@ class Paths
 		// #if sys
 		#if desktop // MODS_ALLOWED
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
-		// #end
+		#end
 		
 		if (FileSystem.exists(getSharedPath(key))) return File.getContent(getSharedPath(key));
 		
@@ -536,37 +536,37 @@ class Paths
 	
 	inline static public function modsFont(key:String)
 	{
-		return font('fonts/' + key);
+		return getPath('fonts/' + key);
 	}
 	
 	inline static public function modsJson(key:String)
 	{
-		return json('songs/' + key + '.json');
+		return getPath('songs/' + key + '.json');
 	}
 	
 	inline static public function modsVideo(key:String)
 	{
-		return video('videos/' + key + '.' + VIDEO_EXT);
+		return getPath('videos/' + key + '.' + VIDEO_EXT);
 	}
 	
 	inline static public function modsSounds(path:String, key:String)
 	{
-		return sound(path + '/' + key + '.' + SOUND_EXT);
+		return getPath(path + '/' + key + '.' + SOUND_EXT);
 	}
 	
 	inline static public function modsImages(key:String)
 	{
-		return image('images/' + key + '.png');
+		return getPath('images/' + key + '.png');
 	}
 	
 	inline static public function modsXml(key:String)
 	{
-		return xml('images/' + key + '.xml');
+		return getPath('images/' + key + '.xml');
 	}
 	
 	inline static public function modsTxt(key:String)
 	{
-		return txt('images/' + key + '.txt');
+		return getPath('images/' + key + '.txt');
 	}
 	
 	/* Goes unused for now
@@ -672,7 +672,7 @@ class Paths
 
 	inline static public function assetsShaderFragment(key:String):String
 	{
-    return getPath('shaders/' + key + '.frag', 'shared');
+        return getPath('shaders/' + key + '.frag', 'shared');
     }
 
 	inline static public function assetsShaderVertex(key:String):String
