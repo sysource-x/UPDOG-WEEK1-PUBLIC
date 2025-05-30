@@ -2,6 +2,7 @@ package funkin.data;
 
 import openfl.Assets;
 import funkin.data.Section.SwagSection;
+import mobile.scripting.NativeAPI;
 
 import haxe.Json;
 

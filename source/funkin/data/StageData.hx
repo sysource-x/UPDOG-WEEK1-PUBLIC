@@ -9,6 +9,7 @@ import openfl.utils.Assets;
 #end
 import haxe.Json;
 import funkin.data.Song;
+import mobile.scripting.NativeAPI;
 
 typedef StageFile =
 {

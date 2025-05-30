@@ -9,6 +9,7 @@ import funkin.states.*;
 
 import openfl.utils.Assets as OpenFlAssets;
 import openfl.utils.Assets; //idk if works
+import mobile.scripting.NativeAPI;
 
 using StringTools;
 
