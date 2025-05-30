@@ -54,7 +54,7 @@
 	<define name="VIDEOS_ALLOWED" if="desktop || android || mobile" />
 	<define name="DISCORD_ALLOWED" if="desktop"/>
 
-	<assets path='assets/embeds' 		rename='assets'			embed="true" />
+	<!-- <assets path='assets/embeds' 		rename='assets'			embed="true" /> -->
 	<!-- assets path="assets/embeds/songs" rename="assets/songs" library="songs" embed="false"/ This are not necessary-->
 
 	<assets path="assets/fonts" />

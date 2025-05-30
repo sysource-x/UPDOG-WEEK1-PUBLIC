@@ -306,8 +306,8 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		// #if sys
-		#if desktop // MODS_ALLOWED
+		#if sys
+		#if MODS_ALLOWED // can be desktop
 		if (!ignoreMods && FileSystem.exists(modFolders(key))) return File.getContent(modFolders(key));
 		#end
 		
