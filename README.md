@@ -27,3 +27,8 @@ In a cmd within the project directory, in order run...
 
 
 After that is complete, run `lime test windows` and you should be compiling
+
+<details>
+  <summary><h2>Special Credits</h2></summary>
+- Credits to [Heropowerbrine](https://youtube.com/@Heropowerbrine) of The Mobile Controls
+</details>

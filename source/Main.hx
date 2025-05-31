@@ -19,7 +19,7 @@ class Main extends Sprite
 	public static final startMeta = {
 		width: 1280,
 		height: 720,
-		initialState: Splash,
+		initialState: LoadingScreen,
 		skipSplash: false,
 		startFullScreen: false,
 		fps: 60
