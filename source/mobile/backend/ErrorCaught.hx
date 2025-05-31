@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup;
 
 class ErrorCaught
 {
@@ -41,7 +41,7 @@ class ErrorCaughtState extends FlxState
     var msg:String;
     var title:String;
     var stack:Array<String>;
-    var scroll:FlxTypedGroup<FlxText>;
+    var scroll:FlxGroup;
     var scrollPos:Int = 0;
 
     public function new(title:String, msg:String, stack:Array<String>)
@@ -63,7 +63,7 @@ class ErrorCaughtState extends FlxState
         m.setFormat(null, 16, 0xFFFFFFFF, "center");
         add(m);
 
-        scroll = new FlxTypedGroup<FlxText>();
+        scroll = new FlxGroup();
         add(scroll);
 
         updateList();
