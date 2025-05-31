@@ -1,5 +1,3 @@
-package source.mobile.states;
-
 package mobile.states;
 
 import Splash;

@@ -1,6 +1,4 @@
-package source.mobile.states;
-
-package mobile.scripting;
+package mobile.states;
 
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.util.typeLimit.OneOfThree;
