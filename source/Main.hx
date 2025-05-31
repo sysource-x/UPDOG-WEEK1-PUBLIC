@@ -42,7 +42,7 @@ class Main extends Sprite
 	{
 		super();
 
-		mobile.backend.CrashHandler.init();
+		// mobile.backend.CrashHandler.init();
 
 		LoadingScreen.nextState = Splash;
 		ClientPrefs.loadDefaultKeys();
@@ -88,6 +88,14 @@ class Main extends Sprite
 		#if DISABLE_TRACES
 		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> {}
 		#end
+
+		openfl.Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(
+			openfl.events.UncaughtErrorEvent.UNCAUGHT_ERROR,
+			function(e) {
+				e.preventDefault();
+				mobile.backend.ErrorCaught.showError(e.error);
+			}
+		);
 	}
 
 	static function onResize(w:Int, h:Int)
