@@ -61,6 +61,9 @@ class FlashingState extends MusicBeatState
 		trace('sel');
 		changeSel(0);
 		trace('seldone');
+		#if mobile
+		addVirtualPad(UP_DOWN,A);
+		#end
 
 	}
 	function changeSel(oh:Int = 0) {
@@ -86,11 +89,11 @@ class FlashingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// controls shit
-		if(controls.UI_DOWN_P)
+		if(controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
 			changeSel(1);
-		if(controls.UI_UP_P)
+		if(controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
 			changeSel(-1);
-		if(controls.ACCEPT) {
+		if(controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end) {
 			if(curSel == goBackNum) {
 				saveOpts();
 				FlxG.sound.play(Paths.sound('confirmMenu'));

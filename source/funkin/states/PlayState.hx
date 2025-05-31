@@ -768,6 +768,9 @@ class PlayState extends MusicBeatState
 		setOnScripts('notes', notes);
 		setOnScripts('botplayTxt', botplayTxt);
 		callOnLuas('onCreate', []);
+
+		addHitbox(3);
+   		_hitbox.visible = false;
 		
 		startingSong = true;
 		
@@ -1179,6 +1182,10 @@ class PlayState extends MusicBeatState
 	
 	public function startCountdown():Void
 	{
+		#if mobile
+   		_hitbox.visible = true;
+   		#end
+		
 		if (startedCountdown)
 		{
 			callOnScripts('onStartCountdown', []);
@@ -2303,7 +2310,7 @@ class PlayState extends MusicBeatState
 		setOnHScripts('curStep', curStep);
 		setOnHScripts('curBeat', curBeat);
 		
-		if (controls.PAUSE && startedCountdown && canPause)
+		if (controls.PAUSE #if android || FlxG.android.justReleased.BACK #end && startedCountdown && canPause)
 		{
 			final ret:Dynamic = callOnScripts('onPause', []);
 			if (ret != Globals.Function_Stop)
@@ -3371,6 +3378,10 @@ class PlayState extends MusicBeatState
 		camZooming = false;
 		inCutscene = false;
 		updateTime = false;
+
+		#if mobile
+   		_hitbox.visible = false;
+   		#end
 		
 		deathCounter = 0;
 		seenCutscene = false;
@@ -3610,7 +3621,7 @@ class PlayState extends MusicBeatState
 		// trace('Pressed: ' + eventKey);
 		if (cpuControlled || paused || !startedCountdown) return;
 		
-		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
+		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || !ClientPrefs.controllerMode))
 		{
 			if (!boyfriend.stunned && generatedMusic && !endingSong)
 			{
@@ -3720,6 +3731,15 @@ class PlayState extends MusicBeatState
 		}
 		return -1;
 	}
+
+	private function hitboxDataKeyIsPressed(data:Int):Bool
+ 	{
+ 		if (_hitbox.array[data].pressed) 
+                 {
+                         return true;
+                 }
+ 		return false;
+ 	}
 	
 	// Hold notes
 	function keyShit():Void
@@ -3734,21 +3754,16 @@ class PlayState extends MusicBeatState
 		var controlHoldArray:Array<Bool> = [left, down, up, right, dodge];
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if (ClientPrefs.controllerMode)
+		if(!ClientPrefs.controllerMode)
 		{
-			var controlArray:Array<Bool> = [
-				controls.NOTE_LEFT_P,
-				controls.NOTE_DOWN_P,
-				controls.NOTE_UP_P,
-				controls.NOTE_RIGHT_P
-			];
-			if (controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+			#if android
+			for (i in 0..._hitbox.array.length) {
+				if (_hitbox.array[i].justPressed)
 				{
-					if (controlArray[i]) onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
+				       onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
 				}
 			}
+			#end
 		}
 		
 		// FlxG.watch.addQuick('asdfa', upP);
@@ -3757,6 +3772,17 @@ class PlayState extends MusicBeatState
 			// rewritten inputs???
 			
 			notes.forEachAlive(function(daNote:Note) {
+				if(!ClientPrefs.controllerMode && !ClientPrefs.keyboardEnabled)
+				{
+				// mobile hold note functions
+				if(!daNote.playField.autoPlayed && daNote.playField.inControl && daNote.playField.playerControls){
+					if (daNote.isSustainNote && hitboxDataKeyIsPressed(daNote.noteData) && daNote.canBeHit && !daNote.tooLate && !daNote.wasGoodHit || (daNote.doAutoSustain && daNote.noteData > 4)) {
+						daNote.playField.noteHitCallback(daNote, daNote.playField);
+					}
+				}
+				}
+				else
+				{
 				// hold note functions
 				if (!daNote.playField.autoPlayed && daNote.playField.inControl && daNote.playField.playerControls)
 				{
@@ -3769,6 +3795,7 @@ class PlayState extends MusicBeatState
 					{
 						if (daNote.playField.noteHitCallback != null) daNote.playField.noteHitCallback(daNote, daNote.playField);
 					}
+				}
 				}
 			});
 			
@@ -3792,21 +3819,16 @@ class PlayState extends MusicBeatState
 		}
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if (ClientPrefs.controllerMode)
+		if(!ClientPrefs.controllerMode)
 		{
-			var controlArray:Array<Bool> = [
-				controls.NOTE_LEFT_R,
-				controls.NOTE_DOWN_R,
-				controls.NOTE_UP_R,
-				controls.NOTE_RIGHT_R
-			];
-			if (controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+			#if android
+			for (i in 0..._hitbox.array.length) {
+				if (_hitbox.array[i].justReleased)
 				{
-					if (controlArray[i]) onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
+				       onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
 				}
 			}
+			#end
 		}
 	}
 	
@@ -4897,10 +4919,14 @@ class PlayState extends MusicBeatState
 		if (isPixelStage != stageData.isPixelStage) isPixelStage = stageData.isPixelStage;
 		super.startOutro(onOutroComplete);
 	}
-	
-	function getPresence()
+
+	/*function getPresence()
 	{
 		// Get the discord presence
+		
 		return ClientPrefs.disc_rpc ? SONG.song : FlxG.random.getObject(DiscordClient.discordPresences);
-	}
+                
+
+	}*/
+
 }

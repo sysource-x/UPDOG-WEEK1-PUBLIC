@@ -26,10 +26,12 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Disable Reset Button', "Disables the Reset button", 'noReset', 'bool', false);
 		addOption(option);
 
-		var option:Option = new Option('Controller Mode', 'Enables controller support',
-			'controllerMode', 'bool', false);
+		var option:Option = new Option('Keyboard Enabled',
+			'Check this if you want to play with\na keyboard on the Android Port',
+			'keyboardEnabled',
+			'bool',
+			false);
 		addOption(option);
-
 		/*
 		var option:Option = new Option('Mechanics', 'Check this if you want to enable mechanics!',
 		'mechanics', 'bool', true);

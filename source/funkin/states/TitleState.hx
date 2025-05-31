@@ -89,6 +89,8 @@ class TitleState extends MusicBeatState
 	var secretKey:Array<FlxKey> = [FlxKey.D, FlxKey.K];
 	var lastKeysPressed:Array<FlxKey> = [];
 	var keyTimer:Float = 0;
+
+	var secretTriggered:Bool = false;
 	
 	function selectedOption()
 	{
@@ -393,6 +395,11 @@ class TitleState extends MusicBeatState
 			// IF CAN PRESS ON THING
 			if (transitioning)
 			{
+				#if mobile
+				if (_virtualpad == null) {
+					addVirtualPad(FULL, A_B);
+				}
+				#end
 				if (FlxG.mouse.justPressed && members.indexOf(tv) != -1 && tv.overlapsPoint(FlxG.mouse.getWorldPosition()))
 				{
 					tv.animation.play('on');
@@ -435,10 +442,7 @@ class TitleState extends MusicBeatState
 					
 					if (checkForMatch(secretKey)) // dk
 					{
-						insert(members.indexOf(lg) - 1, tv);
-						FlxG.sound.play(Paths.sound('confirmMenu'));
-						FlxTween.tween(tv, {alpha: 1}, 2, {ease: FlxEase.linear});
-						FlxG.mouse.visible = true;
+						doSecretAction();
 						
 						secretKey = []; // prevents from doing multiple times
 					}
@@ -464,15 +468,15 @@ class TitleState extends MusicBeatState
 				
 				if (canSelect)
 				{
-					if (controls.UI_DOWN_P)
+					if (controls.UI_DOWN_P #if mobile || _virtualpad.buttonDown.justPressed #end)
 					{
 						changeSel(1, 1);
 					}
-					if (controls.UI_UP_P)
+					if (controls.UI_UP_P #if mobile || _virtualpad.buttonUp.justPressed #end)
 					{
 						changeSel(-1, 1);
 					}
-					if (controls.UI_RIGHT_P)
+					if (controls.UI_RIGHT_P #if mobile || _virtualpad.buttonRight.justPressed #end)
 					{
 						if (curSel == 3)
 						{
@@ -480,7 +484,7 @@ class TitleState extends MusicBeatState
 							changeSel(0, 1);
 						}
 					}
-					if (controls.UI_LEFT_P)
+					if (controls.UI_LEFT_P #if mobile || _virtualpad.buttonLeft.justPressed #end)
 					{
 						if (curSel == 4)
 						{
@@ -488,9 +492,14 @@ class TitleState extends MusicBeatState
 							changeSel(0, 1);
 						}
 					}
-					if (controls.ACCEPT)
+					if (controls.ACCEPT #if mobile || _virtualpad.buttonA.justPressed #end)
 					{
 						selectedOption();
+					}
+					if (_virtualpad.buttonB.justPressed && !secretTriggered)
+					{
+					    doSecretAction();
+					    secretTriggered = true;
 					}
 				}
 			}
@@ -509,11 +518,22 @@ class TitleState extends MusicBeatState
 						FlxTween.tween(spr, {x: buttons[spr.ID][0] + (spr.ID > 2 ? 0 : 9.4)}, 1, {ease: FlxEase.quadOut, startDelay: spr.ID / 6});
 					});
 					// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
+					#if mobile
+					addVirtualPad(FULL,A_B);
+					#end
 				}
 			}
 		}
 		
 		super.update(elapsed);
+	}
+
+	function doSecretAction():Void
+	{
+	    insert(members.indexOf(lg) - 1, tv);
+	    FlxG.sound.play(Paths.sound('confirmMenu'));
+	    FlxTween.tween(tv, {alpha: 1}, 2, {ease: FlxEase.linear});
+	    FlxG.mouse.visible = true;
 	}
 	
 	function moveShitUp(tt:Float = 1)

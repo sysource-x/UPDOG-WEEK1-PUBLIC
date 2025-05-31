@@ -13,11 +13,9 @@ class MiscSubState extends BaseOptionsMenu
 		'disc_rpc', 'bool', true);
 		addOption(option);
 
-		#if !mobile
 		var option:Option = new Option('FPS Counter', 'If unchecked, hides FPS Counter.', 'showFPS', 'bool', true);
 		addOption(option);
 		option.onChange = onChangeFPSCounter;
-		#end
 		
 
 
@@ -48,12 +46,32 @@ class MiscSubState extends BaseOptionsMenu
 		var option:Option = new Option('GPU Caching', 'If checked, GPU caching will be enabled.', 'gpuCaching', 'bool', false);
 		addOption(option);
 
+		var option:Option = new Option('Allow Phone Screensaver',
+		    'If checked, the phone will sleep after going inactive for few seconds.',
+		    'screensaver', 
+		    'bool',
+		    false);
+		option.onChange = () -> lime.system.System.allowScreenTimeout = curOption.getValue(); 
+		addOption(option);
+
+		var option:Option = new Option('Hide Hitbox Hints',
+		    'If checked, makes the hitbox completely invisible. (Why would you use this)',
+		    'hideHitboxHints',
+		    'bool',
+		    false);
+		addOption(option);
+
+		var option:Option = new Option('Extra Hitbox Hints',
+		    'If checked, adds extra hitbox hints that permanently stay on your screen(only works if hide hitbox hints is switched off)',
+		    'ExtraHints',
+		    'bool',
+		    false);
+		addOption(option);
+
 		super();
 	}
-	#if !mobile
 	function onChangeFPSCounter()
 	{
 		if (Main.fpsVar != null) Main.fpsVar.visible = ClientPrefs.showFPS;
 	}
-	#end
 }

@@ -7,6 +7,8 @@ import flixel.FlxState;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.display.StageScaleMode;
+import lime.system.System as LimeSystem;
+import mobile.states.LoadingScreen;
 
 class Main extends Sprite
 {
@@ -17,7 +19,7 @@ class Main extends Sprite
 	public static final startMeta = {
 		width: 1280,
 		height: 720,
-		initialState: Init,
+		initialState: Splash,
 		skipSplash: false,
 		startFullScreen: false,
 		fps: 60
@@ -40,6 +42,9 @@ class Main extends Sprite
 	{
 		super();
 
+		mobile.backend.CrashHandler.init();
+
+		LoadingScreen.nextState = Splash;
 		ClientPrefs.loadDefaultKeys();
 
 		final game = new
@@ -47,7 +52,7 @@ class Main extends Sprite
 			FNFGame
 			#else
 			FlxGame
-			#end(startMeta.width, startMeta.height, #if !debug Splash #else startMeta.initialState #end, startMeta.fps, startMeta.fps, startMeta.skipSplash,
+			#end(startMeta.width, startMeta.height, startMeta.initialState, startMeta.fps, startMeta.fps, startMeta.skipSplash,
 				startMeta.startFullScreen);
 
 		// FlxG.game._customSoundTray wants just the class, it calls new from
@@ -60,7 +65,6 @@ class Main extends Sprite
 		game._customSoundTray = funkin.objects.FunkinSoundTray;
 		addChild(game);
 
-		#if !mobile
 		fpsVar = new DebugDisplay(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
@@ -69,12 +73,15 @@ class Main extends Sprite
 		{
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
-		#end
 
 		#if html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
 		#end
+
+		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
+
+		LimeSystem.allowScreenTimeout = ClientPrefs.screensaver;
 
 		FlxG.signals.gameResized.add(onResize);
 
@@ -88,7 +95,11 @@ class Main extends Sprite
 		final scale:Float = Math.max(1, Math.min(w / FlxG.width, h / FlxG.height));
 		if (fpsVar != null)
 		{
+			#if mobile
+			fpsVar.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height));
+			#else
 			fpsVar.scaleX = fpsVar.scaleY = scale;
+			#end
 		}
 
 		if (FlxG.cameras != null)

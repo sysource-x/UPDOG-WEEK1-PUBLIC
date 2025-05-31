@@ -529,7 +529,7 @@ class Paths
 	inline static public function mods(key:String = '')
 	{
 		return '$MODS_DIRECTORY/' + key;
-	}
+	}// #if mobile Sys.getCwd() + #end 
 	
 	inline static public function modsFont(key:String)
 	{
@@ -599,7 +599,7 @@ class Paths
 			if (FileSystem.exists(fileToCheck)) return fileToCheck;
 		}
 		return '$MODS_DIRECTORY/' + key;
-	}
+	}// #if mobile Sys.getCwd() + #end
 	
 	public static var globalMods:Array<String> = [];
 	

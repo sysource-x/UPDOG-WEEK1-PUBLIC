@@ -5,6 +5,7 @@ import funkin.backend.BaseTransitionState;
 import funkin.states.transitions.SwipeTransition;
 import flixel.addons.ui.FlxUIState;
 import flixel.FlxG;
+import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.data.*;
 import funkin.data.scripts.*;
@@ -81,6 +82,38 @@ class MusicBeatState extends FlxUIState
 
 	inline function get_controls():Controls return PlayerSettings.player1.controls;
 
+	#if mobile
+	var _virtualpad:FlxVirtualPad;
+	var _hitbox:FlxHitbox;
+
+	public function addHitbox(?keyCount:Int = 3) {
+		_hitbox = new FlxHitbox(keyCount);
+
+		var camMobile = new FlxCamera();
+	    camMobile.bgColor.alpha = 0;
+		FlxG.cameras.add(camMobile, false);
+
+		_hitbox.cameras = [camMobile];
+ 		add(_hitbox);
+	}
+
+	public function addVirtualPad(?DPad:FlxDPadMode, ?Action:FlxActionMode) {
+        _virtualpad = new FlxVirtualPad(DPad, Action);
+		add(_virtualpad);
+	}
+
+    	public function addVirtualPadCamera() {
+		var virtualpadcam = new FlxCamera();
+		virtualpadcam.bgColor.alpha = 0;
+		FlxG.cameras.add(virtualpadcam, false);
+		_virtualpad.cameras = [virtualpadcam];
+    	}
+
+	public function removeVirtualPad() {
+		remove(_virtualpad);
+	}
+	#end
+	
 	override function create()
 	{
 		super.create();
@@ -183,6 +216,11 @@ class MusicBeatState extends FlxUIState
 	public static function getState():MusicBeatState
 	{
 		return cast FlxG.state;
+	}
+
+	public static function switchState(nextState:FlxState)
+	{
+		FlxG.switchState(nextState); // just because im too lazy to goto every instance of switchState and change it to a FlxG call
 	}
 
 	public function stepHit():Void

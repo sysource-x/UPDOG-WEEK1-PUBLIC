@@ -8,6 +8,10 @@ import haxe.ds.StringMap;
 /**
 	General Utility class for more one off functions
 **/
+#if cpp
+@:cppFileCode('#include <thread>')
+#end
+
 class CoolUtil
 {
 	/**
@@ -283,6 +287,24 @@ class CoolUtil
 		
 		return eases.get(name.toLowerCase()) ?? FlxEase.linear;
 	}
+	public static function showPopUp(message:String, title:String):Void
+	{
+		/*#if android
+		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);
+		#else*/
+		FlxG.stage.window.alert(message, title);
+		//#end
+	}
+
+	#if cpp
+    @:functionCode('
+        return std::thread::hardware_concurrency();
+    ')
+	#end
+    public static function getCPUThreadsCount():Int
+    {
+        return 1;
+    }
 
 
 }
