@@ -1,7 +1,7 @@
 package;
 
-
 import flixel.FlxState;
+import openfl.utils.Assets;
 
 using StringTools;
 
