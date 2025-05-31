@@ -8,13 +8,11 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+import mobile.states.NativeAPI;
+
 using StringTools;
 using flixel.util.FlxArrayUtil;
 
-/**
- * Crash Handler.
- * @author YoshiCrafter29, Ne_Eo, MAJigsaw77 and Homura Akemi (HomuHomu833)
- */
 class CrashHandler
 {
 	public static function init():Void
@@ -33,50 +31,51 @@ class CrashHandler
 		e.stopPropagation();
 		e.stopImmediatePropagation();
 
-		var m:String = e.error;
-		if (Std.isOfType(e.error, Error))
-		{
+		var errorMsg:String = "";
+		if (Std.isOfType(e.error, Error)) {
 			var err = cast(e.error, Error);
-			m = '${err.message}';
-		}
-		else if (Std.isOfType(e.error, ErrorEvent))
-		{
+			errorMsg = err.message;
+		} else if (Std.isOfType(e.error, ErrorEvent)) {
 			var err = cast(e.error, ErrorEvent);
-			m = '${err.text}';
+			errorMsg = err.text;
+		} else {
+			errorMsg = Std.string(e.error);
 		}
+
 		var stack = haxe.CallStack.exceptionStack();
-		var stackLabelArr:Array<String> = [];
-		var stackLabel:String = "";
-		for (e in stack)
-		{
-			switch (e)
-			{
-				case CFunction:
-					stackLabelArr.push("Non-Haxe (C) Function");
-				case Module(c):
-					stackLabelArr.push('Module ${c}');
+		var errorList:Array<String> = [];
+
+		for (item in stack) {
+			switch (item) {
 				case FilePos(parent, file, line, col):
-					switch (parent)
-					{
+					var funcName = "";
+					switch (parent) {
 						case Method(cla, func):
-							stackLabelArr.push('${file.replace('.hx', '')}.$func() [line $line]');
+							funcName = '.$func';
 						case _:
-							stackLabelArr.push('${file.replace('.hx', '')} [line $line]');
+							funcName = '';
 					}
+					errorList.push('${file}:${line}${funcName}');
+				case Module(c):
+					errorList.push('Module: ${c}');
+				case CFunction:
+					errorList.push('Native/C Function');
 				case LocalFunction(v):
-					stackLabelArr.push('Local Function ${v}');
+					errorList.push('Local Function: ${v}');
 				case Method(cl, m):
-					stackLabelArr.push('${cl} - ${m}');
+					errorList.push('${cl}.${m}');
 			}
 		}
-		stackLabel = stackLabelArr.join('\r\n');
 
-		#if sys
-		saveErrorMessage('$m\n$stackLabel');
+		var stackMsg = errorList.length > 0 ? errorList.join('\n') : "[Sem stacktrace]";
+		var fullMsg = 'Error: $errorMsg\n\nStacktrace:\n$stackMsg';
+
+		// CoolUtil trocado pelo NativeAPI
+		NativeAPI.showMessageBox("Error!", fullMsg);
+
+		#if DISCORD_ALLOWED
+		DiscordClient.shutdown();
 		#end
-
-		CoolUtil.showPopUp('$m\n$stackLabel', "Error!");
-		#if DISCORD_ALLOWED DiscordClient.shutdown(); #end
 		lime.system.System.exit(1);
 	}
 
@@ -94,8 +93,11 @@ class CrashHandler
 		saveErrorMessage(log.join('\n'));
 		#end
 
-		CoolUtil.showPopUp(log.join('\n'), "Critical Error!");
-		#if DISCORD_ALLOWED DiscordClient.shutdown(); #end
+		// CoolUtil trocado por NativeAPI
+		NativeAPI.showMessageBox("Critical Error!", log.join('\n'));
+		#if DISCORD_ALLOWED
+		DiscordClient.shutdown();
+		#end
 		lime.system.System.exit(1);
 	}
 	#end
@@ -116,4 +118,4 @@ class CrashHandler
 			trace('Couldn\'t save error message. (${e.message})');
 	}
 	#end
-      }
+}
