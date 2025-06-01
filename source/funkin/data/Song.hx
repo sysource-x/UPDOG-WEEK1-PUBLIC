@@ -1,6 +1,6 @@
 package funkin.data;
 
-import openfl.Assets;
+import lime.utils.Assets;
 import funkin.data.Section.SwagSection;
 import mobile.scripting.NativeAPI;
 
@@ -128,34 +128,15 @@ class Song
 
 		if (rawJson == null)
 		{
-			if (mod)
-			{
-				rawJson = File.getContent(moddyFile).trim();
-			}
-			else
-			{
-				try
-				{
-					rawJson = openfl.Assets.getText('assets/shared/songs/$formattedFolder/$formattedSong.json');
-				}
-				catch (e)
-				{
-					#if desktop
-					try {
-						rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
-					} catch (e2:Dynamic) {
-						NativeAPI.showMessageBox("Song Load Error", "Failed to load chart (desktop):\n" + Std.string(e2));
-						throw e2;
-					}
-					#else
-					try {
-						rawJson = openfl.Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
-					} catch (e2:Dynamic) {
-						NativeAPI.showMessageBox("Song Load Error", "Failed to load chart (assets):\n" + Std.string(e2));
-						throw e2;
-					}
-					#end
-				}
+			try {
+				#if desktop
+				rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+				#else
+				rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+				#end
+			} catch (e:Dynamic) {
+				NativeAPI.showMessageBox("Song Load Error", "Could not load chart for song: " + formattedSong + "\n" + Std.string(e));
+				throw "Chart not found: " + formattedSong;
 			}
 		}
 

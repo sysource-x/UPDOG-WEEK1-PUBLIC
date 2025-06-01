@@ -198,7 +198,7 @@ class Paths
 	
 	inline static public function json(key:String, ?library:String)
 	{
-		return getPath('songs/$key/$key.json', AssetType.TEXT, library);
+		return getPath('shared/songs/$key/$key.json', AssetType.TEXT, library);
 	}
 	
 	inline static public function noteskin(key:String, ?library:String)
