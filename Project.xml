@@ -60,6 +60,7 @@
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
+	<assets path="assets/shared/shaders" include="*.frag" embed="true"/>
 	<assets path="assets/shared/songs" library="songs" embed="true" exclude="*.mp3" unless="web"/>
 	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
 

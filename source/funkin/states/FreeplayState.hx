@@ -179,8 +179,18 @@ class FreeplayState extends MusicBeatState
 
 	function createShader(fragFile:String = null, vertFile:String = null):FunkinRuntimeShader
 	{
-		// Corrigido para usar o caminho de assets/shared/shaders
-		return new FunkinRuntimeShader(fragFile == null ? null : File.getContent(Paths.shaderFragment(fragFile)));
+		// urbilacxe - lol ("load the shader.frag")
+	    var shaderSource:String = null;
+	    #if desktop
+	    shaderSource = File.getContent(Paths.shaderFragment(fragFile));
+	    #else
+	    shaderSource = Assets.getText(Paths.shaderFragment(fragFile));
+	    #end
+	    if (shaderSource == null) {
+	        NativeAPI.showMessageBox("Shader Error", "Shader not found: " + Paths.shaderFragment(fragFile));
+	        return null;
+	    }
+	    return new FunkinRuntimeShader(shaderSource);
 	}
 
 	function reloadWeekShit()
