@@ -118,7 +118,7 @@ class Song
 			formattedSong = formattedSong.substr(formattedSong.lastIndexOf("\\") + 1);
 		}
 
-		#if MODS_ALLOWED
+		#if desktop
 		var moddyFile:String = Paths.modsJson(formattedFolder + '/' + formattedSong);
 		if (FileSystem.exists(moddyFile))
 		{
@@ -128,11 +128,11 @@ class Song
 
 		if (rawJson == null)
 		{
-			try {
+			try {// AAAAAAAAAAAAAAAAAAAAA this is so bad
 				#if desktop
-				rawJson = File.getContent(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+				rawJson = File.getContent(Paths.json(formattedSong)).trim();
 				#else
-				rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+				rawJson = Assets.getText(Paths.json(formattedSong)).trim();
 				#end
 			} catch (e:Dynamic) {
 				NativeAPI.showMessageBox("Song Load Error", "Could not load chart for song: " + formattedSong + "\n" + Std.string(e));
