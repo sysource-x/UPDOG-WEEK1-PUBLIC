@@ -1,4 +1,4 @@
-package content.songs.meltdown;
+package assets.songs.meltdown;
 
 import funkin.objects.BGSprite;
 

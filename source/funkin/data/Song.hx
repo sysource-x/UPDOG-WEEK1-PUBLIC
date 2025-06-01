@@ -136,7 +136,7 @@ class Song
 			{
 				try
 				{
-					rawJson = openfl.Assets.getText('assets/shared/songs/$formattedFolder/$formattedSong.json');
+					rawJson = openfl.Assets.getText('assets/songs/$formattedFolder/$formattedSong.json');
 				}
 				catch (e)
 				{
