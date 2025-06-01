@@ -198,7 +198,7 @@ class Paths
 	
 	inline static public function json(key:String, ?library:String)
 	{
-		return getPath('shared/songs/$key/$key.json', AssetType.TEXT, library);
+		return getPath('songs/$key/$key.json', AssetType.TEXT, library);
 	}
 	
 	inline static public function noteskin(key:String, ?library:String)
@@ -213,12 +213,12 @@ class Paths
 	
 	inline static public function shaderFragment(key:String, ?library:String)
 	{
-		return getPath('shared/shaders/$key.frag', AssetType.TEXT, library);
+		return getPath('shaders/$key.frag', AssetType.TEXT, library);
 	}
 	
 	inline static public function shaderVertex(key:String, ?library:String)
 	{
-		return getPath('shared/shaders/$key.vert', AssetType.TEXT, library);
+		return getPath('shaders/$key.vert', AssetType.TEXT, library);
 	}
 	
 	inline static public function lua(key:String, ?library:String)
