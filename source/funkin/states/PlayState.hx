@@ -1026,9 +1026,9 @@ class PlayState extends MusicBeatState
 	
 	public function addCharacterToList(newCharacter:String, type:Int)
 	{
+		try {
 		switch (type)
 		{
-			try {
 			case 0:
 				if (!boyfriendMap.exists(newCharacter))
 				{
@@ -1061,9 +1061,9 @@ class PlayState extends MusicBeatState
 					newGf.alpha = 0.00001;
 					startCharacterScripts(newGf.curCharacter, newGf);
 				}
-			} catch (e:Dynamic) {
-			    NativeAPI.showMessageBox("PlayState Error", "An error occurred while addCharacterToList:\n" + Std.string(e));
 		    }
+	    } catch (e:Dynamic) {
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred while addCharacterToList:\n" + Std.string(e));
 		}
 	}
 	
