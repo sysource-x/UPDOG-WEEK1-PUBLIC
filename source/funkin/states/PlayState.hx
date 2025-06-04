@@ -43,7 +43,7 @@ import funkin.modchart.*;
 import funkin.backend.SyncedFlxSoundGroup;
 import funkin.utils.DifficultyUtil;
 import funkin.game.RatingInfo;
-import mobile.states.NativeAPI;
+import mobile.scripting.NativeAPI;
 
 @:structInit class SpeedEvent
 {
