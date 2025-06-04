@@ -1,6 +1,7 @@
 package funkin.data;
 
 import lime.utils.Assets;
+import openfl.Assets;//idk
 import funkin.data.Section.SwagSection;
 import mobile.scripting.NativeAPI;
 

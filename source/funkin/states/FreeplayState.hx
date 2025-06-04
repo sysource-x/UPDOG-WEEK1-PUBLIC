@@ -10,6 +10,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxAxes;
 import flixel.util.FlxStringUtil;
+import openfl.Assets;
 
 import funkin.data.WeekData;
 import funkin.states.*;
