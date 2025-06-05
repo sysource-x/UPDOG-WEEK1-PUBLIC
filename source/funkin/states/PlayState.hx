@@ -43,7 +43,7 @@ import funkin.modchart.*;
 import funkin.backend.SyncedFlxSoundGroup;
 import funkin.utils.DifficultyUtil;
 import funkin.game.RatingInfo;
-import mobile.states.NativeAPI;
+import mobile.scripting.NativeAPI;
 
 @:structInit class SpeedEvent
 {
@@ -1105,7 +1105,8 @@ class PlayState extends MusicBeatState
 		    funkyScripts.push(script);
             return script;
 		} catch (e:Dynamic) {
-			NativeAPI.showMessageBox("PlayState Error", "An error occurred while initFunkinIris:\n" + Std.string(e));
+			NativeAPI.showMessageBox("PlayState Error", "An error occurred in initFunkinIris:\n" + Std.string(e));
+			return null;
 		}
 	}
 	
@@ -1115,9 +1116,10 @@ class PlayState extends MusicBeatState
 		    if (modchartObjects.exists(tag)) return modchartObjects.get(tag);
 		    if (modchartSprites.exists(tag)) return modchartSprites.get(tag);
 		    if (text && modchartTexts.exists(tag)) return modchartTexts.get(tag);
-            return null;
+            return null; 
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("PlayState Error", "An error occurred while getLuaObject:\n" + Std.string(e));
+			return new flixel.FlxSprite();
 		}
 	}
 	
@@ -1464,6 +1466,7 @@ class PlayState extends MusicBeatState
 		    return spr;
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("PlayState Error", "An error occurred while makeCountdownSprite:\n" + Std.string(e));
+			return new flixel.FlxSprite();
 		}
 	}
 	
@@ -1607,6 +1610,7 @@ class PlayState extends MusicBeatState
 		    return true;
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("PlayState Error", "An error occurred while shouldPush:\n" + Std.string(e));
+			return false;
 		}
 	}
 	
@@ -1669,6 +1673,7 @@ class PlayState extends MusicBeatState
 		    return events;
 		} catch (e:Dynamic) {
 			NativeAPI.showMessageBox("PlayState Error", "An error occurred while getEvents:\n" + Std.string(e));
+			return [];
 		}
 	}
 	
