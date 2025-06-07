@@ -61,8 +61,8 @@
 	<assets path="assets/shared"        exclude="*.ogg" 		if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" 		unless="web"/>
 	<assets path="assets/shared/shaders" include="*.frag" embed="true"/>
-	<assets path="assets/shared/songs" library="songs" embed="true" exclude="*.mp3" unless="web"/>
-	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
+	<assets path="assets/shared/songs" library="songs" include="**/*" />
+	<assets path="assets/videos" library="videos" include="**/*.mp4" if="VIDEOS_ALLOWED"/>
 
 	<library name="videos"        preload="true" if="VIDEOS_ALLOWED"/>
 	<library name="songs"         preload="true" />
